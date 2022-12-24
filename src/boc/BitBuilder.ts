@@ -9,6 +9,10 @@ export class BitBuilder {
         this._length = 0;
     }
 
+    /**
+     * Write a single bit
+     * @param value bit to write, true or positive number for 1, false or zero or negative for 0
+     */
     writeBit(value: boolean | number) {
 
         // Check overflow
@@ -26,12 +30,31 @@ export class BitBuilder {
         this._length++;
     }
 
+    /**
+     * Copy bits from BitString
+     * @param src source bits
+     */
     writeBits(src: BitString) {
         for (let i = 0; i < src.length; i++) {
             this.writeBit(src.at(i));
         }
     }
 
+    /**
+     * Write bits from buffer
+     * @param src source buffer
+     */
+    writeBuffer(src: Buffer) {
+        for (let i = 0; i < src.length; i++) {
+            this.writeInt(src[i], 8);
+        }
+    }
+
+    /**
+     * Write uint value
+     * @param value value as bigint or number
+     * @param bits number of bits to write
+     */
     writeUint(value: bigint | number, bits: number) {
         let v = BigInt(value);
         if (bits < 0 || !Number.isSafeInteger(bits)) {
@@ -71,6 +94,11 @@ export class BitBuilder {
         }
     }
 
+    /**
+     * Write int value
+     * @param value value as bigint or number
+     * @param bits number of bits to write
+     */
     writeInt(value: bigint | number, bits: number) {
         let v = BigInt(value);
         if (bits < 0 || !Number.isSafeInteger(bits)) {
@@ -114,16 +142,90 @@ export class BitBuilder {
         this.writeUint(v, bits - 1);
     }
 
-    writeBuffer(src: Buffer) {
-        for (let i = 0; i < src.length; i++) {
-            this.writeInt(src[i], 8);
+    /**
+     * Wrtie var uint value, used for serializing coins
+     * @param value value to write as bigint or number
+     * @param bits header bits to write size
+     */
+    writeVarUint(value: number | bigint, bits: number) {
+        let v = BigInt(value);
+        if (bits < 0 || !Number.isSafeInteger(bits)) {
+            throw Error(`invalid bit length. Got ${bits}`);
         }
+        if (v < 0) {
+            throw Error(`value is negative. Got ${value}`);
+        }
+
+        // Corner case for zero
+        if (v === 0n) {
+            // Write zero size
+            this.writeUint(0, bits);
+            return;
+        }
+
+        // Calculate size
+        const sizeBytes = Math.ceil((v.toString(2).length) / 8); // Fastest way in most environments
+        const sizeBits = sizeBytes * 8;
+
+        // Write size
+        this.writeUint(sizeBytes, bits);
+
+        // Write number
+        this.writeUint(v, sizeBits);
     }
 
+    /**
+     * Wrtie var int value, used for serializing coins
+     * @param value value to write as bigint or number
+     * @param bits header bits to write size
+     */
+    writeVarInt(value: number | bigint, bits: number) {
+        let v = BigInt(value);
+        if (bits < 0 || !Number.isSafeInteger(bits)) {
+            throw Error(`invalid bit length. Got ${bits}`);
+        }
+
+        // Corner case for zero
+        if (v === 0n) {
+            // Write zero size
+            this.writeUint(0, bits);
+            return;
+        }
+
+        // Calculate size
+        // NOTE: toString will append minus for negative valyues
+        //       and will make it one bit more and will adjust 
+        //       the size and make it correct one
+        const sizeBytes = Math.ceil((v.toString(2).length) / 8); // Fastest way in most environments
+        const sizeBits = sizeBytes * 8;
+
+        // Write size
+        this.writeUint(sizeBytes, bits);
+
+        // Write number
+        this.writeInt(v, sizeBits);
+    }
+
+    /**
+     * Write coins in var uint format
+     * @param amount amount to write
+     */
+    writeCoins(amount: number | bigint) {
+        this.writeVarUint(amount, 4);
+    }
+
+    /**
+     * Build BitString
+     * @returns result bit string
+     */
     build() {
         return new BitString(this._buffer, 0, this._length);
     }
 
+    /**
+     * Build into Buffer
+     * @returns result buffer
+     */
     buffer() {
         if (this._length % 8 !== 0) {
             throw new Error("BitBuilder buffer is not byte aligned");
