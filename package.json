@@ -27,6 +27,10 @@
   "dependencies": {
     "symbol.inspect": "1.0.1"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "release-it": {
     "github": {
       "release": true
