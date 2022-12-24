@@ -2,6 +2,7 @@ import { BitString } from "./BitString";
 import { CellType } from "./CellType";
 import { bitsToPaddedBuffer } from "./utils/paddedBits";
 import { sha256_sync } from 'ton-crypto';
+import { Slice } from "./Slice";
 
 function getRefsDescriptor(cell: Cell) {
     return cell.refs.length + (cell.isExotic ? 1 : 0) * 8 + cell.level * 32;
@@ -45,6 +46,9 @@ function getRepr(cell: Cell) {
     return repr;
 }
 
+/**
+ * Cell as described in TVM spec
+ */
 export class Cell {
 
     readonly type: CellType;
@@ -71,7 +75,7 @@ export class Cell {
             this.bits = new BitString(Buffer.alloc(0), 0, 0);
         }
         if (opts && opts.refs) {
-            this.refs = opts.refs;
+            this.refs = [...opts.refs];
         } else {
             this.refs = [];
         }
@@ -90,12 +94,31 @@ export class Cell {
         let l = 0;
         // TODO: Implement for non-ordinary cells
         this.level = l;
+
+        // Freeze
+        Object.freeze(this);
+        Object.freeze(this.refs);
     }
 
+    /**
+     * Check if cell is exotic
+     */
     get isExotic() {
         return this.type !== CellType.Ordinary;
     }
 
+    /**
+     * Beging cell parsing
+     * @returns a new slice
+     */
+    beginParse = () => {
+        return new Slice(this);
+    }
+
+    /**
+     * Compute cell hash
+     * @returns cell hash
+     */
     hash = (): Buffer => {
 
         // Check if hash is already computed

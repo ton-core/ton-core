@@ -1,5 +1,10 @@
+import { Address } from "../address/Address";
+import { ExternalAddress } from "../address/ExternalAddress";
 import { BitString } from "./BitString";
 
+/**
+ * Class for building bit strings
+ */
 export class BitBuilder {
     private _buffer: Buffer;
     private _length: number;
@@ -46,7 +51,7 @@ export class BitBuilder {
      */
     writeBuffer(src: Buffer) {
         for (let i = 0; i < src.length; i++) {
-            this.writeInt(src[i], 8);
+            this.writeUint(src[i], 8);
         }
     }
 
@@ -193,10 +198,8 @@ export class BitBuilder {
         }
 
         // Calculate size
-        // NOTE: toString will append minus for negative valyues
-        //       and will make it one bit more and will adjust 
-        //       the size and make it correct one
-        const sizeBytes = Math.ceil((v.toString(2).length) / 8); // Fastest way in most environments
+        let v2 = v > 0 ? v : -v;
+        const sizeBytes = 1 + Math.ceil((v2.toString(2).length) / 8); // Fastest way in most environments
         const sizeBits = sizeBytes * 8;
 
         // Write size
@@ -212,6 +215,38 @@ export class BitBuilder {
      */
     writeCoins(amount: number | bigint) {
         this.writeVarUint(amount, 4);
+    }
+
+    /**
+     * Write address
+     * @param address write address or address external 
+     */
+    writeAddress(address: Address | ExternalAddress | null) {
+
+        // Is empty address
+        if (address === null) {
+            this.writeUint(0, 2); // Empty address
+            return;
+        }
+
+        // Is Internal Address
+        if (Address.isAddress(address)) {
+            this.writeUint(2, 2); // Internal address
+            this.writeUint(0, 1); // No anycast
+            this.writeInt(address.workChain, 8);
+            this.writeBuffer(address.hash);
+            return;
+        }
+
+        // Is External Address
+        if (ExternalAddress.isAddress(address)) {
+            this.writeUint(1, 2); // External address
+            this.writeVarUint(address.value, 9);
+            return;
+        }
+
+        // Invalid address
+        throw Error(`Invalid address. Got ${address}`);
     }
 
     /**
