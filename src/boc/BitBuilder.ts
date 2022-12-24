@@ -33,9 +33,21 @@ export class BitBuilder {
     }
 
     writeUint(value: bigint | number, bits: number) {
+        let v = BigInt(value);
+        if (bits < 0 || !Number.isSafeInteger(bits)) {
+            throw Error(`invalid bit length. Got ${bits}`);
+        }
+
+        // Corner case for zero bits
+        if (bits === 0) {
+            if (value !== 0n) {
+                throw Error(`value is not zero for ${bits} bits. Got ${value}`);
+            } else {
+                return;
+            }
+        }
 
         // Check input
-        let v = BigInt(value);
         let vBits = (1n << BigInt(bits));
         if (v < 0 || v >= vBits) {
             throw Error(`bitLength is too small for a value ${value}. Got ${bits}`);
@@ -60,9 +72,31 @@ export class BitBuilder {
     }
 
     writeInt(value: bigint | number, bits: number) {
+        let v = BigInt(value);
+        if (bits < 0 || !Number.isSafeInteger(bits)) {
+            throw Error(`invalid bit length. Got ${bits}`);
+        }
+
+        // Corner case for zero bits
+        if (bits === 0) {
+            if (value !== 0n) {
+                throw Error(`value is not zero for ${bits} bits. Got ${value}`);
+            } else {
+                return;
+            }
+        }
+
+        // Corner case for one bit
+        if (bits === 1) {
+            if (value !== -1n && value !== 0n) {
+                throw Error(`value is not zero or -1 for ${bits} bits. Got ${value}`);
+            } else {
+                this.writeBit(value === -1n);
+                return;
+            }
+        }
 
         // Check input
-        let v = BigInt(value);
         let vBits = 1n << (BigInt(bits) - 1n);
         if (v < -vBits || v >= vBits) {
             throw Error(`value is out of range for ${bits} bits. Got ${value}`);
@@ -71,7 +105,7 @@ export class BitBuilder {
         // Write sign
         if (v < 0) {
             this.writeBit(true);
-            v = -v;
+            v = (1n << (BigInt(bits) - 1n)) + v;
         } else {
             this.writeBit(false);
         }
