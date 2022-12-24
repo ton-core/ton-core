@@ -10,7 +10,7 @@ export class BitReader {
         this._bits = bits;
     }
 
-    readBit = (): boolean => {
+    readBit(): boolean {
         let r = this._bits.at(this._offset);
         this._offset++;
         return r;

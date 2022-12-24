@@ -9,7 +9,7 @@ export class BitBuilder {
         this._length = 0;
     }
 
-    writeBit = (value: boolean | number) => {
+    writeBit(value: boolean | number) {
 
         // Check overflow
         let n = this._length;
