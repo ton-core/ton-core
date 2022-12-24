@@ -14,8 +14,8 @@ function parseFriendlyAddress(src: string | Buffer) {
     }
 
     // Prepare data
-    const addr = data.slice(0, 34);
-    const crc = data.slice(34, 36);
+    const addr = data.subarray(0, 34);
+    const crc = data.subarray(34, 36);
     const calcedCrc = crc16(addr);
     if (!(calcedCrc[0] === crc[0] && calcedCrc[1] === crc[1])) {
         throw new Error('Invalid checksum: ' + src);
@@ -41,7 +41,7 @@ function parseFriendlyAddress(src: string | Buffer) {
         workchain = addr[1];
     }
 
-    const hashPart = addr.slice(2, 34);
+    const hashPart = addr.subarray(2, 34);
 
     return { isTestOnly, isBounceable, workchain, hashPart };
 }
