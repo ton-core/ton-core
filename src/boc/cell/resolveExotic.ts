@@ -72,19 +72,19 @@ function resolveMerkleProof(bits: BitString, refs: Cell[], reader: BitReader): {
     // Check data
     const proofHash = reader.loadBuffer(32);
     const proofDepth = reader.loadUint(16);
-    const refHash = refs[0].hash()
+    const refHash = refs[0].hash(0)
     const refDepth = refs[0].depth;
 
     if (!proofHash.equals(refHash)) {
         throw new Error(`Merkle Proof cell ref hash must be exactly "${proofHash.toString('hex')}", got "${refHash.toString('hex')}"`);
     }
 
-    if (proofDepth !== refDepth) {
-        throw new Error(`Merkle Proof cell ref depth must be exactly "${proofDepth}", got "${refDepth}"`);
+    if (proofDepth !== refDepth(0)) {
+        throw new Error(`Merkle Proof cell ref depth must be exactly "${proofDepth}", got "${refDepth(0)}"`);
     }
 
     const depth = proofDepth;
-    const level = Math.max(refs[0].level - 1, 0);
+    const level = Math.max(refs[0].level() - 1, 0);
 
     return {
         type: CellType.MerkleProof,
@@ -104,6 +104,8 @@ function resolveMerkleUpdate(bits: BitString, refs: Cell[], reader: BitReader): 
 export function resolveExotic(bits: BitString, refs: Cell[]): { type: CellType, depth: number, level: number } {
     let reader = new BitReader(bits);
     let type = reader.preloadUint(8);
+
+    console.warn('Exotic cell type: ' + type);
 
     if (type === 1) {
         return resolvePruned(bits, refs, reader);

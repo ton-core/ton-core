@@ -4,22 +4,22 @@ import { CellType } from "./CellType";
 import { sha256_sync } from 'ton-crypto';
 import { Slice } from "./Slice";
 import { getRepr } from './cell/descriptor';
-import { resolveExotic } from './cell/resolveExotic';
+import { LevelMask } from './cell/LevelMask';
 
 /**
  * Cell as described in TVM spec
  */
 export class Cell {
 
+    // Public properties
     readonly type: CellType;
     readonly bits: BitString;
     readonly refs: Cell[];
-    readonly depth: number;
-    readonly level: number;
+    readonly mask: LevelMask;
 
-    // Cached hash
-    private _hash: Buffer | null = null;
-    private _hashComputing = false;
+    // Level and depth information
+    private _hashes: Buffer[] = [];
+    private _depths: number[] = [];
 
     constructor(opts?: { exotic?: boolean, bits?: BitString, refs?: Cell[] }) {
 
@@ -36,14 +36,15 @@ export class Cell {
         }
 
         // Resolve type
+        let hashes: Buffer[];
+        let depths: number[];
+        let mask: LevelMask;
         let type = CellType.Ordinary;
-        let level = 0;
-        let depth = 0;
         if (opts && opts.exotic) {
-            let resolved = resolveExotic(bits, refs);
-            type = resolved.type;
-            depth = resolved.depth;
-            level = resolved.level;
+            // let resolved = resolveExotic(bits, refs);
+            // type = resolved.type;
+            // mask = new LevelMask(0);
+            throw Error('Unsupported');
         } else {
 
             // Check correctness
@@ -54,32 +55,43 @@ export class Cell {
                 throw new Error("Invalid number of bits");
             }
 
-            // Calculate depth
-            let d = 0;
-            if (refs.length > 0) {
-                for (let ref of refs) {
-                    d = Math.max(ref.depth, d);
-                }
-                d++;
-            }
-            depth = d;
-
             // Calculate level
             let l = 0;
             if (refs.length > 0) {
                 for (let ref of refs) {
-                    l = Math.max(ref.level, l);
+                    l = l | ref.level();
                 }
             }
-            level = l;
+            mask = new LevelMask(l);
+
+            // Calculate depth
+            depths = [];
+            for (let i = 0; i <= mask.level; i++) {
+                let d = 0;
+                if (refs.length > 0) {
+                    for (let ref of refs) {
+                        d = Math.max(ref.depth(i), d);
+                    }
+                    d++;
+                }
+                depths.push(d);
+            }
+
+            // Calculate hashes
+            hashes = [];
+            for (let i = 0; i <= mask.level; i++) {
+                let repr = getRepr(bits, refs, i, false);
+                hashes.push(sha256_sync(repr));
+            }
         }
 
         // Set fields
         this.type = type;
         this.bits = bits;
         this.refs = refs;
-        this.depth = depth;
-        this.level = level;
+        this.mask = mask;
+        this._depths = depths;
+        this._hashes = hashes;
     }
 
     /**
@@ -98,24 +110,19 @@ export class Cell {
     }
 
     /**
-     * Compute cell hash
+     * Get cell hash
      * @returns cell hash
      */
-    hash = (): Buffer => {
+    hash = (level: number = 3): Buffer => {
+        return this._hashes[Math.min(this._hashes.length - 1, level)];
+    }
 
-        // Check if hash is already computed
-        if (this._hash) {
-            return this._hash;
-        }
-        if (this._hashComputing) {
-            throw new Error("Cell cicrucular reference detected"); // Should not happen
-        }
-        this._hashComputing = true;
-        let repr = getRepr(this);
-        let h = sha256_sync(repr);
-        this._hashComputing = false;
-        this._hash = h;
-        return h;
+    depth = (level: number = 3): number => {
+        return this._depths[Math.min(this._depths.length - 1, level)];
+    }
+
+    level = (): number => {
+        return this.mask.level;
     }
 
     equals = (other: Cell): boolean => {
@@ -124,7 +131,7 @@ export class Cell {
 
     toString(indent?: string): string {
         let id = indent || '';
-        let s = id + 'x{' + this.bits.toString() + '}';
+        let s = id + (this.isExotic ? 'e' : 'x') + '{' + this.bits.toString() + '}';
         for (let k in this.refs) {
             const i = this.refs[k];
             s += '\n' + i.toString(id + ' ');
