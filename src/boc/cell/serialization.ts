@@ -23,7 +23,7 @@ function readCell(reader: BitReader, sizeBytes: number) {
     let bits = BitString.EMPTY;
     if (dataBytesize > 0) {
         if (paddingAdded) {
-            bits = reader.loadPaddedBits(dataBytesize);
+            bits = reader.loadPaddedBits(dataBytesize * 8);
         } else {
             bits = reader.loadBits(dataBytesize * 8);
         }

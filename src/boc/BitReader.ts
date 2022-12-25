@@ -359,10 +359,15 @@ export class BitReader {
      * Load bit string that was padded to make it byte alligned. Used in BOC serialization
      * @param bytes number of bytes to read
      */
-    loadPaddedBits(bytes: number) {
+    loadPaddedBits(bits: number) {
+
+        // Check that number of bits is byte alligned
+        if (bits % 8 !== 0) {
+            throw new Error("Invalid number of bits");
+        }
 
         // Skip padding
-        let length = bytes * 8;
+        let length = bits;
         while (true) {
             if (this._bits.at(this._offset + length - 1)) {
                 length--;
@@ -374,7 +379,7 @@ export class BitReader {
 
         // Read substring
         let r = this._bits.substring(this._offset, length);
-        this._offset += bytes * 8;
+        this._offset += bits;
         return r;
     }
 

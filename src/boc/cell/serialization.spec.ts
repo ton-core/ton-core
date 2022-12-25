@@ -33,17 +33,26 @@ describe('boc', () => {
 
     it('should parse largeBoc.txt', () => {
         let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/largeBoc.txt', 'utf8'), 'base64');
-        console.warn(parseBoc(boc));
-        deserializeBoc(boc);
+        // console.warn(parseBoc(boc));
+        let c = deserializeBoc(boc)[0];
+        serializeBoc(c, { idx: false, crc32c: true });
     });
     it('should parse manyCells.txt', () => {
         let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/manyCells.txt', 'utf8'), 'base64');
-        console.warn(parseBoc(boc));
-        deserializeBoc(boc);
+        // console.warn(parseBoc(boc));
+        let c = deserializeBoc(boc)[0];
+        serializeBoc(c, { idx: false, crc32c: true });
     });
     it('should parse veryLarge.boc', () => {
         let boc = fs.readFileSync(__dirname + '/__testdata__/veryLarge.boc');
-        console.warn(parseBoc(boc));
-        deserializeBoc(boc);
+        // console.warn(parseBoc(boc));
+        let c = deserializeBoc(boc)[0];
+        serializeBoc(c, { idx: false, crc32c: true });
+    });
+    it('should parse accountState.txt', () => {
+        let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/accountState.txt', 'utf8'), 'base64');
+        // console.warn(parseBoc(boc));
+        let c = deserializeBoc(boc)[0];
+        serializeBoc(c, { idx: false, crc32c: true });
     });
 });
