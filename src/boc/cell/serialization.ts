@@ -199,15 +199,15 @@ function writeCellToBuilder(cell: Cell, refs: number[], sizeBytes: number, to: B
     }
 }
 
-export function serializeBoc(root: Cell, opts?: { idx?: boolean, crc32c?: boolean }) {
+export function serializeBoc(root: Cell, opts: { idx: boolean, crc32: boolean }) {
 
     // Sort cells
     let allCells = topologicalSort(root);
 
     // Calculcate parameters
     let cellsNum = allCells.length;
-    let has_idx = opts?.idx ?? true;
-    let has_crc32c = opts?.crc32c ?? true;
+    let has_idx = opts.idx;
+    let has_crc32c = opts.crc32;
     let has_cache_bits = false;
     let flags = 0;
     let sizeBytes = Math.max(Math.ceil(bitsForNumber(cellsNum, 'uint') / 8), 1);

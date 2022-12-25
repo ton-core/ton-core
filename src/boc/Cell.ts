@@ -91,6 +91,10 @@ export class Cell {
         return h;
     }
 
+    equals = (other: Cell): boolean => {
+        return this.hash().equals(other.hash());
+    }
+
     toString(indent?: string): string {
         let id = indent || '';
         let s = id + 'x{' + this.bits.toString() + '}';

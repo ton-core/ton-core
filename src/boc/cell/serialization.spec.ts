@@ -1,5 +1,6 @@
 import { deserializeBoc, parseBoc, serializeBoc } from "./serialization";
 import fs from 'fs';
+import { beginCell } from "../Builder";
 
 const wallets: string[] = [
     'B5EE9C72410101010044000084FF0020DDA4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED5441FDF089',
@@ -17,12 +18,12 @@ describe('boc', () => {
         let b2 = deserializeBoc(Buffer.from('te6cckEBAgEADgABCQHW80VgAQAHdWtbOOjL63Q=', 'base64'));
         let b3 = deserializeBoc(Buffer.from('te6ccsEBAgEADgAIDgEJAdbzRWABAAd1a1s4yDmZeQ==', 'base64'));
 
-        let r1 = serializeBoc(b1[0], { idx: false, crc32c: true }).toString('base64');
-        console.warn(r1);
-        let r2 = serializeBoc(b2[0], { idx: true, crc32c: true }).toString('base64');
-        console.warn(r2);
-        let r3 = serializeBoc(b3[0], { idx: true, crc32c: true }).toString('base64');
-        console.warn(r3);
+        let r1 = serializeBoc(b1[0], { idx: false, crc32: true }).toString('base64');
+        // console.warn(r1);
+        let r2 = serializeBoc(b2[0], { idx: true, crc32: true }).toString('base64');
+        // console.warn(r2);
+        let r3 = serializeBoc(b3[0], { idx: true, crc32: true }).toString('base64');
+        // console.warn(r3);
     });
 
     it('should parse wallet code', () => {
@@ -35,24 +36,63 @@ describe('boc', () => {
         let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/largeBoc.txt', 'utf8'), 'base64');
         // console.warn(parseBoc(boc));
         let c = deserializeBoc(boc)[0];
-        serializeBoc(c, { idx: false, crc32c: true });
+        serializeBoc(c, { idx: false, crc32: true });
     });
     it('should parse manyCells.txt', () => {
         let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/manyCells.txt', 'utf8'), 'base64');
         // console.warn(parseBoc(boc));
         let c = deserializeBoc(boc)[0];
-        serializeBoc(c, { idx: false, crc32c: true });
+        serializeBoc(c, { idx: false, crc32: true });
     });
     it('should parse veryLarge.boc', () => {
         let boc = fs.readFileSync(__dirname + '/__testdata__/veryLarge.boc');
         // console.warn(parseBoc(boc));
         let c = deserializeBoc(boc)[0];
-        serializeBoc(c, { idx: false, crc32c: true });
+        serializeBoc(c, { idx: false, crc32: true });
     });
     it('should parse accountState.txt', () => {
         let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/accountState.txt', 'utf8'), 'base64');
         // console.warn(parseBoc(boc));
         let c = deserializeBoc(boc)[0];
-        serializeBoc(c, { idx: false, crc32c: true });
+        serializeBoc(c, { idx: false, crc32: true });
+    });
+
+    it('should serialize single cell with a empty bits', () => {
+        let cell = beginCell().endCell();
+        expect(cell.toString()).toBe('x{}');
+        expect(serializeBoc(cell, { idx: false, crc32: false }).toString('base64')).toBe('te6ccgEBAQEAAgAAAA==');
+        expect(serializeBoc(cell, { idx: false, crc32: true }).toString('base64')).toBe('te6cckEBAQEAAgAAAEysuc0=');
+        expect(serializeBoc(cell, { idx: true, crc32: false }).toString('base64')).toBe('te6ccoEBAQEAAgAAAAA=');
+        expect(serializeBoc(cell, { idx: true, crc32: true }).toString('base64')).toBe('te6ccsEBAQEAAgAAAAC1U5ck');
+        expect(deserializeBoc(Buffer.from('te6ccgEBAQEAAgAAAA==', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6cckEBAQEAAgAAAEysuc0=', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6ccoEBAQEAAgAAAAA=', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6ccsEBAQEAAgAAAAC1U5ck', 'base64'))[0].equals(cell)).toBe(true);
+    });
+
+    it('should serialize single cell with a number of byte-aligned bits', () => {
+        let cell = beginCell().storeUint(123456789, 32).endCell();
+        expect(cell.toString()).toBe('x{075BCD15}');
+        expect(serializeBoc(cell, { idx: false, crc32: false }).toString('base64')).toBe('te6ccgEBAQEABgAACAdbzRU=');
+        expect(serializeBoc(cell, { idx: false, crc32: true }).toString('base64')).toBe('te6cckEBAQEABgAACAdbzRVRblCS');
+        expect(serializeBoc(cell, { idx: true, crc32: false }).toString('base64')).toBe('te6ccoEBAQEABgAAAAgHW80V');
+        expect(serializeBoc(cell, { idx: true, crc32: true }).toString('base64')).toBe('te6ccsEBAQEABgAAAAgHW80Vyf0TAA==');
+        expect(deserializeBoc(Buffer.from('te6ccgEBAQEABgAACAdbzRU=', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6cckEBAQEABgAACAdbzRVRblCS', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6ccoEBAQEABgAAAAgHW80V', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6ccsEBAQEABgAAAAgHW80Vyf0TAA==', 'base64'))[0].equals(cell)).toBe(true);
+    });
+
+    it('should serialize single cell with a number of non-aligned bits', () => {
+        let cell = beginCell().storeUint(123456789, 34).endCell();
+        expect(cell.toString()).toBe('x{01D6F3456_}');
+        expect(serializeBoc(cell, { idx: false, crc32: false }).toString('base64')).toBe('te6ccgEBAQEABwAACQHW80Vg');
+        expect(serializeBoc(cell, { idx: false, crc32: true }).toString('base64')).toBe('te6cckEBAQEABwAACQHW80Vgb11ZoQ==');
+        expect(serializeBoc(cell, { idx: true, crc32: false }).toString('base64')).toBe('te6ccoEBAQEABwAAAAkB1vNFYA==');
+        expect(serializeBoc(cell, { idx: true, crc32: true }).toString('base64')).toBe('te6ccsEBAQEABwAAAAkB1vNFYMkX0oY=');
+        expect(deserializeBoc(Buffer.from('te6ccgEBAQEABwAACQHW80Vg', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6cckEBAQEABwAACQHW80Vgb11ZoQ==', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6ccoEBAQEABwAAAAkB1vNFYA==', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6ccsEBAQEABwAAAAkB1vNFYMkX0oY=', 'base64'))[0].equals(cell)).toBe(true);
     });
 });
