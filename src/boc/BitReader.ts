@@ -21,7 +21,7 @@ export class BitReader {
      * @param bits number of bits to skip
      */
     skip(bits: number) {
-        if (this._offset + bits < 0 || this._offset + bits > this._bits.length) {
+        if (bits < 0 || this._offset + bits > this._bits.length) {
             throw new Error(`Index ${this._offset + bits} is out of bounds`);
         }
         this._offset += bits;
@@ -353,6 +353,29 @@ export class BitReader {
         } else {
             throw Error('Unreachable');
         }
+    }
+
+    /**
+     * Load bit string that was padded to make it byte alligned. Used in BOC serialization
+     * @param bytes number of bytes to read
+     */
+    loadPaddedBits(bytes: number) {
+
+        // Skip padding
+        let length = bytes * 8;
+        while (true) {
+            if (this._bits.at(this._offset + length - 1)) {
+                length--;
+                break;
+            } else {
+                length--;
+            }
+        }
+
+        // Read substring
+        let r = this._bits.substring(this._offset, length);
+        this._offset += bytes * 8;
+        return r;
     }
 
     /**
