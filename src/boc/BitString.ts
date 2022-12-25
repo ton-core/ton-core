@@ -51,10 +51,10 @@ export class BitString {
 
         // Check bounds
         if (index >= this._length) {
-            throw new Error(`Index ${index} is out of bounds`);
+            throw new Error(`Index ${index} > ${this._length} is out of bounds`);
         }
         if (index < 0) {
-            throw new Error(`Index ${index} is out of bounds`);
+            throw new Error(`Index ${index} < 0 is out of bounds`);
         }
 
         // Calculcate offsets

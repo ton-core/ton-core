@@ -1,10 +1,10 @@
 import inspectSymbol from 'symbol.inspect';
 import { BitString } from "./BitString";
 import { CellType } from "./CellType";
-import { sha256_sync } from 'ton-crypto';
 import { Slice } from "./Slice";
-import { getRepr } from './cell/descriptor';
 import { LevelMask } from './cell/LevelMask';
+import { resolveExotic } from './cell/resolveExotic';
+import { wonderCalculator } from './cell/wonderCalculator';
 
 /**
  * Cell as described in TVM spec
@@ -41,10 +41,19 @@ export class Cell {
         let mask: LevelMask;
         let type = CellType.Ordinary;
         if (opts && opts.exotic) {
-            // let resolved = resolveExotic(bits, refs);
-            // type = resolved.type;
-            // mask = new LevelMask(0);
-            throw Error('Unsupported');
+
+            // Resolve exotic cell
+            let resolved = resolveExotic(bits, refs);
+
+            // Perform wonders
+            let wonders = wonderCalculator(resolved.type, bits, refs);
+
+            // Copy results
+            mask = wonders.mask;
+            depths = wonders.depths;
+            hashes = wonders.hashes;
+            type = resolved.type;
+
         } else {
 
             // Check correctness
@@ -55,34 +64,14 @@ export class Cell {
                 throw new Error("Invalid number of bits");
             }
 
-            // Calculate level
-            let l = 0;
-            if (refs.length > 0) {
-                for (let ref of refs) {
-                    l = l | ref.level();
-                }
-            }
-            mask = new LevelMask(l);
+            // Perform wonders
+            let wonders = wonderCalculator(CellType.Ordinary, bits, refs);
 
-            // Calculate depth
-            depths = [];
-            for (let i = 0; i <= mask.level; i++) {
-                let d = 0;
-                if (refs.length > 0) {
-                    for (let ref of refs) {
-                        d = Math.max(ref.depth(i), d);
-                    }
-                    d++;
-                }
-                depths.push(d);
-            }
-
-            // Calculate hashes
-            hashes = [];
-            for (let i = 0; i <= mask.level; i++) {
-                let repr = getRepr(bits, refs, i, false);
-                hashes.push(sha256_sync(repr));
-            }
+            // Copy results
+            mask = wonders.mask;
+            depths = wonders.depths;
+            hashes = wonders.hashes;
+            type = CellType.Ordinary;
         }
 
         // Set fields
