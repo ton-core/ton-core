@@ -4,6 +4,7 @@ import { CellType } from "./CellType";
 import { sha256_sync } from 'ton-crypto';
 import { Slice } from "./Slice";
 import { getRepr } from './cell/descriptor';
+import { resolveExotic } from './cell/resolveExotic';
 
 /**
  * Cell as described in TVM spec
@@ -20,39 +21,65 @@ export class Cell {
     private _hash: Buffer | null = null;
     private _hashComputing = false;
 
-    constructor(opts?: { type?: CellType, bits?: BitString, refs?: Cell[] }) {
+    constructor(opts?: { exotic?: boolean, bits?: BitString, refs?: Cell[] }) {
 
-        // Load parameters
-        if (opts && opts.type) {
-            this.type = opts.type;
-        } else {
-            this.type = CellType.Ordinary;
-        }
+        // Resolve bits
+        let bits = BitString.EMPTY;
         if (opts && opts.bits) {
-            this.bits = opts.bits;
-        } else {
-            this.bits = new BitString(Buffer.alloc(0), 0, 0);
+            bits = opts.bits;
         }
+
+        // Resolve refs
+        let refs: Cell[] = [];
         if (opts && opts.refs) {
-            this.refs = [...opts.refs];
+            refs = opts.refs;
+        }
+
+        // Resolve type
+        let type = CellType.Ordinary;
+        let level = 0;
+        let depth = 0;
+        if (opts && opts.exotic) {
+            let resolved = resolveExotic(bits, refs);
+            type = resolved.type;
+            depth = resolved.depth;
+            level = resolved.level;
         } else {
-            this.refs = [];
-        }
 
-        // Compute depth
-        let d = 0;
-        if (this.refs.length > 0) {
-            for (let ref of this.refs) {
-                d = Math.max(ref.depth, d);
+            // Check correctness
+            if (refs.length > 4) {
+                throw new Error("Invalid number of references");
             }
-            d++;
-        }
-        this.depth = d;
+            if (bits.length > 1023) {
+                throw new Error("Invalid number of bits");
+            }
 
-        // Compute level
-        let l = 0;
-        // TODO: Implement for non-ordinary cells
-        this.level = l;
+            // Calculate depth
+            let d = 0;
+            if (refs.length > 0) {
+                for (let ref of refs) {
+                    d = Math.max(ref.depth, d);
+                }
+                d++;
+            }
+            depth = d;
+
+            // Calculate level
+            let l = 0;
+            if (refs.length > 0) {
+                for (let ref of refs) {
+                    l = Math.max(ref.level, l);
+                }
+            }
+            level = l;
+        }
+
+        // Set fields
+        this.type = type;
+        this.bits = bits;
+        this.refs = refs;
+        this.depth = depth;
+        this.level = level;
     }
 
     /**

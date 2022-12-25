@@ -13,6 +13,7 @@ function readCell(reader: BitReader, sizeBytes: number) {
     // D1
     const d1 = reader.loadUint(8);
     const refsCount = d1 % 8;
+    const exotic = !!(d1 & 8);
 
     // D2
     const d2 = reader.loadUint(8);
@@ -38,7 +39,8 @@ function readCell(reader: BitReader, sizeBytes: number) {
     // Result
     return {
         bits,
-        refs
+        refs,
+        exotic
     };
 }
 
@@ -148,7 +150,7 @@ export function deserializeBoc(src: Buffer) {
     // Load cells
     //
 
-    let cells: { bits: BitString, refs: number[], result: Cell | null }[] = [];
+    let cells: { bits: BitString, refs: number[], exotic: boolean, result: Cell | null }[] = [];
     for (let i = 0; i < boc.cells; i++) {
         let cll = readCell(reader, boc.size);
         cells.push({ ...cll, result: null });
@@ -169,7 +171,7 @@ export function deserializeBoc(src: Buffer) {
             }
             refs.push(cells[r].result!);
         }
-        cells[i].result = new Cell({ bits: cells[i].bits, refs });
+        cells[i].result = new Cell({ bits: cells[i].bits, refs, exotic: cells[i].exotic });
     }
 
     //
