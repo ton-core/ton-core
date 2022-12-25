@@ -14,11 +14,22 @@ describe('Slice', () => {
             builder.writeUint(a, 48);
             builder.writeUint(b, 48);
             let bits = builder.build();
-            let reader = new Cell({ bits }).beginParse();
-            expect(Number(reader.preloadUint(48))).toEqual(a);
-            expect(Number(reader.loadUint(48))).toEqual(a);
-            expect(Number(reader.preloadUint(48))).toEqual(b);
-            expect(Number(reader.loadUint(48))).toEqual(b);
+
+            {
+                let reader = new Cell({ bits }).beginParse();
+                expect(reader.preloadUint(48)).toEqual(a);
+                expect(reader.loadUint(48)).toEqual(a);
+                expect(reader.preloadUint(48)).toEqual(b);
+                expect(reader.loadUint(48)).toEqual(b);
+            }
+
+            {
+                let reader = new Cell({ bits }).beginParse();
+                expect(Number(reader.preloadUintBig(48))).toEqual(a);
+                expect(Number(reader.loadUintBig(48))).toEqual(a);
+                expect(Number(reader.preloadUintBig(48))).toEqual(b);
+                expect(Number(reader.loadUintBig(48))).toEqual(b);
+            }
         }
     });
     it('should read ints from slice', () => {
@@ -30,11 +41,22 @@ describe('Slice', () => {
             builder.writeInt(a, 49);
             builder.writeInt(b, 49);
             let bits = builder.build();
-            let reader = new Cell({ bits }).beginParse();
-            expect(Number(reader.preloadInt(49))).toEqual(a);
-            expect(Number(reader.loadInt(49))).toEqual(a);
-            expect(Number(reader.preloadInt(49))).toEqual(b);
-            expect(Number(reader.loadInt(49))).toEqual(b);
+
+            {
+                let reader = new Cell({ bits }).beginParse();
+                expect(reader.preloadInt(49)).toEqual(a);
+                expect(reader.loadInt(49)).toEqual(a);
+                expect(reader.preloadInt(49)).toEqual(b);
+                expect(reader.loadInt(49)).toEqual(b);
+            }
+
+            {
+                let reader = new Cell({ bits }).beginParse();
+                expect(Number(reader.preloadIntBig(49))).toEqual(a);
+                expect(Number(reader.loadIntBig(49))).toEqual(a);
+                expect(Number(reader.preloadIntBig(49))).toEqual(b);
+                expect(Number(reader.loadIntBig(49))).toEqual(b);
+            }
         }
     });
     it('should read var uints from slice', () => {
@@ -47,11 +69,22 @@ describe('Slice', () => {
             builder.writeVarUint(a, sizeBits);
             builder.writeVarUint(b, sizeBits);
             let bits = builder.build();
-            let reader = new Cell({ bits }).beginParse();
-            expect(Number(reader.preloadVarUint(sizeBits))).toEqual(a);
-            expect(Number(reader.loadVarUint(sizeBits))).toEqual(a);
-            expect(Number(reader.preloadVarUint(sizeBits))).toEqual(b);
-            expect(Number(reader.loadVarUint(sizeBits))).toEqual(b);
+
+            {
+                let reader = new Cell({ bits }).beginParse();
+                expect(reader.preloadVarUint(sizeBits)).toEqual(a);
+                expect(reader.loadVarUint(sizeBits)).toEqual(a);
+                expect(reader.preloadVarUint(sizeBits)).toEqual(b);
+                expect(reader.loadVarUint(sizeBits)).toEqual(b);
+            }
+
+            {
+                let reader = new Cell({ bits }).beginParse();
+                expect(Number(reader.preloadVarUintBig(sizeBits))).toEqual(a);
+                expect(Number(reader.loadVarUintBig(sizeBits))).toEqual(a);
+                expect(Number(reader.preloadVarUintBig(sizeBits))).toEqual(b);
+                expect(Number(reader.loadVarUintBig(sizeBits))).toEqual(b);
+            }
         }
     });
     it('should read var ints from slice', () => {
@@ -64,11 +97,22 @@ describe('Slice', () => {
             builder.writeVarInt(a, sizeBits);
             builder.writeVarInt(b, sizeBits);
             let bits = builder.build();
-            let reader = new Cell({ bits }).beginParse();
-            expect(Number(reader.preloadVarInt(sizeBits))).toEqual(a);
-            expect(Number(reader.loadVarInt(sizeBits))).toEqual(a);
-            expect(Number(reader.preloadVarInt(sizeBits))).toEqual(b);
-            expect(Number(reader.loadVarInt(sizeBits))).toEqual(b);
+
+            {
+                let reader = new Cell({ bits }).beginParse();
+                expect(reader.preloadVarInt(sizeBits)).toEqual(a);
+                expect(reader.loadVarInt(sizeBits)).toEqual(a);
+                expect(reader.preloadVarInt(sizeBits)).toEqual(b);
+                expect(reader.loadVarInt(sizeBits)).toEqual(b);
+            }
+
+            {
+                let reader = new Cell({ bits }).beginParse();
+                expect(Number(reader.preloadVarIntBig(sizeBits))).toEqual(a);
+                expect(Number(reader.loadVarIntBig(sizeBits))).toEqual(a);
+                expect(Number(reader.preloadVarIntBig(sizeBits))).toEqual(b);
+                expect(Number(reader.loadVarIntBig(sizeBits))).toEqual(b);
+            }
         }
     });
     it('should read coins from slice', () => {

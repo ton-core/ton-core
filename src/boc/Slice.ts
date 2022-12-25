@@ -65,12 +65,30 @@ export class Slice {
     }
 
     /**
+     * Load uint
+     * @param bits number of bits to read 
+     * @returns uint value
+     */
+    loadUintBig(bits: number) {
+        return this._reader.loadUintBig(bits);
+    }
+
+    /**
      * Preload uint
      * @param bits number of bits to read 
      * @returns uint value
      */
     preloadUint(bits: number) {
         return this._reader.preloadUint(bits);
+    }
+
+    /**
+     * Preload uint
+     * @param bits number of bits to read 
+     * @returns uint value
+     */
+    preloadUintBig(bits: number) {
+        return this._reader.preloadUintBig(bits);
     }
 
     /**
@@ -83,12 +101,30 @@ export class Slice {
     }
 
     /**
+     * Load int
+     * @param bits number of bits to read 
+     * @returns int value
+     */
+    loadIntBig(bits: number) {
+        return this._reader.loadIntBig(bits);
+    }
+
+    /**
      * Preload int
      * @param bits number of bits to read 
      * @returns int value
      */
     preloadInt(bits: number) {
         return this._reader.preloadInt(bits);
+    }
+
+    /**
+     * Preload int
+     * @param bits number of bits to read 
+     * @returns int value
+     */
+    preloadIntBig(bits: number) {
+        return this._reader.preloadIntBig(bits);
     }
 
     /**
@@ -101,12 +137,30 @@ export class Slice {
     }
 
     /**
+     * Load varuint
+     * @param bits number of bits to read in header
+     * @returns varuint value
+     */
+    loadVarUintBig(bits: number) {
+        return this._reader.loadVarUintBig(bits);
+    }
+
+    /**
      * Preload varuint
      * @param bits number of bits to read in header
      * @returns varuint value
      */
     preloadVarUint(bits: number) {
         return this._reader.preloadVarUint(bits);
+    }
+
+    /**
+     * Preload varuint
+     * @param bits number of bits to read in header
+     * @returns varuint value
+     */
+    preloadVarUintBig(bits: number) {
+        return this._reader.preloadVarUintBig(bits);
     }
 
     /**
@@ -118,6 +172,16 @@ export class Slice {
         return this._reader.loadVarInt(bits);
     }
 
+
+    /**
+     * Load varint
+     * @param bits number of bits to read in header
+     * @returns varint value
+     */
+    loadVarIntBig(bits: number) {
+        return this._reader.loadVarIntBig(bits);
+    }
+
     /**
      * Preload varint
      * @param bits number of bits to read in header
@@ -125,6 +189,15 @@ export class Slice {
      */
     preloadVarInt(bits: number) {
         return this._reader.preloadVarInt(bits);
+    }
+
+    /**
+     * Preload varint
+     * @param bits number of bits to read in header
+     * @returns varint value
+     */
+    preloadVarIntBig(bits: number) {
+        return this._reader.preloadVarIntBig(bits);
     }
 
     /**
@@ -193,7 +266,7 @@ export class Slice {
         }
         return this._refs.shift()!!;
     }
-    
+
     /**
      * Preload reference
      * @returns Cell
@@ -203,7 +276,7 @@ export class Slice {
             throw new Error("No more references");
         }
         return this._refs[0];
-    }    
+    }
 
     /**
      * Load optional reference
@@ -220,7 +293,7 @@ export class Slice {
     /**
      * Preload optional reference
      * @returns Cell or null
-     */    
+     */
     preloadMaybeCell() {
         if (this.preloadBit()) {
             return this.preloadRef();

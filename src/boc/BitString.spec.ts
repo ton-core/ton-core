@@ -34,6 +34,11 @@ describe('BitString', () => {
         expect(new BitString(Buffer.from([0b11100000]), 0, 4).toString()).toEqual('E');
         expect(new BitString(Buffer.from([0b11101000]), 0, 5).toString()).toEqual('EC_');
     });
+    it('should do subbuffers', () => {
+        let bs = new BitString(Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]), 0, 64);
+        let bs2 = bs.subbuffer(0, 16);
+        expect(bs2!.length).toBe(2);
+    });
     it('should process monkey strings', () => {
         let cases = [
             ['001110101100111010', '3ACEA_'],

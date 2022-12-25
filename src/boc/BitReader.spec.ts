@@ -14,13 +14,25 @@ describe('BitReader', () => {
             builder.writeUint(a, 48);
             builder.writeUint(b, 48);
             let bits = builder.build();
-            let reader = new BitReader(bits);
-            expect(Number(reader.preloadUint(48))).toEqual(a);
-            expect(Number(reader.loadUint(48))).toEqual(a);
-            expect(Number(reader.preloadUint(48))).toEqual(b);
-            expect(Number(reader.loadUint(48))).toEqual(b);
+
+            {
+                let reader = new BitReader(bits);
+                expect(reader.preloadUint(48)).toEqual(a);
+                expect(reader.loadUint(48)).toEqual(a);
+                expect(reader.preloadUint(48)).toEqual(b);
+                expect(reader.loadUint(48)).toEqual(b);
+            }
+
+            {
+                let reader = new BitReader(bits);
+                expect(Number(reader.preloadUintBig(48))).toEqual(a);
+                expect(Number(reader.loadUintBig(48))).toEqual(a);
+                expect(Number(reader.preloadUintBig(48))).toEqual(b);
+                expect(Number(reader.loadUintBig(48))).toEqual(b);
+            }
         }
     });
+
     it('should read ints from builder', () => {
         let prando = new Prando('test-2');
         for (let i = 0; i < 1000; i++) {
@@ -30,13 +42,25 @@ describe('BitReader', () => {
             builder.writeInt(a, 49);
             builder.writeInt(b, 49);
             let bits = builder.build();
-            let reader = new BitReader(bits);
-            expect(Number(reader.preloadInt(49))).toEqual(a);
-            expect(Number(reader.loadInt(49))).toEqual(a);
-            expect(Number(reader.preloadInt(49))).toEqual(b);
-            expect(Number(reader.loadInt(49))).toEqual(b);
+
+            {
+                let reader = new BitReader(bits);
+                expect(reader.preloadInt(49)).toEqual(a);
+                expect(reader.loadInt(49)).toEqual(a);
+                expect(reader.preloadInt(49)).toEqual(b);
+                expect(reader.loadInt(49)).toEqual(b);
+            }
+
+            {
+                let reader = new BitReader(bits);
+                expect(Number(reader.preloadIntBig(49))).toEqual(a);
+                expect(Number(reader.loadIntBig(49))).toEqual(a);
+                expect(Number(reader.preloadIntBig(49))).toEqual(b);
+                expect(Number(reader.loadIntBig(49))).toEqual(b);
+            }
         }
     });
+
     it('should read var uints from builder', () => {
         let prando = new Prando('test-3');
         for (let i = 0; i < 1000; i++) {
@@ -47,13 +71,25 @@ describe('BitReader', () => {
             builder.writeVarUint(a, sizeBits);
             builder.writeVarUint(b, sizeBits);
             let bits = builder.build();
-            let reader = new BitReader(bits);
-            expect(Number(reader.preloadVarUint(sizeBits))).toEqual(a);
-            expect(Number(reader.loadVarUint(sizeBits))).toEqual(a);
-            expect(Number(reader.preloadVarUint(sizeBits))).toEqual(b);
-            expect(Number(reader.loadVarUint(sizeBits))).toEqual(b);
+
+            {
+                let reader = new BitReader(bits);
+                expect(reader.preloadVarUint(sizeBits)).toEqual(a);
+                expect(reader.loadVarUint(sizeBits)).toEqual(a);
+                expect(reader.preloadVarUint(sizeBits)).toEqual(b);
+                expect(reader.loadVarUint(sizeBits)).toEqual(b);
+            }
+
+            {
+                let reader = new BitReader(bits);
+                expect(Number(reader.preloadVarUintBig(sizeBits))).toEqual(a);
+                expect(Number(reader.loadVarUintBig(sizeBits))).toEqual(a);
+                expect(Number(reader.preloadVarUintBig(sizeBits))).toEqual(b);
+                expect(Number(reader.loadVarUintBig(sizeBits))).toEqual(b);
+            }
         }
     });
+
     it('should read var ints from builder', () => {
         let prando = new Prando('test-4');
         for (let i = 0; i < 1000; i++) {
@@ -64,13 +100,25 @@ describe('BitReader', () => {
             builder.writeVarInt(a, sizeBits);
             builder.writeVarInt(b, sizeBits);
             let bits = builder.build();
-            let reader = new BitReader(bits);
-            expect(Number(reader.preloadVarInt(sizeBits))).toEqual(a);
-            expect(Number(reader.loadVarInt(sizeBits))).toEqual(a);
-            expect(Number(reader.preloadVarInt(sizeBits))).toEqual(b);
-            expect(Number(reader.loadVarInt(sizeBits))).toEqual(b);
+
+            {
+                let reader = new BitReader(bits);
+                expect(reader.preloadVarInt(sizeBits)).toEqual(a);
+                expect(reader.loadVarInt(sizeBits)).toEqual(a);
+                expect(reader.preloadVarInt(sizeBits)).toEqual(b);
+                expect(reader.loadVarInt(sizeBits)).toEqual(b);
+            }
+
+            {
+                let reader = new BitReader(bits);
+                expect(Number(reader.preloadVarIntBig(sizeBits))).toEqual(a);
+                expect(Number(reader.loadVarIntBig(sizeBits))).toEqual(a);
+                expect(Number(reader.preloadVarIntBig(sizeBits))).toEqual(b);
+                expect(Number(reader.loadVarIntBig(sizeBits))).toEqual(b);
+            }
         }
     });
+
     it('should read coins from builder', () => {
         let prando = new Prando('test-5');
         for (let i = 0; i < 1000; i++) {

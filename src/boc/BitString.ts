@@ -1,4 +1,5 @@
 import { bitsToPaddedBuffer } from "./utils/paddedBits";
+import inspectSymbol from 'symbol.inspect';
 
 /**
  * BitString is a class that represents a bitstring in a buffer with a specified offset and length
@@ -77,12 +78,45 @@ export class BitString {
         if (offset < 0) {
             throw new Error(`Offset ${offset} is out of bounds`);
         }
-        if (offset + length >= this._length) {
-            throw new Error(`Offset + Lenght ${offset} is out of bounds`);
+        if (offset + length > this._length) {
+            throw new Error(`Offset ${offset} + Length ${length} > ${this._length} is out of bounds`);
         }
 
         // Create substring
         return new BitString(this._data, this._offset + offset, length);
+    }
+
+    /**
+     * Try to get a buffer from the bitstring without allocations
+     * @param offset offset in bits
+     * @param length length in bits
+     * @returns buffer if the bitstring is aligned to bytes, null otherwise
+     */
+    subbuffer(offset: number, length: number) {
+
+        // Check offset
+        if (offset >= this._length) {
+            throw new Error(`Offset ${offset} is out of bounds`);
+        }
+        if (offset < 0) {
+            throw new Error(`Offset ${offset} is out of bounds`);
+        }
+        if (offset + length > this._length) {
+            throw new Error(`Offset + Lenght = ${offset + length} is out of bounds`);
+        }
+
+        // Check alignment
+        if (length % 8 !== 0) {
+            return null;
+        }
+        if ((this._offset + offset) % 8 !== 0) {
+            return null;
+        }
+
+        // Create substring
+        let start = ((this._offset + offset) >> 3);
+        let end = start + (length >> 3);
+        return this._data.subarray(start, end);
     }
 
     /**
@@ -125,4 +159,6 @@ export class BitString {
             }
         }
     }
+
+    [inspectSymbol] = () => this.toString()
 }

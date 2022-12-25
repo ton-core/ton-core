@@ -10,6 +10,7 @@ export class BitReader {
 
     private _bits: BitString;
     private _offset = 0;
+    private _checkpoints: number[] = [];
 
     constructor(bits: BitString) {
         this._bits = bits;
@@ -20,9 +21,28 @@ export class BitReader {
      * @param bits number of bits to skip
      */
     skip(bits: number) {
-        for (let i = 0; i < bits; i++) {
-            this.loadBit();
+        if (this._offset + bits < 0 || this._offset + bits > this._bits.length) {
+            throw new Error(`Index ${this._offset + bits} is out of bounds`);
         }
+        this._offset += bits;
+    }
+
+    /**
+     * Reset to the beginning or latest checkpoint
+     */
+    reset() {
+        if (this._checkpoints.length > 0) {
+            this._offset = this._checkpoints.pop()!;
+        } else {
+            this._offset = 0;
+        }
+    }
+
+    /**
+     * Save checkpoint
+     */
+    save() {
+        this._checkpoints.push(this._offset);
     }
 
     /**
@@ -49,11 +69,9 @@ export class BitReader {
      * @returns new bitstring
      */
     loadBits(bits: number) {
-        let builder = new BitBuilder();
-        for (let i = 0; i < bits; i++) {
-            builder.writeBit(this.loadBit());
-        }
-        return builder.build();
+        let r = this._bits.substring(this._offset, bits);
+        this._offset += bits;
+        return r;
     }
 
     /**
@@ -62,11 +80,7 @@ export class BitReader {
      * @returns new bitstring
      */
     preloadBits(bits: number) {
-        let builder = new BitBuilder();
-        for (let i = 0; i < bits; i++) {
-            builder.writeBit(this._bits.at(this._offset + i));
-        }
-        return builder.build();
+        return this._bits.substring(this._offset, bits);
     }
 
     /**
@@ -92,10 +106,19 @@ export class BitReader {
     /**
      * Load uint value
      * @param bits uint bits
+     * @returns read value as number
+     */
+    loadUint(bits: number): number {
+        return Number(this.loadUintBig(bits));
+    }
+
+    /**
+     * Load uint value as bigint
+     * @param bits uint bits
      * @returns read value as bigint
      */
-    loadUint(bits: number): bigint {
-        let loaded = this.preloadUint(bits);
+    loadUintBig(bits: number): bigint {
+        let loaded = this.preloadUintBig(bits);
         this._offset += bits;
         return loaded;
     }
@@ -103,9 +126,18 @@ export class BitReader {
     /**
      * Preload uint value
      * @param bits uint bits
+     * @returns read value as number
+     */
+    preloadUint(bits: number): number {
+        return Number(this._preloadUint(bits, this._offset));
+    }
+
+    /**
+     * Preload uint value as bigint
+     * @param bits uint bits
      * @returns read value as bigint
      */
-    preloadUint(bits: number): bigint {
+    preloadUintBig(bits: number): bigint {
         return this._preloadUint(bits, this._offset);
     }
 
@@ -114,7 +146,18 @@ export class BitReader {
      * @param bits int bits
      * @returns read value as bigint
      */
-    loadInt(bits: number): bigint {
+    loadInt(bits: number): number {
+        let res = this._preloadInt(bits, this._offset);
+        this._offset += bits;
+        return Number(res);
+    }
+
+    /**
+     * Load int value as bigint
+     * @param bits int bits
+     * @returns read value as bigint
+     */
+    loadIntBig(bits: number): bigint {
         let res = this._preloadInt(bits, this._offset);
         this._offset += bits;
         return res;
@@ -125,7 +168,16 @@ export class BitReader {
      * @param bits int bits
      * @returns read value as bigint
      */
-    preloadInt(bits: number): bigint {
+    preloadInt(bits: number): number {
+        return Number(this._preloadInt(bits, this._offset));
+    }
+
+    /**
+     * Preload int value
+     * @param bits int bits
+     * @returns read value as bigint
+     */
+    preloadIntBig(bits: number): bigint {
         return this._preloadInt(bits, this._offset);
     }
 
@@ -134,9 +186,19 @@ export class BitReader {
      * @param bits number of bits to read the size
      * @returns read value as bigint
      */
-    loadVarUint(bits: number): bigint {
+    loadVarUint(bits: number): number {
         let size = Number(this.loadUint(bits));
-        return this.loadUint(size * 8);
+        return Number(this.loadUintBig(size * 8));
+    }
+
+    /**
+     * Load varuint value
+     * @param bits number of bits to read the size
+     * @returns read value as bigint
+     */
+    loadVarUintBig(bits: number): bigint {
+        let size = Number(this.loadUint(bits));
+        return this.loadUintBig(size * 8);
     }
 
     /**
@@ -144,7 +206,17 @@ export class BitReader {
      * @param bits number of bits to read the size
      * @returns read value as bigint
      */
-    preloadVarUint(bits: number): bigint {
+    preloadVarUint(bits: number): number {
+        let size = Number(this._preloadUint(bits, this._offset));
+        return Number(this._preloadUint(size * 8, this._offset + bits));
+    }
+
+    /**
+     * Preload varuint value
+     * @param bits number of bits to read the size
+     * @returns read value as bigint
+     */
+    preloadVarUintBig(bits: number): bigint {
         let size = Number(this._preloadUint(bits, this._offset));
         return this._preloadUint(size * 8, this._offset + bits);
     }
@@ -154,9 +226,19 @@ export class BitReader {
      * @param bits number of bits to read the size
      * @returns read value as bigint
      */
-    loadVarInt(bits: number): bigint {
+    loadVarInt(bits: number): number {
         let size = Number(this.loadUint(bits));
-        return this.loadInt(size * 8);
+        return Number(this.loadIntBig(size * 8));
+    }
+
+    /**
+     * Load varint value
+     * @param bits number of bits to read the size
+     * @returns read value as bigint
+     */
+    loadVarIntBig(bits: number): bigint {
+        let size = Number(this.loadUint(bits));
+        return this.loadIntBig(size * 8);
     }
 
     /**
@@ -164,7 +246,17 @@ export class BitReader {
      * @param bits number of bits to read the size
      * @returns read value as bigint
      */
-    preloadVarInt(bits: number): bigint {
+    preloadVarInt(bits: number): number {
+        let size = Number(this._preloadUint(bits, this._offset));
+        return Number(this._preloadInt(size * 8, this._offset + bits));
+    }
+
+    /**
+     * Preload varint value
+     * @param bits number of bits to read the size
+     * @returns read value as bigint
+     */
+    preloadVarIntBig(bits: number): bigint {
         let size = Number(this._preloadUint(bits, this._offset));
         return this._preloadInt(size * 8, this._offset + bits);
     }
@@ -306,6 +398,14 @@ export class BitReader {
     }
 
     private _preloadBuffer(bytes: number, offset: number): Buffer {
+
+        // Try to load fast
+        let fastBuffer = this._bits.subbuffer(offset, bytes * 8);
+        if (fastBuffer) {
+            return fastBuffer;
+        }
+
+        // Load slow
         let buf = Buffer.alloc(bytes);
         for (let i = 0; i < bytes; i++) {
             buf[i] = Number(this._preloadUint(8, offset + i * 8));

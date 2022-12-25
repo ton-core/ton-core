@@ -1,3 +1,4 @@
+import inspectSymbol from 'symbol.inspect';
 import { BitString } from "./BitString";
 import { CellType } from "./CellType";
 import { bitsToPaddedBuffer } from "./utils/paddedBits";
@@ -135,4 +136,16 @@ export class Cell {
         this._hash = h;
         return h;
     }
+
+    toString(indent?: string): string {
+        let id = indent || '';
+        let s = id + 'x{' + this.bits.toString() + '}';
+        for (let k in this.refs) {
+            const i = this.refs[k];
+            s += '\n' + i.toString(id + ' ');
+        }
+        return s;
+    }
+
+    [inspectSymbol] = () => this.toString()
 }
