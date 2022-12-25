@@ -31,7 +31,7 @@ function calcCellSize(cell: Cell, sizeBytes: number) {
     return 2 /* D1+D2 */ + Math.ceil(cell.bits.length / 8) + cell.refs.length * sizeBytes;
 }
 
-function parseBoc(src: Buffer) {
+export function parseBoc(src: Buffer) {
     let reader = new BitReader(new BitString(src, 0, src.length * 8));
     let magic = reader.loadUint(32);
     if (magic === 0x68ff65f3) {
@@ -165,50 +165,46 @@ export function deserializeBoc(src: Buffer) {
         const offset = getOffset(id);
         reader.reset();
         reader.skip(offset * 8);
+        let size = resolveCellSize(reader, boc.size);
+        let cellBits = reader.loadBits(size * 8);
+        let cr = new BitReader(cellBits);
 
         // Load descriptor
-        const d1 = reader.loadUint(8);
-        const d2 = reader.loadUint(8);
-        // const isExotic = !!(d1 & 8);
+        const d1 = cr.loadUint(8);
+        const d2 = cr.loadUint(8);
         const refNum = d1 % 8;
         const dataBytesize = Math.ceil(d2 / 2);
-        const fullfilledBits = !!(d2 % 2);
+        const paddedBits = !!(d2 % 2);
 
-        // Load bits size
-        let totalBits = dataBytesize * 8;
-        if (fullfilledBits) {
+        // Load bits
+        let bits = BitString.EMPTY;
+        if (dataBytesize > 0) {
 
-            // Load padding
-            let paddedBits = 0;
-            while (true) {
+            // Load bits size
+            let totalBits = dataBytesize * 8;
+            if (paddedBits) {
 
-                // Read last bit
-                reader.skip(totalBits - paddedBits - 1);
-                let bt = reader.preloadBit();
-                reader.skip(-(totalBits - paddedBits - 1));
-
-                // Update number of bits
-                paddedBits++;
-
-                // Check if last bit is set: exit loop
-                if (bt) {
-                    break;
+                // Load padding
+                while (!cr.preloadBit()) {
+                    totalBits--;
+                    cr.reset();
+                    cr.skip(16 + totalBits);
                 }
             }
 
-            // Update total bits
-            totalBits = totalBits - paddedBits;
+            // Load bits
+            cr.reset();
+            cr.skip(16);
+            bits = cr.loadBits(totalBits);
+            cr.skip(dataBytesize * 8 - totalBits);
         }
 
-        // Load bits
-        let bits = reader.loadBits(totalBits);
-        reader.skip(dataBytesize * 8 - totalBits);
 
         // Load refs
         let refs: Cell[] = [];
         let refId: number[] = [];
         for (let i = 0; i < refNum; i++) {
-            refId.push(reader.loadUint(boc.offBytes * 8));
+            refId.push(cr.loadUint(boc.offBytes * 8));
         }
         for (let r of refId) {
             refs.push(loadCell(r));

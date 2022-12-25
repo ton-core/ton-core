@@ -1,4 +1,4 @@
-import { deserializeBoc, serializeBoc } from "./serialization";
+import { deserializeBoc, parseBoc, serializeBoc } from "./serialization";
 import fs from 'fs';
 
 const wallets: string[] = [
@@ -31,13 +31,19 @@ describe('boc', () => {
         }
     });
 
-    // it('should parse largeBoc.txt', () => {
-    //     deserializeBoc(Buffer.from(fs.readFileSync(__dirname + '/__testdata__/largeBoc.txt', 'utf8'), 'base64'));
-    // });
+    it('should parse largeBoc.txt', () => {
+        let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/largeBoc.txt', 'utf8'), 'base64');
+        console.warn(parseBoc(boc));
+        deserializeBoc(boc);
+    });
     // it('should parse manyCells.txt', () => {
-    //     deserializeBoc(Buffer.from(fs.readFileSync(__dirname + '/__testdata__/manyCells.txt', 'utf8'), 'base64'));
+    //     let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/manyCells.txt', 'utf8'), 'base64');
+    //     console.warn(parseBoc(boc));
+    //     deserializeBoc(boc);
     // });
-    // it('should parse veruLarge.boc', () => {
-    //     deserializeBoc(fs.readFileSync(__dirname + '/__testdata__/veryLarge.boc'));
+    // it('should parse veryLarge.boc', () => {
+    //     let boc = fs.readFileSync(__dirname + '/__testdata__/veryLarge.boc');
+    //     console.warn(parseBoc(boc));
+    //     deserializeBoc(boc);
     // });
 });

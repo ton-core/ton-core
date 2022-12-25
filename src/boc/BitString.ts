@@ -6,6 +6,8 @@ import inspectSymbol from 'symbol.inspect';
  */
 export class BitString {
 
+    static readonly EMPTY = new BitString(Buffer.alloc(0), 0, 0);
+
     // NOTE: We want to hide this fields from the user, but
     //       using private fields would break the compatibility
     //       between different versions in typescript
@@ -70,6 +72,11 @@ export class BitString {
      * @returns 
      */
     substring(offset: number, length: number) {
+
+        // Corner case of empty string
+        if (length === 0 && offset === this._length) {
+            return BitString.EMPTY;
+        }
 
         // Check offset
         if (offset >= this._length) {
