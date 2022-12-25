@@ -73,10 +73,10 @@ export class BitString {
 
         // Check offset
         if (offset >= this._length) {
-            throw new Error(`Offset ${offset} is out of bounds`);
+            throw new Error(`Offset(${offset}) > ${this._length} is out of bounds`);
         }
         if (offset < 0) {
-            throw new Error(`Offset ${offset} is out of bounds`);
+            throw new Error(`Offset(${offset}) < 0 is out of bounds`);
         }
         if (offset + length > this._length) {
             throw new Error(`Offset ${offset} + Length ${length} > ${this._length} is out of bounds`);

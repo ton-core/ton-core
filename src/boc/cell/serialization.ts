@@ -161,8 +161,6 @@ export function deserializeBoc(src: Buffer) {
     // Load cell
     let loadCell = (id: number): Cell => {
 
-        console.warn('loading cell ' + id);
-
         // Go to cell
         const offset = getOffset(id);
         reader.reset();
@@ -175,8 +173,6 @@ export function deserializeBoc(src: Buffer) {
         const refNum = d1 % 8;
         const dataBytesize = Math.ceil(d2 / 2);
         const fullfilledBits = !!(d2 % 2);
-
-        console.warn({ d1, d2, refNum, dataBytesize, fullfilledBits });
 
         // Load bits size
         let totalBits = dataBytesize * 8;
@@ -227,9 +223,6 @@ export function deserializeBoc(src: Buffer) {
     for (let i = 0; i < boc.root.length; i++) {
         roots.push(loadCell(boc.root[i]));
     }
-
-    console.warn(boc.root);
-    console.warn(roots);
 
     // Return
     return roots;
