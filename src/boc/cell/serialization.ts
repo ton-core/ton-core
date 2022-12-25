@@ -8,23 +8,34 @@ import { getBitsDescriptor, getRefsDescriptor } from "./descriptor";
 import { bitsToPaddedBuffer } from "../utils/paddedBits";
 import { crc32c } from "../../utils/crc32c";
 
-function resolveCellSize(reader: BitReader, sizeBytes: number) {
-
-    // Save
-    reader.save();
+function readCell(reader: BitReader, sizeBytes: number) {
 
     // D1
     const d1 = reader.loadUint(8);
-    const refs = d1 % 8;
+    const refsCount = d1 % 8;
 
     // D2
     const d2 = reader.loadUint(8);
     const dataBytesize = Math.ceil(d2 / 2);
+    const paddingAdded = !!(d2 % 2);
 
-    // Reset
-    reader.reset();
+    // Bits
+    let bits = BitString.EMPTY;
+    if (dataBytesize > 0) {
+        bits = reader.loadBits(dataBytesize * 8);
+    }
 
-    return refs * sizeBytes + dataBytesize + 2;
+    // Refs
+    let refs: number[] = [];
+    for (let i = 0; i < refsCount; i++) {
+        refs.push(reader.loadUint(sizeBytes * 8));
+    }
+
+    // Result
+    return {
+        bits,
+        refs
+    };
 }
 
 function calcCellSize(cell: Cell, sizeBytes: number) {
@@ -121,106 +132,55 @@ export function parseBoc(src: Buffer) {
 }
 
 export function deserializeBoc(src: Buffer) {
+
+    //
+    // Parse BOC
+    //
+
     let boc = parseBoc(src);
     let reader = new BitReader(new BitString(boc.cellData, 0, boc.cellData.length * 8));
 
-    // Index
-    let getOffset: (id: number) => number;
-    // if (boc.index) {
-    //     let indexReader = new BitReader(new BitString(boc.index, 0, boc.index.length * 8));
-    //     for (let i = 0; i < boc.cells; i++) {
-    //         indexReader.reset();
-    //         indexReader.skip(i * boc.offBytes * 8);
-    //         let off = indexReader.loadUint(boc.offBytes * 8);
-    //         console.warn(off);
-    //     }
-    //     getOffset = (id: number) => {
-    //         indexReader.reset();
-    //         indexReader.skip(id * boc.offBytes * 8);
-    //         let off = indexReader.loadUint(boc.offBytes * 8);
-    //         console.warn(off);
-    //         return off;
-    //     }
-    // } else {
-    let index: number[] = [];
-    let offset = 0;
+    //
+    // Load cells
+    //
+
+    let cells: { bits: BitString, refs: number[], result: Cell | null }[] = [];
     for (let i = 0; i < boc.cells; i++) {
-        let size = resolveCellSize(reader, boc.size);
-        index.push(offset);
-        offset += size;
-        reader.skip(size * 8);
+        let cll = readCell(reader, boc.size);
+        cells.push({ ...cll, result: null });
     }
-    getOffset = (id: number) => {
-        if (id < 0 || id >= index.length) {
-            throw Error('Invalid cell id: ' + id);
+
+    //
+    // Build cells
+    //
+
+    for (let i = cells.length - 1; i >= 0; i--) {
+        if (cells[i].result) {
+            throw Error('Impossible');
         }
-        return index[id];
-    };
-    // }
-
-    // Load cell
-    let loadCell = (id: number): Cell => {
-
-        // Go to cell
-        const offset = getOffset(id);
-        reader.reset();
-        reader.skip(offset * 8);
-        let size = resolveCellSize(reader, boc.size);
-        let cellBits = reader.loadBits(size * 8);
-        let cr = new BitReader(cellBits);
-
-        // Load descriptor
-        const d1 = cr.loadUint(8);
-        const d2 = cr.loadUint(8);
-        const refNum = d1 % 8;
-        const dataBytesize = Math.ceil(d2 / 2);
-        const paddedBits = !!(d2 % 2);
-
-        // Load bits
-        let bits = BitString.EMPTY;
-        if (dataBytesize > 0) {
-
-            // Load bits size
-            let totalBits = dataBytesize * 8;
-            if (paddedBits) {
-
-                // Load padding
-                while (!cr.preloadBit()) {
-                    totalBits--;
-                    cr.reset();
-                    cr.skip(16 + totalBits);
-                }
-            }
-
-            // Load bits
-            cr.reset();
-            cr.skip(16);
-            bits = cr.loadBits(totalBits);
-            cr.skip(dataBytesize * 8 - totalBits);
-        }
-
-
-        // Load refs
         let refs: Cell[] = [];
-        let refId: number[] = [];
-        for (let i = 0; i < refNum; i++) {
-            refId.push(cr.loadUint(boc.offBytes * 8));
+        for (let r of cells[i].refs) {
+            if (!cells[r].result) {
+                throw Error('Invalid BOC file');
+            }
+            refs.push(cells[r].result!);
         }
-        for (let r of refId) {
-            refs.push(loadCell(r));
-        }
-
-        // Return
-        return new Cell({ bits, refs });
+        cells[i].result = new Cell({ bits: cells[i].bits, refs });
     }
 
+    //
     // Load roots
+    //
+
     let roots: Cell[] = [];
     for (let i = 0; i < boc.root.length; i++) {
-        roots.push(loadCell(boc.root[i]));
+        roots.push(cells[boc.root[i]].result!);
     }
 
+    //
     // Return
+    //
+
     return roots;
 }
 
