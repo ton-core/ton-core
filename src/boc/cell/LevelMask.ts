@@ -28,6 +28,12 @@ export class LevelMask {
     apply(level: number): LevelMask {
         return new LevelMask(this._mask & ((1 << level) - 1))
     }
+
+    isSignificant(level: number): boolean {
+        let res = level === 0 || (this._mask >> (level - 1)) % 2 !== 0;
+        return res;
+        // bool res = level == 0 | | ( (mask_ >> (level -1)) % 2 != 0);
+    }
 }
 
 function countSetBits(n: number): number {

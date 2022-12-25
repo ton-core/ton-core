@@ -1,7 +1,6 @@
-import { deserializeBoc, parseBoc, serializeBoc } from "./serialization";
+import { deserializeBoc, serializeBoc } from "./serialization";
 import fs from 'fs';
 import { beginCell } from "../Builder";
-import { BOC } from "ton3-core";
 
 const wallets: string[] = [
     'B5EE9C72410101010044000084FF0020DDA4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED5441FDF089',
@@ -46,20 +45,20 @@ describe('boc', () => {
         expect(c2.equals(c)).toBe(true);
     });
 
-    // it('should parse accountState.txt', () => {
-    //     let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/accountState.txt', 'utf8'), 'base64');
-    //     let c = deserializeBoc(boc)[0];
-    //     let b = serializeBoc(c, { idx: false, crc32: true });
-    //     let c2 = deserializeBoc(b)[0];
-    //     expect(c2.equals(c)).toBe(true);
-    // });
+    it('should parse accountState.txt', () => {
+        let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/accountState.txt', 'utf8'), 'base64');
+        let c = deserializeBoc(boc)[0];
+        let b = serializeBoc(c, { idx: false, crc32: true });
+        let c2 = deserializeBoc(b)[0];
+        expect(c2.equals(c)).toBe(true);
+    });
 
     it('should parse accountProof.txt', () => {
         let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/accountProof.txt', 'utf8'), 'base64');
         let c = deserializeBoc(boc)[0];
-        // let b = serializeBoc(c, { idx: false, crc32: true });
-        // let c2 = deserializeBoc(b)[0];
-        // expect(c2.equals(c)).toBe(true);
+        let b = serializeBoc(c, { idx: false, crc32: true });
+        let c2 = deserializeBoc(b)[0];
+        expect(c2.equals(c)).toBe(true);
     });
 
     it('should serialize single cell with a empty bits', () => {

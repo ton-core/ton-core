@@ -1,9 +1,10 @@
 import { BitReader } from "../BitReader";
 import { BitString } from "../BitString";
 import { Cell } from "../Cell";
+import { LevelMask } from "./LevelMask";
 
 export type ExoticPruned = {
-    level: number;
+    mask: number;
     pruned: { depth: number, hash: Buffer }[]
 }
 
@@ -23,26 +24,35 @@ export function exoticPruned(bits: BitString, refs: Cell[]): ExoticPruned {
     }
 
     // Check level
-    let level = 32 - Math.clz32(reader.loadUint(8));
-    if (level < 1 || level > 3) {
-        throw new Error(`Pruned Branch cell level must be >= 1 and <= 3, got "${level}"`);
+    let mask = new LevelMask(reader.loadUint(8));
+    if (mask.level < 1 || mask.level > 3) {
+        throw new Error(`Pruned Branch cell level must be >= 1 and <= 3, got "${mask.level}"`);
     }
 
     // Read pruned
-    const size = 8 + 8 + (level * (256 /* Hash */ + 16 /* Depth */));
+    const size = 8 + 8 + (mask.level * (256 /* Hash */ + 16 /* Depth */));
     if (bits.length !== size) {
         throw new Error(`Pruned branch cell must have exactly ${size} bits, got "${bits.length}"`);
     }
     let pruned: { depth: number, hash: Buffer }[] = [];
-    for (let i = 0; i < level; i++) {
+
+    let hashes: Buffer[] = [];
+    let depths: number[] = [];
+    for (let i = 0; i < mask.level; i++) {
+        hashes.push(reader.loadBuffer(32));
+    }
+    for (let i = 0; i < mask.level; i++) {
+        depths.push(reader.loadUint(16));
+    }
+    for (let i = 0; i < mask.level; i++) {
         pruned.push({
-            hash: reader.loadBuffer(32),
-            depth: reader.loadUint(16)
+            depth: depths[i],
+            hash: hashes[i]
         });
     }
 
     return {
-        level,
+        mask: mask.value,
         pruned
     };
 }

@@ -2,7 +2,7 @@ import { BitString } from "../BitString";
 import { CellType } from "../CellType";
 import { Cell } from '../Cell';
 import { LevelMask } from "./LevelMask";
-import { exoticPruned } from "./exoticPruned";
+import { ExoticPruned, exoticPruned } from "./exoticPruned";
 import { exoticMerkleProof } from "./exoticMerkleProof";
 import { getRepr } from "./descriptor";
 import { sha256_sync } from "ton-crypto";
@@ -19,6 +19,7 @@ export function wonderCalculator(type: CellType, bits: BitString, refs: Cell[]):
     //
 
     let levelMask: LevelMask;
+    let pruned: ExoticPruned | null = null;
     if (type === CellType.Ordinary) {
         let mask = 0;
         for (let r of refs) {
@@ -28,10 +29,11 @@ export function wonderCalculator(type: CellType, bits: BitString, refs: Cell[]):
     } else if (type === CellType.PrunedBranch) {
 
         // Parse pruned
-        let loaded = exoticPruned(bits, refs);
+        pruned = exoticPruned(bits, refs);
 
         // Load level
-        levelMask = new LevelMask(loaded.level);
+        levelMask = new LevelMask(pruned.mask);
+
     } else if (type === CellType.MerkleProof) {
 
         // Parse proof
@@ -61,14 +63,14 @@ export function wonderCalculator(type: CellType, bits: BitString, refs: Cell[]):
     let hashCount = type === CellType.PrunedBranch ? 1 : levelMask.hashCount;
     let totalHashCount = levelMask.hashCount;
     let hashIOffset = totalHashCount - hashCount;
-    for (let levelI = 0, hashI = 0; levelI <= levelMask.level; levelI++, hashI++) {
+    for (let levelI = 0, hashI = 0; levelI <= levelMask.level; levelI++) {
 
-        // TODO: Check if this line makes sense
-        // if (!level_mask.is_significant(level_i)) {
-        //   continue;
-        // }
+        if (!levelMask.isSignificant(levelI)) {
+            continue;
+        }
 
         if (hashI < hashIOffset) {
+            hashI++;
             continue;
         }
 
@@ -121,11 +123,46 @@ export function wonderCalculator(type: CellType, bits: BitString, refs: Cell[]):
         let destI = hashI - hashIOffset;
         depths[destI] = currentDepth;
         hashes[destI] = hash;
+
+        //
+        // Next
+        //
+
+        hashI++;
     }
+
+    //
+    // Calculate hash and depth for all levels
+    //
+
+    let resolvedHashes: Buffer[] = [];
+    let resolvedDepths: number[] = [];
+    if (pruned) {
+        for (let i = 0; i < 4; i++) {
+            const { hashIndex } = levelMask.apply(i);
+            const { hashIndex: thisHashIndex } = levelMask;
+            if (hashIndex !== thisHashIndex) {
+                resolvedHashes.push(pruned.pruned[hashIndex].hash);
+                resolvedDepths.push(pruned.pruned[hashIndex].depth);
+            } else {
+                resolvedHashes.push(hashes[0]);
+                resolvedDepths.push(depths[0]);
+            }
+        }
+    } else {
+        for (let i = 0; i < 4; i++) {
+            resolvedHashes.push(hashes[levelMask.apply(i).hashIndex]);
+            resolvedDepths.push(depths[levelMask.apply(i).hashIndex]);
+        }
+    }
+
+    //
+    // Result
+    //
 
     return {
         mask: levelMask,
-        hashes,
-        depths
+        hashes: resolvedHashes,
+        depths: resolvedDepths
     };
 }

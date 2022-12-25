@@ -15,7 +15,7 @@ function resolvePruned(bits: BitString, refs: Cell[]): { type: CellType, depths:
     // Calculate parameters
     let depths: number[] = [];
     let hashes: Buffer[] = [];
-    let mask = new LevelMask(pruned.level);
+    let mask = new LevelMask(pruned.mask);
     for (let i = 0; i < pruned.pruned.length; i++) {
         depths.push(pruned.pruned[i].depth);
         hashes.push(pruned.pruned[i].hash);
@@ -68,8 +68,6 @@ function resolveMerkleUpdate(bits: BitString, refs: Cell[]): { type: CellType, d
 export function resolveExotic(bits: BitString, refs: Cell[]): { type: CellType, depths: number[], hashes: Buffer[], mask: LevelMask } {
     let reader = new BitReader(bits);
     let type = reader.preloadUint(8);
-
-    console.warn('Exotic cell type: ' + type);
 
     if (type === 1) {
         return resolvePruned(bits, refs);

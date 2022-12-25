@@ -26,14 +26,14 @@ export function exoticMerkleProof(bits: BitString, refs: Cell[]) {
     const proofHash = reader.loadBuffer(32);
     const proofDepth = reader.loadUint(16);
     const refHash = refs[0].hash(0)
-    const refDepth = refs[0].depth;
+    const refDepth = refs[0].depth(0);
+
+    if (proofDepth !== refDepth) {
+        throw new Error(`Merkle Proof cell ref depth must be exactly "${proofDepth}", got "${refDepth}"`);
+    }
 
     if (!proofHash.equals(refHash)) {
         throw new Error(`Merkle Proof cell ref hash must be exactly "${proofHash.toString('hex')}", got "${refHash.toString('hex')}"`);
-    }
-
-    if (proofDepth !== refDepth(0)) {
-        throw new Error(`Merkle Proof cell ref depth must be exactly "${proofDepth}", got "${refDepth(0)}"`);
     }
 
     return {
