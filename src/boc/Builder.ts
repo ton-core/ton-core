@@ -121,6 +121,7 @@ export class Builder {
     /**
      * Store reference
      * @param cell cell or builder to store
+     * @returns this builder
      */
     storeRef(cell: Cell | Builder) {
 
@@ -137,11 +138,14 @@ export class Builder {
         } else {
             throw new Error("Invalid argument");
         }
+
+        return this;
     }
 
     /**
      * Store reference if not null
      * @param cell cell or builder to store
+     * @returns this builder
      */
     storeMaybeRef(cell: Cell | Builder | null) {
         if (cell) {
@@ -150,6 +154,8 @@ export class Builder {
         } else {
             this.storeBit(0);
         }
+
+        return this;
     }
 
     /**

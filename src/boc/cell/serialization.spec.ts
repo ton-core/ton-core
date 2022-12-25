@@ -13,48 +13,45 @@ const wallets: string[] = [
 ];
 
 describe('boc', () => {
-    it('should boc', () => {
-        let b1 = deserializeBoc(Buffer.from('te6cckEBAQEABwAACQHW80Vgb11ZoQ==', 'base64'));
-        let b2 = deserializeBoc(Buffer.from('te6cckEBAgEADgABCQHW80VgAQAHdWtbOOjL63Q=', 'base64'));
-        let b3 = deserializeBoc(Buffer.from('te6ccsEBAgEADgAIDgEJAdbzRWABAAd1a1s4yDmZeQ==', 'base64'));
-
-        let r1 = serializeBoc(b1[0], { idx: false, crc32: true }).toString('base64');
-        // console.warn(r1);
-        let r2 = serializeBoc(b2[0], { idx: true, crc32: true }).toString('base64');
-        // console.warn(r2);
-        let r3 = serializeBoc(b3[0], { idx: true, crc32: true }).toString('base64');
-        // console.warn(r3);
-    });
 
     it('should parse wallet code', () => {
         for (let w of wallets) {
-            deserializeBoc(Buffer.from(w, 'hex'));
+            let c = deserializeBoc(Buffer.from(w, 'hex'))[0];
+            let b = serializeBoc(c, { idx: false, crc32: true });
+            let c2 = deserializeBoc(b)[0];
+            expect(c2.equals(c)).toBe(true);
         }
     });
 
     it('should parse largeBoc.txt', () => {
         let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/largeBoc.txt', 'utf8'), 'base64');
-        // console.warn(parseBoc(boc));
         let c = deserializeBoc(boc)[0];
         serializeBoc(c, { idx: false, crc32: true });
     });
+
     it('should parse manyCells.txt', () => {
         let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/manyCells.txt', 'utf8'), 'base64');
-        // console.warn(parseBoc(boc));
         let c = deserializeBoc(boc)[0];
-        serializeBoc(c, { idx: false, crc32: true });
+        let b = serializeBoc(c, { idx: false, crc32: true });
+        let c2 = deserializeBoc(b)[0];
+        expect(c2.equals(c)).toBe(true);
     });
+
     it('should parse veryLarge.boc', () => {
         let boc = fs.readFileSync(__dirname + '/__testdata__/veryLarge.boc');
-        // console.warn(parseBoc(boc));
         let c = deserializeBoc(boc)[0];
-        serializeBoc(c, { idx: false, crc32: true });
+        let b = serializeBoc(c, { idx: false, crc32: true });
+        let c2 = deserializeBoc(b)[0];
+        expect(c2.equals(c)).toBe(true);
     });
+
     it('should parse accountState.txt', () => {
         let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/accountState.txt', 'utf8'), 'base64');
         // console.warn(parseBoc(boc));
         let c = deserializeBoc(boc)[0];
-        serializeBoc(c, { idx: false, crc32: true });
+        let b = serializeBoc(c, { idx: false, crc32: true });
+        let c2 = deserializeBoc(b)[0];
+        expect(c2.equals(c)).toBe(true);
     });
 
     it('should serialize single cell with a empty bits', () => {
@@ -94,5 +91,45 @@ describe('boc', () => {
         expect(deserializeBoc(Buffer.from('te6cckEBAQEABwAACQHW80Vgb11ZoQ==', 'base64'))[0].equals(cell)).toBe(true);
         expect(deserializeBoc(Buffer.from('te6ccoEBAQEABwAAAAkB1vNFYA==', 'base64'))[0].equals(cell)).toBe(true);
         expect(deserializeBoc(Buffer.from('te6ccsEBAQEABwAAAAkB1vNFYMkX0oY=', 'base64'))[0].equals(cell)).toBe(true);
+    });
+
+    it('should serialize single cell with a single reference', () => {
+        let refCell = beginCell()
+            .storeUint(123456789, 32)
+            .endCell();
+        let cell = beginCell()
+            .storeUint(987654321, 32)
+            .storeRef(refCell)
+            .endCell();
+        expect(cell.toString()).toBe('x{3ADE68B1}\n x{075BCD15}');
+        expect(serializeBoc(cell, { idx: false, crc32: false }).toString('base64')).toBe('te6ccgEBAgEADQABCDreaLEBAAgHW80V');
+        expect(serializeBoc(cell, { idx: false, crc32: true }).toString('base64')).toBe('te6cckEBAgEADQABCDreaLEBAAgHW80VSW/75w==');
+        expect(serializeBoc(cell, { idx: true, crc32: false }).toString('base64')).toBe('te6ccoEBAgEADQAABwEIOt5osQEACAdbzRU=');
+        expect(serializeBoc(cell, { idx: true, crc32: true }).toString('base64')).toBe('te6ccsEBAgEADQAABwEIOt5osQEACAdbzRWZVy8t');
+        expect(deserializeBoc(Buffer.from('te6ccgEBAgEADQABCDreaLEBAAgHW80V', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6cckEBAgEADQABCDreaLEBAAgHW80VSW/75w==', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6ccoEBAgEADQAABwEIOt5osQEACAdbzRU=', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6ccsEBAgEADQAABwEIOt5osQEACAdbzRWZVy8t', 'base64'))[0].equals(cell)).toBe(true);
+    });
+
+    it('should serialize single cell with multiple references', () => {
+        let refCell = beginCell()
+            .storeUint(123456789, 32)
+            .endCell();
+        let cell = beginCell()
+            .storeUint(987654321, 32)
+            .storeRef(refCell)
+            .storeRef(refCell)
+            .storeRef(refCell)
+            .endCell();
+        expect(cell.toString()).toBe('x{3ADE68B1}\n x{075BCD15}\n x{075BCD15}\n x{075BCD15}');
+        expect(serializeBoc(cell, { idx: false, crc32: false }).toString('base64')).toBe('te6ccgEBAgEADwADCDreaLEBAQEACAdbzRU=');
+        expect(serializeBoc(cell, { idx: false, crc32: true }).toString('base64')).toBe('te6cckEBAgEADwADCDreaLEBAQEACAdbzRWpQD2p');
+        expect(serializeBoc(cell, { idx: true, crc32: false }).toString('base64')).toBe('te6ccoEBAgEADwAACQMIOt5osQEBAQAIB1vNFQ==');
+        expect(serializeBoc(cell, { idx: true, crc32: true }).toString('base64')).toBe('te6ccsEBAgEADwAACQMIOt5osQEBAQAIB1vNFT/vUE4=');
+        expect(deserializeBoc(Buffer.from('te6ccgEBAgEADwADCDreaLEBAQEACAdbzRU=', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6cckEBAgEADwADCDreaLEBAQEACAdbzRWpQD2p', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6ccoEBAgEADwAACQMIOt5osQEBAQAIB1vNFQ==', 'base64'))[0].equals(cell)).toBe(true);
+        expect(deserializeBoc(Buffer.from('te6ccsEBAgEADwAACQMIOt5osQEBAQAIB1vNFT/vUE4=', 'base64'))[0].equals(cell)).toBe(true);
     });
 });
