@@ -47,7 +47,6 @@ describe('boc', () => {
 
     it('should parse accountState.txt', () => {
         let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/accountState.txt', 'utf8'), 'base64');
-        // console.warn(parseBoc(boc));
         let c = deserializeBoc(boc)[0];
         let b = serializeBoc(c, { idx: false, crc32: true });
         let c2 = deserializeBoc(b)[0];

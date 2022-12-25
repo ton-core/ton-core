@@ -50,8 +50,18 @@ export class BitBuilder {
      * @param src source buffer
      */
     writeBuffer(src: Buffer) {
-        for (let i = 0; i < src.length; i++) {
-            this.writeUint(src[i], 8);
+
+        // Special case for aligned offsets
+        if (this._length % 8 === 0) {
+            if (this._length + src.length * 8 > this._buffer.length * 8) {
+                throw new Error("BitBuilder overflow");
+            }
+            src.copy(this._buffer, this._length / 8);
+            this._length += src.length * 8;
+        } else {
+            for (let i = 0; i < src.length; i++) {
+                this.writeUint(src[i], 8);
+            }
         }
     }
 
@@ -61,6 +71,31 @@ export class BitBuilder {
      * @param bits number of bits to write
      */
     writeUint(value: bigint | number, bits: number) {
+
+        // Special case for 8 bits
+        if (bits === 8 && this._length % 8 === 0) {
+            let v = Number(value);
+            if (v < 0 || v > 255 || !Number.isSafeInteger(v)) {
+                throw Error(`value is out of range for ${bits} bits. Got ${value}`);
+            }
+            this._buffer[this._length / 8] = Number(value);
+            this._length += 8;
+            return;
+        }
+
+        // Special case for 16 bits
+        if (bits === 16 && this._length % 8 === 0) {
+            let v = Number(value);
+            if (v < 0 || v > 65536 || !Number.isSafeInteger(v)) {
+                throw Error(`value is out of range for ${bits} bits. Got ${value}`);
+            }
+            this._buffer[this._length / 8] = v >> 8;
+            this._buffer[this._length / 8 + 1] = v & 0xff;
+            this._length += 16;
+            return;
+        }
+
+        // Generic case
         let v = BigInt(value);
         if (bits < 0 || !Number.isSafeInteger(bits)) {
             throw Error(`invalid bit length. Got ${bits}`);
