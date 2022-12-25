@@ -31,17 +31,18 @@ function calcCellSize(cell: Cell, sizeBytes: number) {
     return 2 /* D1+D2 */ + Math.ceil(cell.bits.length / 8) + cell.refs.length * sizeBytes;
 }
 
-function parseBoc(src: BitReader) {
-    let magic = src.loadUint(32);
+function parseBoc(src: Buffer) {
+    let reader = new BitReader(new BitString(src, 0, src.length * 8));
+    let magic = reader.loadUint(32);
     if (magic === 0x68ff65f3) {
-        let size = src.loadUint(8);
-        let offBytes = src.loadUint(8);
-        let cells = src.loadUint(size * 8);
-        let roots = src.loadUint(size * 8); // Must be 1
-        let absent = src.loadUint(size * 8);
-        let totalCellSize = src.loadUint(offBytes * 8);
-        let index = src.loadBuffer(cells * offBytes);
-        let cellData = src.loadBuffer(totalCellSize);
+        let size = reader.loadUint(8);
+        let offBytes = reader.loadUint(8);
+        let cells = reader.loadUint(size * 8);
+        let roots = reader.loadUint(size * 8); // Must be 1
+        let absent = reader.loadUint(size * 8);
+        let totalCellSize = reader.loadUint(offBytes * 8);
+        let index = reader.loadBuffer(cells * offBytes);
+        let cellData = reader.loadBuffer(totalCellSize);
         return {
             size,
             offBytes,
@@ -54,15 +55,18 @@ function parseBoc(src: BitReader) {
             root: [0]
         };
     } else if (magic === 0xacc3a728) {
-        let size = src.loadUint(8);
-        let offBytes = src.loadUint(8);
-        let cells = src.loadUint(size * 8);
-        let roots = src.loadUint(size * 8); // Must be 1
-        let absent = src.loadUint(size * 8);
-        let totalCellSize = src.loadUint(offBytes * 8);
-        let index = src.loadBuffer(cells * offBytes);
-        let cellData = src.loadBuffer(totalCellSize);
-        let crc32c = src.loadUint(32);
+        let size = reader.loadUint(8);
+        let offBytes = reader.loadUint(8);
+        let cells = reader.loadUint(size * 8);
+        let roots = reader.loadUint(size * 8); // Must be 1
+        let absent = reader.loadUint(size * 8);
+        let totalCellSize = reader.loadUint(offBytes * 8);
+        let index = reader.loadBuffer(cells * offBytes);
+        let cellData = reader.loadBuffer(totalCellSize);
+        let crc32 = reader.loadBuffer(4);
+        if (!crc32c(src.subarray(0, src.length - 4)).equals(crc32)) {
+            throw Error('Invalid CRC32C');
+        }
         return {
             size,
             offBytes,
@@ -75,28 +79,30 @@ function parseBoc(src: BitReader) {
             root: [0]
         };
     } else if (magic === 0xb5ee9c72) {
-        let hasIdx = src.loadUint(1);
-        let hasCrc32c = src.loadUint(1);
-        let hasCacheBits = src.loadUint(1);
-        let flags = src.loadUint(2); // Must be 0
-        let size = src.loadUint(3);
-        let offBytes = src.loadUint(8);
-        let cells = src.loadUint(size * 8);
-        let roots = src.loadUint(size * 8);
-        let absent = src.loadUint(size * 8);
-        let totalCellSize = src.loadUint(offBytes * 8);
+        let hasIdx = reader.loadUint(1);
+        let hasCrc32c = reader.loadUint(1);
+        let hasCacheBits = reader.loadUint(1);
+        let flags = reader.loadUint(2); // Must be 0
+        let size = reader.loadUint(3);
+        let offBytes = reader.loadUint(8);
+        let cells = reader.loadUint(size * 8);
+        let roots = reader.loadUint(size * 8);
+        let absent = reader.loadUint(size * 8);
+        let totalCellSize = reader.loadUint(offBytes * 8);
         let root: number[] = [];
         for (let i = 0; i < roots; i++) {
-            root.push(src.loadUint(size * 8));
+            root.push(reader.loadUint(size * 8));
         }
         let index: Buffer | null = null;
         if (hasIdx) {
-            index = src.loadBuffer(cells * offBytes);
+            index = reader.loadBuffer(cells * offBytes);
         }
-        let cellData = src.loadBuffer(totalCellSize);
-        let crc32c: number | null = null
+        let cellData = reader.loadBuffer(totalCellSize);
         if (hasCrc32c) {
-            crc32c = src.loadUint(32);
+            let crc32 = reader.loadBuffer(4);
+            if (!crc32c(src.subarray(0, src.length - 4)).equals(crc32)) {
+                throw Error('Invalid CRC32C');
+            }
         }
         return {
             size,
@@ -115,8 +121,7 @@ function parseBoc(src: BitReader) {
 }
 
 export function deserializeBoc(src: Buffer) {
-    let srcReader = new BitReader(new BitString(src, 0, src.length * 8));
-    let boc = parseBoc(srcReader);
+    let boc = parseBoc(src);
     let reader = new BitReader(new BitString(boc.cellData, 0, boc.cellData.length * 8));
 
     // Index
