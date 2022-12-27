@@ -27,6 +27,20 @@ export class Builder {
     }
 
     /**
+     * Bits written so far
+     */
+    get bits() {
+        return this._bits.length;
+    }
+
+    /**
+     * References written so far
+     */
+    get refs() {
+        return this._refs.length;
+    }
+
+    /**
      * Write a single bit
      * @param value bit to write, true or positive number for 1, false or zero or negative for 0
      * @returns this builder
@@ -189,6 +203,30 @@ export class Builder {
     }
 
     /**
+     * Store builder
+     * @param src builder to store
+     * @returns this builder
+     */
+    storeBuilder(src: Builder) {
+        return this.storeSlice(src.endCell().beginParse());
+    }
+
+    /**
+     * Store builder if not null
+     * @param src builder to store
+     * @returns this builder
+     */
+    storeMaybeBuilder(src: Builder | null) {
+        if (src) {
+            this.storeBit(1);
+            this.storeBuilder(src);
+        } else {
+            this.storeBit(0);
+        }
+        return this;
+    }
+
+    /**
      * Store writer or builder
      * @param writer writer or builder to store
      */
@@ -198,6 +236,7 @@ export class Builder {
         } else {
             writer(this);
         }
+        return this;
     }
 
     /**
@@ -211,6 +250,7 @@ export class Builder {
         } else {
             this.storeBit(0);
         }
+        return this;
     }
 
     /**

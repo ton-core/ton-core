@@ -15,6 +15,13 @@ export class BitBuilder {
     }
 
     /**
+     * Current number of bits written
+     */
+    get length() {
+        return this._length;
+    }
+
+    /**
      * Write a single bit
      * @param value bit to write, true or positive number for 1, false or zero or negative for 0
      */
