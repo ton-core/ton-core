@@ -5,11 +5,21 @@ import { Slice } from "./Slice";
 import { LevelMask } from './cell/LevelMask';
 import { resolveExotic } from './cell/resolveExotic';
 import { wonderCalculator } from './cell/wonderCalculator';
+import { deserializeBoc, serializeBoc } from './cell/serialization';
 
 /**
  * Cell as described in TVM spec
  */
 export class Cell {
+
+    /**
+     * Deserialize cells from BOC
+     * @param src source buffer
+     * @returns array of cells
+     */
+    static fromBoc(src: Buffer) {
+        return deserializeBoc(src);
+    }
 
     // Public properties
     readonly type: CellType;
@@ -100,24 +110,54 @@ export class Cell {
 
     /**
      * Get cell hash
+     * @param level level
      * @returns cell hash
      */
     hash = (level: number = 3): Buffer => {
         return this._hashes[Math.min(this._hashes.length - 1, level)];
     }
 
+    /**
+     * Get cell depth
+     * @param level level
+     * @returns cell depth
+     */
     depth = (level: number = 3): number => {
         return this._depths[Math.min(this._depths.length - 1, level)];
     }
 
+    /**
+     * Get cell level
+     * @returns cell level
+     */
     level = (): number => {
         return this.mask.level;
     }
 
+    /**
+     * Checks cell to be euqal to another cell
+     * @param other other cell
+     * @returns true if cells are equal
+     */
     equals = (other: Cell): boolean => {
         return this.hash().equals(other.hash());
     }
 
+    /**
+     * Serializes cell to BOC
+     * @param opts options
+     */
+    toBoc(opts?: { idx?: boolean | null | undefined, crc32?: boolean | null | undefined }): Buffer {
+        let idx = (opts && opts.idx !== null && opts.idx !== undefined) ? opts.idx : false;
+        let crc32 = (opts && opts.crc32 !== null && opts.crc32 !== undefined) ? opts.crc32 : true;
+        return serializeBoc(this, { idx, crc32 });
+    }
+
+    /**
+     * Format cell to string
+     * @param indent indentation
+     * @returns string representation
+     */
     toString(indent?: string): string {
         let id = indent || '';
         let s = id + (this.isExotic ? 'e' : 'x') + '{' + this.bits.toString() + '}';
