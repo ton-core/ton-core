@@ -1,4 +1,5 @@
 import { BitReader } from "./BitReader";
+import { beginCell } from "./Builder";
 import { Cell } from "./Cell";
 
 /**
@@ -332,6 +333,21 @@ export class Slice {
      */
     preloadBuffer(bytes: number) {
         return this._reader.preloadBuffer(bytes);
+    }
+
+    /**
+     * Convert slice to cell
+     */
+    asCell() {
+        return beginCell().storeSlice(this).endCell();
+    }
+
+    /**
+     * 
+     * @returns 
+     */
+    asBuilder() {
+        return beginCell().storeSlice(this);
     }
 
     /**

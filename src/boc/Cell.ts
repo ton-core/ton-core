@@ -7,6 +7,7 @@ import { resolveExotic } from './cell/resolveExotic';
 import { wonderCalculator } from './cell/wonderCalculator';
 import { deserializeBoc, serializeBoc } from './cell/serialization';
 import { BitReader } from './BitReader';
+import { beginCell } from './Builder';
 
 /**
  * Cell as described in TVM spec
@@ -167,6 +168,22 @@ export class Cell {
             s += '\n' + i.toString(id + ' ');
         }
         return s;
+    }
+
+    /**
+     * Covnert cell to slice
+     * @returns slice
+     */
+    asSlice() {
+        return this.beginParse();
+    }
+
+    /**
+     * Convert cell to a builder that has this cell stored
+     * @returns builder
+     */
+    asBuilder() {
+        return beginCell().storeSlice(this.asSlice());
     }
 
     [inspectSymbol] = () => this.toString()

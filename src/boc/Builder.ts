@@ -189,21 +189,22 @@ export class Builder {
     }
 
     /**
-     * Read slice and store it in this builder
+     * Store slice it in this builder
      * @param src source slice
      */
     storeSlice(src: Slice) {
-        if (src.remainingBits > 0) {
-            this.storeBits(src.loadBits(src.remainingBits));
+        let c = src.clone();
+        if (c.remainingBits > 0) {
+            this.storeBits(c.loadBits(c.remainingBits));
         }
-        while (src.remainingRefs > 0) {
-            this.storeRef(src.loadRef());
+        while (c.remainingRefs > 0) {
+            this.storeRef(c.loadRef());
         }
         return this;
     }
 
     /**
-     * Read slice and store it in this builder if not null
+     * Store slice in this builder if not null
      * @param src source slice
      */
     storeMaybeSlice(src: Slice | null) {
@@ -276,5 +277,21 @@ export class Builder {
             bits: this._bits.build(),
             refs: this._refs
         });
+    }
+
+    /**
+     * Convert to cell
+     * @returns cell
+     */
+    asCell() {
+        return this.endCell();
+    }
+
+    /**
+     * Convert to slice
+     * @returns slice
+     */
+    asSlice() {
+        return this.endCell().beginParse();
     }
 }
