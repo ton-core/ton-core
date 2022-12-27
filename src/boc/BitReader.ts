@@ -273,7 +273,7 @@ export class BitReader {
      * @returns read value as bigint
      */
     loadCoins() {
-        return this.loadVarUint(4);
+        return this.loadVarUintBig(4);
     }
 
     /**
@@ -281,7 +281,7 @@ export class BitReader {
      * @returns read value as bigint
      */
     preloadCoins() {
-        return this.preloadVarUint(4);
+        return this.preloadVarUintBig(4);
     }
 
     /**
