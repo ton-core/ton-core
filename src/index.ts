@@ -1,6 +1,7 @@
 // Address
 export { Address } from './address/Address';
 export { ExternalAddress } from './address/ExternalAddress';
+export { ADNLAddress } from './address/ADNLAddress';
 
 // BitString
 export { BitString } from './boc/BitString';
