@@ -487,10 +487,10 @@ export class BitReader {
         let l = this._preloadUint(9, this._offset + 2);
 
         // Load address
-        let value = this._preloadUint(Number(l), this._offset + 9);
+        let value = this._preloadUint(Number(l), this._offset + 11);
 
         // Update offset
-        this._offset += 9 + Number(l);
+        this._offset += 11 + Number(l);
 
         return new ExternalAddress(value);
     }
