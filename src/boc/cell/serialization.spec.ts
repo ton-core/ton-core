@@ -61,6 +61,14 @@ describe('boc', () => {
         expect(c2.equals(c)).toBe(true);
     });
 
+    it('should parse configProof.txt', () => {
+        let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/configProof.txt', 'utf8'), 'base64');
+        let c = deserializeBoc(boc)[0];
+        let b = serializeBoc(c, { idx: false, crc32: true });
+        let c2 = deserializeBoc(b)[0];
+        expect(c2.equals(c)).toBe(true);
+    });
+
     it('should serialize single cell with a empty bits', () => {
         let cell = beginCell().endCell();
         expect(cell.toString()).toBe('x{}');
