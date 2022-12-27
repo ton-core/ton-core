@@ -14,6 +14,20 @@ export class Slice {
     }
 
     /**
+     * Get remaining bits
+     */
+    get remainingBits() {
+        return this._reader.remaining;
+    }
+
+    /**
+     * Get remaining refs
+     */
+    get remainingRefs() {
+        return this._refs.length;
+    }
+
+    /**
      * Skip bits
      * @param bits 
      */
@@ -300,5 +314,23 @@ export class Slice {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Load byte buffer
+     * @param bytes number of bytes to load
+     * @returns Buffer
+     */
+    loadBuffer(bytes: number) {
+        return this._reader.loadBuffer(bytes);
+    }
+
+    /**
+     * Load byte buffer
+     * @param bytes number of bytes to load
+     * @returns Buffer
+     */
+    preloadBuffer(bytes: number) {
+        return this._reader.preloadBuffer(bytes);
     }
 }

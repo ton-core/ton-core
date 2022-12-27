@@ -17,6 +17,13 @@ export class BitReader {
     }
 
     /**
+     * Number of bits remaining
+     */
+    get remaining() {
+        return this._bits.length - this._offset;
+    }
+
+    /**
      * Skip bits
      * @param bits number of bits to skip
      */

@@ -2,7 +2,9 @@ import { Address } from "../address/Address";
 import { ExternalAddress } from "../address/ExternalAddress";
 import { BitBuilder } from "./BitBuilder";
 import { BitString } from "./BitString";
+import { Writable } from "./Writable";
 import { Cell } from "./Cell";
+import { Slice } from "./Slice";
 
 /**
  * Start building a cell
@@ -156,6 +158,59 @@ export class Builder {
         }
 
         return this;
+    }
+
+    /**
+     * Read slice and store it in this builder
+     * @param src source slice
+     */
+    storeSlice(src: Slice) {
+        if (src.remainingBits > 0) {
+            this.storeBits(src.loadBits(src.remainingBits));
+        }
+        while (src.remainingRefs > 0) {
+            this.storeRef(src.loadRef());
+        }
+        return this;
+    }
+
+    /**
+     * Read slice and store it in this builder if not null
+     * @param src source slice
+     */
+    storeMaybeSlice(src: Slice | null) {
+        if (src) {
+            this.storeBit(1);
+            this.storeSlice(src);
+        } else {
+            this.storeBit(0);
+        }
+        return this;
+    }
+
+    /**
+     * Store writer or builder
+     * @param writer writer or builder to store
+     */
+    storeWritable(writer: ((builder: Builder) => void) | Writable) {
+        if (typeof writer === 'object') {
+            writer.writeTo(this);
+        } else {
+            writer(this);
+        }
+    }
+
+    /**
+     * Store writer or builder if not null
+     * @param writer writer or builder to store
+     */
+    storeMaybeWritable(writer: ((builder: Builder) => void) | Writable | null) {
+        if (writer) {
+            this.storeBit(1);
+            this.storeWritable(writer);
+        } else {
+            this.storeBit(0);
+        }
     }
 
     /**

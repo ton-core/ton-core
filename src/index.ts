@@ -13,6 +13,7 @@ export { Builder, beginCell } from './boc/Builder';
 export { Slice } from './boc/Slice';
 export { CellType } from './boc/CellType';
 export { Cell } from './boc/Cell';
+export { Writable } from './boc/Writable';
 
 // Exotics
 export { exoticMerkleProof } from './boc/cell/exoticMerkleProof';
