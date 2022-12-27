@@ -19,3 +19,8 @@ export { Writable } from './boc/Writable';
 export { exoticMerkleProof } from './boc/cell/exoticMerkleProof';
 export { exoticMerkleUpdate } from './boc/cell/exoticMerkleUpdate';
 export { exoticPruned } from './boc/cell/exoticPruned';
+
+// Tuples
+export { Tuple, TupleItem, TupleNull, TupleInt, TupleNaN, TupleCell, TupleBuilder } from './tuple/tuple';
+export { parseTuple, serializeTuple } from './tuple/tuple';
+export { TupleReader } from './tuple/reader';
