@@ -8,9 +8,9 @@ export class Slice {
     private _reader: BitReader;
     private _refs: Cell[];
 
-    constructor(cell: Cell) {
-        this._reader = new BitReader(cell.bits);
-        this._refs = [...cell.refs];
+    constructor(reader: BitReader, refs: Cell[]) {
+        this._reader = reader;
+        this._refs = refs;
     }
 
     /**
@@ -332,5 +332,13 @@ export class Slice {
      */
     preloadBuffer(bytes: number) {
         return this._reader.preloadBuffer(bytes);
+    }
+
+    /**
+     * Clone slice
+     * @returns cloned slice
+     */
+    clone() {
+        return new Slice(this._reader.clone(), [...this._refs]);
     }
 }

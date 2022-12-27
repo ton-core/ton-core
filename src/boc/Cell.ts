@@ -6,6 +6,7 @@ import { LevelMask } from './cell/LevelMask';
 import { resolveExotic } from './cell/resolveExotic';
 import { wonderCalculator } from './cell/wonderCalculator';
 import { deserializeBoc, serializeBoc } from './cell/serialization';
+import { BitReader } from './BitReader';
 
 /**
  * Cell as described in TVM spec
@@ -105,7 +106,7 @@ export class Cell {
      * @returns a new slice
      */
     beginParse = () => {
-        return new Slice(this);
+        return new Slice(new BitReader(this.bits), this.refs);
     }
 
     /**

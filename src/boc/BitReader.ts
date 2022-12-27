@@ -1,6 +1,5 @@
 import { Address } from "../address/Address";
 import { ExternalAddress } from "../address/ExternalAddress";
-import { BitBuilder } from "./BitBuilder";
 import { BitString } from "./BitString";
 
 /**
@@ -9,11 +8,12 @@ import { BitString } from "./BitString";
 export class BitReader {
 
     private _bits: BitString;
-    private _offset = 0;
+    private _offset;
     private _checkpoints: number[] = [];
 
-    constructor(bits: BitString) {
+    constructor(bits: BitString, offset: number = 0) {
         this._bits = bits;
+        this._offset = offset;
     }
 
     /**
@@ -388,6 +388,13 @@ export class BitReader {
         let r = this._bits.substring(this._offset, length);
         this._offset += bits;
         return r;
+    }
+
+    /**
+     * Clone BitReader
+     */
+    clone() {
+        return new BitReader(this._bits, this._offset);
     }
 
     /**
