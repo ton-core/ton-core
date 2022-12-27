@@ -297,7 +297,7 @@ export class Slice {
      * Load optional reference
      * @returns Cell or null
      */
-    loadMaybeCell() {
+    loadMaybeRef() {
         if (this.loadBit()) {
             return this.loadRef();
         } else {
@@ -309,7 +309,7 @@ export class Slice {
      * Preload optional reference
      * @returns Cell or null
      */
-    preloadMaybeCell() {
+    preloadMaybeRef() {
         if (this.preloadBit()) {
             return this.preloadRef();
         } else {
