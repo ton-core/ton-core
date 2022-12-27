@@ -41,6 +41,20 @@ export class Builder {
     }
 
     /**
+     * Available bits
+     */
+    get availableBits() {
+        return 1024 - this.bits;
+    }
+
+    /**
+     * Available references
+     */
+    get availableRefs() {
+        return 4 - this.refs;
+    }
+
+    /**
      * Write a single bit
      * @param value bit to write, true or positive number for 1, false or zero or negative for 0
      * @returns this builder
