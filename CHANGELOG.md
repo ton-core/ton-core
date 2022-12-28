@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## Added
+- `toNano` and `fromNano` helper methods
+- `crc16` and `crc32c` checksum functions that compatible with TON
+- `base32Decode` and `base32Encode` for base32 encoding/decoding
+- Messages: `StateInit`, `InternalMessage`, `ExternalMessage`, `EmptyMessage`, `CommentMessage`, `CommonMessageInfo`, `CellMessage`, `BufferMessage`
+- `contractAddress` function for calculation of an address
+- `storeStringTail`, `storeMaybeStringTail`, `storeStringRefTail`, `storeMaybeStringRefTail` in `Builder`
+- `loadStringTail`, `loadMaybeStringTail`, `loadStringRefTail`, `loadMaybeStringRefTail` in `Slice`
+
+## Fixed
+- `availableBits` in `Builder`
+
 ## [0.11.0] - 2022-12-27
 
 ## Added

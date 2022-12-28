@@ -106,4 +106,18 @@ describe('BitReader', () => {
             expect(reader.loadAddress().toString()).toEqual(b.toString());
         }
     });
+
+    it('should read string tails from builder', () => {
+        let prando = new Prando('test-6');
+        for (let i = 0; i < 1000; i++) {
+            let a = prando.nextString(prando.nextInt(0, 1024));
+            let b = prando.nextString(prando.nextInt(0, 1024));
+            let builder = beginCell();
+            builder.storeStringRefTail(a);
+            builder.storeStringTail(b);
+            let sc = builder.endCell().beginParse();
+            expect(sc.loadStringRefTail()).toEqual(a);
+            expect(sc.loadStringTail()).toEqual(b);
+        }
+    });
 });

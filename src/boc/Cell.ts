@@ -73,7 +73,7 @@ export class Cell {
                 throw new Error("Invalid number of references");
             }
             if (bits.length > 1023) {
-                throw new Error("Invalid number of bits");
+                throw new Error(`Bits overflow: ${bits.length} > 1023`);
             }
 
             // Perform wonders

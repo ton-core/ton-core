@@ -2,6 +2,7 @@
 export { Address } from './address/Address';
 export { ExternalAddress } from './address/ExternalAddress';
 export { ADNLAddress } from './address/ADNLAddress';
+export { contractAddress } from './address/contractAddress';
 
 // BitString
 export { BitString } from './boc/BitString';
@@ -24,3 +25,21 @@ export { exoticPruned } from './boc/cell/exoticPruned';
 export { Tuple, TupleItem, TupleNull, TupleInt, TupleNaN, TupleCell, TupleBuilder } from './tuple/tuple';
 export { parseTuple, serializeTuple } from './tuple/tuple';
 export { TupleReader } from './tuple/reader';
+
+// Messages
+export { Message } from './messages/Message';
+export { StateInit } from './messages/StateInit';
+export { InternalMessage } from './messages/InternalMessage';
+export { ExternalMessage } from './messages/ExternalMessage';
+export { CommonMessageInfo } from './messages/CommonMessageInfo';
+
+export { CommentMessage } from './messages/CommentMessage';
+export { EmptyMessage } from './messages/EmptyMessage';
+export { CellMessage } from './messages/CellMessage';
+export { BufferMessage } from './messages/BufferMessage';
+
+// Utility
+export { toNano, fromNano } from './utils/convert';
+export { crc16 } from './utils/crc16';
+export { crc32c } from './utils/crc32c';
+export { base32Decode, base32Encode } from './utils/base32';

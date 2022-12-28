@@ -1,6 +1,7 @@
 import { BitReader } from "./BitReader";
 import { beginCell } from "./Builder";
 import { Cell } from "./Cell";
+import { readString } from "./utils/strings";
 
 /**
  * Slice is a class that allows to read cell data
@@ -34,6 +35,7 @@ export class Slice {
      */
     skip(bits: number) {
         this._reader.skip(bits);
+        return this;
     }
 
     /**
@@ -333,6 +335,46 @@ export class Slice {
      */
     preloadBuffer(bytes: number) {
         return this._reader.preloadBuffer(bytes);
+    }
+
+    /**
+     * Load string tail
+     */
+    loadStringTail() {
+        return readString(this);
+    }
+
+    /**
+     * Load maybe string tail
+     * @returns string or null
+     */
+    loadMaybeStringTail() {
+        if (this.loadBit()) {
+            return readString(this);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Load string tail from ref
+     * @returns string
+     */
+    loadStringRefTail() {
+        return readString(this.loadRef().beginParse());
+    }
+
+    /**
+     * Load maybe string tail from ref
+     * @returns string or null
+     */
+    loadMaybeStringRefTail() {
+        const ref = this.loadMaybeRef();
+        if (ref) {
+            return readString(ref.beginParse());
+        } else {
+            return null;
+        }
     }
 
     /**

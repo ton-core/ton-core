@@ -5,6 +5,7 @@ import { BitString } from "./BitString";
 import { Writable } from "./Writable";
 import { Cell } from "./Cell";
 import { Slice } from "./Slice";
+import { writeString } from "./utils/strings";
 
 /**
  * Start building a cell
@@ -44,7 +45,7 @@ export class Builder {
      * Available bits
      */
     get availableBits() {
-        return 1024 - this.bits;
+        return 1023 - this.bits;
     }
 
     /**
@@ -244,6 +245,7 @@ export class Builder {
     /**
      * Store writer or builder
      * @param writer writer or builder to store
+     * @returns this builder
      */
     storeWritable(writer: ((builder: Builder) => void) | Writable) {
         if (typeof writer === 'object') {
@@ -257,11 +259,63 @@ export class Builder {
     /**
      * Store writer or builder if not null
      * @param writer writer or builder to store
+     * @returns this builder
      */
     storeMaybeWritable(writer: ((builder: Builder) => void) | Writable | null) {
         if (writer) {
             this.storeBit(1);
             this.storeWritable(writer);
+        } else {
+            this.storeBit(0);
+        }
+        return this;
+    }
+
+    /**
+     * Store string tail
+     * @param src source string
+     * @returns this builder
+     */
+    storeStringTail(src: string) {
+        writeString(src, this);
+        return this;
+    }
+
+    /**
+     * Store string tail
+     * @param src source string
+     * @returns this builder
+     */
+    storeMaybeStringTail(src: string | null) {
+        if (src !== null) {
+            this.storeBit(1);
+            writeString(src, this);
+        } else {
+            this.storeBit(0);
+        }
+        return this;
+    }
+
+    /**
+     * Store string tail in ref
+     * @param src source string
+     * @returns this builder
+     */
+    storeStringRefTail(src: string) {
+        this.storeRef(beginCell()
+            .storeStringTail(src));
+        return this;
+    }
+
+    /**
+     * Store maybe string tail in ref
+     * @param src source string
+     * @returns this builder
+     */
+    storeMaybeStringRefTail(src: string | null) {
+        if (src !== null) {
+            this.storeBit(1);
+            this.storeStringRefTail(src);
         } else {
             this.storeBit(0);
         }
