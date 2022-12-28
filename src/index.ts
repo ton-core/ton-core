@@ -35,6 +35,7 @@ export { StateInit } from './messages/StateInit';
 export { InternalMessage } from './messages/InternalMessage';
 export { ExternalMessage } from './messages/ExternalMessage';
 export { CommonMessageInfo } from './messages/CommonMessageInfo';
+export { SendMode } from './messages/SendMode';
 
 export { CommentMessage } from './messages/CommentMessage';
 export { EmptyMessage } from './messages/EmptyMessage';
@@ -46,3 +47,6 @@ export { toNano, fromNano } from './utils/convert';
 export { crc16 } from './utils/crc16';
 export { crc32c } from './utils/crc32c';
 export { base32Decode, base32Encode } from './utils/base32';
+
+// Crypto
+export { safeSign, safeSignVerify } from './crypto/safeSign';
