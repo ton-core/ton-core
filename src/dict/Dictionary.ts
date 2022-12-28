@@ -115,8 +115,8 @@ export class Dictionary<K, V> {
      * @param value value type
      * @returns Dictionary<K, V>
      */
-    static empty<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>) {
-        return new Dictionary(key, value, new Map());
+    static empty<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>): Dictionary<K, V> {
+        return new Dictionary<K, V>(key, value, new Map());
     }
 
     /**
@@ -126,12 +126,12 @@ export class Dictionary<K, V> {
      * @param src slice
      * @returns Dictionary<K, V>
      */
-    static load<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>, sc: Slice) {
+    static load<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>, sc: Slice): Dictionary<K, V> {
         let cell = sc.loadMaybeRef();
         if (cell) {
-            return Dictionary.loadDirect(key, value, cell.beginParse());
+            return Dictionary.loadDirect<K, V>(key, value, cell.beginParse());
         } else {
-            return Dictionary.empty(key, value);
+            return Dictionary.empty<K, V>(key, value);
         }
     }
 
@@ -144,7 +144,7 @@ export class Dictionary<K, V> {
      * @param sc slice
      * @returns Dictionary<K, V>
      */
-    static loadDirect<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>, sc: Slice) {
+    static loadDirect<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>, sc: Slice): Dictionary<K, V> {
         let values = parseDict(sc, key.bits, value.parse);
         return new Dictionary(key, value, values);
     }
