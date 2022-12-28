@@ -22,11 +22,10 @@ export class StateInit implements Message {
     }
 
     writeTo(builder: Builder) {
-        builder.storeBit(0);
         builder.storeBit(0); // SplitDepth
         builder.storeBit(0); // TickTock
-        builder.storeMaybeRef(this.code); // Code
-        builder.storeMaybeRef(this.data); // Code
+        builder.storeMaybeRef(this.code);
+        builder.storeMaybeRef(this.data);
         builder.storeBit(0); // Library
     }
 }

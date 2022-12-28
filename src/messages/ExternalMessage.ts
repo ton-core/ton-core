@@ -1,16 +1,17 @@
 import { Address } from "../address/Address";
+import { ExternalAddress } from "../address/ExternalAddress";
 import { Builder } from "../boc/Builder";
 import { CommonMessageInfo } from "./CommonMessageInfo";
 import { Message } from "./Message";
 
 export class ExternalMessage implements Message {
 
-    readonly from: Address | null;
+    readonly from: ExternalAddress | null;
     readonly to: Address;
     readonly importFee: number;
     readonly body: CommonMessageInfo;
 
-    constructor(opts: { to: Address, from?: Address | null, importFee?: number | null, body: CommonMessageInfo }) {
+    constructor(opts: { to: Address, from?: ExternalAddress | null, importFee?: number | null, body: CommonMessageInfo }) {
         this.to = opts.to;
         this.body = opts.body;
         if (opts.from !== undefined && opts.from !== null) {

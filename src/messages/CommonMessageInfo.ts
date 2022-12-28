@@ -44,7 +44,7 @@ export class CommonMessageInfo implements Message {
         if (this.body) {
             const body = beginCell();
             this.body.writeTo(body);
-            if ((1023 - builder.bits) - 1 /* At least on byte for body */ >= body.bits) {
+            if (builder.availableBits - 1 /* At least on byte for body */ >= body.bits) {
                 builder.storeBit(0);
                 builder.storeBuilder(body);
             } else {
