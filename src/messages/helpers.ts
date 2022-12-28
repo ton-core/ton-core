@@ -9,13 +9,15 @@ import { ExternalMessage } from './ExternalMessage';
 import { StateInit } from "./StateInit";
 import { CommentMessage } from "./CommentMessage";
 import { beginCell } from "../boc/Builder";
+import { toNano } from "../utils/convert";
+import { Message } from "./Message";
 
 export function internal(src: {
     to: Address | string,
-    value: bigint,
+    value: bigint | string,
     bounce?: Maybe<boolean>,
     init?: Maybe<{ code?: Maybe<Cell>, data?: Maybe<Cell> }>,
-    body?: Cell
+    body?: Cell | string
 }) {
 
     // Resolve bounce
@@ -34,14 +36,30 @@ export function internal(src: {
         throw new Error(`Invalid address ${src.to}`);
     }
 
+    // Resolve value
+    let value: bigint;
+    if (typeof src.value === 'string') {
+        value = toNano(src.value);
+    } else {
+        value = src.value;
+    }
+
+    // Resolve body
+    let body: Message = new EmptyMessage();
+    if (typeof src.body === 'string') {
+        body = new CommentMessage(src.body);
+    } else if (src.body) {
+        body = new CellMessage(src.body);
+    }
+
     // Create message
     return new InternalMessage({
         to: to,
-        value: src.value,
+        value,
         bounce: src.bounce || false,
         body: new CommonMessageInfo({
             stateInit: src.init ? new StateInit(src.init) : null,
-            body: src.body ? new CellMessage(src.body) : new EmptyMessage()
+            body
         })
     });
 }
