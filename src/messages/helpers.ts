@@ -12,7 +12,7 @@ import { beginCell } from "../boc/Builder";
 
 export function internal(src: {
     to: Address | string,
-    amount: bigint,
+    value: bigint,
     bounce?: Maybe<boolean>,
     init?: Maybe<{ code?: Maybe<Cell>, data?: Maybe<Cell> }>,
     body?: Cell
@@ -37,7 +37,7 @@ export function internal(src: {
     // Create message
     return new InternalMessage({
         to: to,
-        value: src.amount,
+        value: src.value,
         bounce: src.bounce || false,
         body: new CommonMessageInfo({
             stateInit: src.init ? new StateInit(src.init) : null,
