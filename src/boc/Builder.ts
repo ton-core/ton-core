@@ -6,6 +6,7 @@ import { Writable } from "./Writable";
 import { Cell } from "./Cell";
 import { Slice } from "./Slice";
 import { writeString } from "./utils/strings";
+import { Dictionary } from "../dict/Dictionary";
 
 /**
  * Start building a cell
@@ -319,6 +320,26 @@ export class Builder {
         } else {
             this.storeBit(0);
         }
+        return this;
+    }
+
+    /**
+     * Store dictionary in this builder
+     * @param dict dictionary to store
+     * @returns this builder
+     */
+    storeDict<K, V>(dict: Dictionary<K, V>) {
+        dict.store(this);
+        return this;
+    }
+
+    /**
+     * Store dictionary in this builder directly
+     * @param dict dictionary to store
+     * @returns this builder
+     */
+    storeDictDirect<K, V>(dict: Dictionary<K, V>) {
+        dict.storeDirect(this);
         return this;
     }
 

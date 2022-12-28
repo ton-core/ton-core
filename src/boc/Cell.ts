@@ -186,5 +186,5 @@ export class Cell {
         return beginCell().storeSlice(this.asSlice());
     }
 
-    [inspectSymbol] = () => this.toString()
+    [inspectSymbol] = () => this.toString();
 }

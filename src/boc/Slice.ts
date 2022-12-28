@@ -1,3 +1,5 @@
+import inspectSymbol from 'symbol.inspect';
+import { Dictionary, DictionaryKey, DictionaryValue } from '../dict/Dictionary';
 import { BitReader } from "./BitReader";
 import { beginCell } from "./Builder";
 import { Cell } from "./Cell";
@@ -378,6 +380,26 @@ export class Slice {
     }
 
     /**
+     * Loads dictionary
+     * @param key key description
+     * @param value value description
+     * @returns Dictionary<K, V>
+     */
+    loadDict<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>) {
+        return Dictionary.load(key, value, this);
+    }
+
+    /**
+     * Loads dictionary directly from current slice
+     * @param key key description
+     * @param value value description
+     * @returns Dictionary<K, V>
+     */
+    loadDictDirect<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>) {
+        return Dictionary.loadDirect(key, value, this);
+    }
+
+    /**
      * Convert slice to cell
      */
     asCell() {
@@ -399,4 +421,14 @@ export class Slice {
     clone() {
         return new Slice(this._reader.clone(), [...this._refs]);
     }
+
+    /**
+     * Print slice as string by converting it to cell
+     * @returns string
+     */
+    toString(): string {
+        return this.asCell().toString();
+    }
+
+    [inspectSymbol] = () => this.toString();
 }
