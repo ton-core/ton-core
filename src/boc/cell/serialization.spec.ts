@@ -1,6 +1,8 @@
 import { deserializeBoc, serializeBoc } from "./serialization";
 import fs from 'fs';
 import { beginCell } from "../Builder";
+import { CellType } from "../CellType";
+import { exoticPruned } from "./exoticPruned";
 
 const wallets: string[] = [
     'B5EE9C72410101010044000084FF0020DDA4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED5441FDF089',
@@ -67,6 +69,46 @@ describe('boc', () => {
         let b = serializeBoc(c, { idx: false, crc32: true });
         let c2 = deserializeBoc(b)[0];
         expect(c2.equals(c)).toBe(true);
+    });
+
+    it('should parse accountStateTest.txt', () => {
+        let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/accountStateTest.txt', 'utf8'), 'base64');
+        let c = deserializeBoc(boc)[0];
+        let b = serializeBoc(c, { idx: false, crc32: true });
+        let c2 = deserializeBoc(b)[0];
+        expect(c2.equals(c)).toBe(true);
+    });
+
+    it('should parse accountStateTestPruned.txt', () => {
+        let boc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/accountStateTestPruned.txt', 'utf8'), 'base64');
+        let c = deserializeBoc(boc)[0];
+        let b = serializeBoc(c, { idx: false, crc32: true });
+        let c2 = deserializeBoc(b)[0];
+        expect(c2.equals(c)).toBe(true);
+    });
+
+    it('should match pruned state', () => {
+        let prunedBoc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/accountStateTestPruned.txt', 'utf8'), 'base64');
+        let pruned = deserializeBoc(prunedBoc)[0];
+        let fullBoc = Buffer.from(fs.readFileSync(__dirname + '/__testdata__/accountStateTest.txt', 'utf8'), 'base64');
+        let full = deserializeBoc(fullBoc)[0];
+        expect(pruned.isExotic).toBe(true);
+        expect(pruned.type).toBe(CellType.MerkleProof);
+        let prunedData = pruned.beginParse().loadRef();
+
+        // Load refs
+        let sc = full.beginParse();
+        let fullA = sc.loadRef();
+        let fullB = sc.loadRef();
+        let sc2 = prunedData.beginParse();
+        let prunedA = sc2.loadRef();
+        let prunedB = sc2.loadRef();
+        let ppA = exoticPruned(prunedA.bits, prunedA.refs);
+        let ppB = exoticPruned(prunedB.bits, prunedB.refs);
+
+        // Check hashes
+        expect(ppA.pruned[0].hash).toMatchObject(fullA.hash());
+        expect(ppB.pruned[0].hash).toMatchObject(fullB.hash());
     });
 
     it('should serialize single cell with a empty bits', () => {
