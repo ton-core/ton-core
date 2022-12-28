@@ -2,14 +2,15 @@ import { Address } from "../address/Address";
 import { Cell } from "../boc/Cell";
 import { SendMode } from "../messages/SendMode";
 import { StateInit } from "../messages/StateInit";
+import { Maybe } from "../utils/maybe";
 
 export type SenderArguments = {
-    amount: bigint,
+    value: bigint,
     to: Address,
-    sendMode?: SendMode,
-    bounce?: boolean,
-    init?: StateInit,
-    body?: Cell
+    sendMode?: Maybe<SendMode>,
+    bounce?: Maybe<boolean>,
+    init?: Maybe<StateInit>,
+    body?: Maybe<Cell>
 }
 
 export interface Sender {
