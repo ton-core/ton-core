@@ -42,6 +42,11 @@ export { EmptyMessage } from './messages/EmptyMessage';
 export { CellMessage } from './messages/CellMessage';
 export { BufferMessage } from './messages/BufferMessage';
 
+// Contract
+export { Contract } from './contract/Contract';
+export { ContractProvider } from './contract/ContractProvider';
+export { AccountState } from './contract/AccountState';
+
 // Utility
 export { toNano, fromNano } from './utils/convert';
 export { crc16 } from './utils/crc16';
