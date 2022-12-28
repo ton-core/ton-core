@@ -36,6 +36,7 @@ export { InternalMessage } from './messages/InternalMessage';
 export { ExternalMessage } from './messages/ExternalMessage';
 export { CommonMessageInfo } from './messages/CommonMessageInfo';
 export { SendMode } from './messages/SendMode';
+export { internal, external, comment } from './messages/helpers';
 
 export { CommentMessage } from './messages/CommentMessage';
 export { EmptyMessage } from './messages/EmptyMessage';
@@ -46,6 +47,7 @@ export { BufferMessage } from './messages/BufferMessage';
 export { Contract } from './contract/Contract';
 export { ContractProvider } from './contract/ContractProvider';
 export { AccountState } from './contract/AccountState';
+export { Sender } from './contract/Sender';
 
 // Utility
 export { toNano, fromNano } from './utils/convert';
