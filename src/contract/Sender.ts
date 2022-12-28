@@ -1,7 +1,6 @@
 import { Address } from "../address/Address";
 import { Cell } from "../boc/Cell";
 import { SendMode } from "../messages/SendMode";
-import { StateInit } from "../messages/StateInit";
 import { Maybe } from "../utils/maybe";
 
 export type SenderArguments = {
@@ -9,7 +8,7 @@ export type SenderArguments = {
     to: Address,
     sendMode?: Maybe<SendMode>,
     bounce?: Maybe<boolean>,
-    init?: Maybe<StateInit>,
+    init?: Maybe<{ code?: Maybe<Cell>, data?: Maybe<Cell> }>,
     body?: Maybe<Cell>
 }
 
