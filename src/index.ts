@@ -47,7 +47,7 @@ export { BufferMessage } from './messages/BufferMessage';
 export { Contract } from './contract/Contract';
 export { ContractProvider } from './contract/ContractProvider';
 export { AccountState } from './contract/AccountState';
-export { Sender } from './contract/Sender';
+export { Sender, SenderArguments } from './contract/Sender';
 
 // Utility
 export { toNano, fromNano } from './utils/convert';
