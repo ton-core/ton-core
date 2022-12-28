@@ -1,5 +1,7 @@
 import { beginCell, Builder } from "../boc/Builder";
+import { Cell } from "../boc/Cell";
 import { Dictionary } from "./Dictionary";
+import fs from 'fs';
 
 function storeBits(builder: Builder, src: string) {
     for (let s of src) {
@@ -35,5 +37,32 @@ describe('Dictionary', () => {
 
         // Compare
         expect(packed.equals(root)).toBe(true);
+    });
+
+    it('should parse config', () => {
+        let cell = Cell.fromBoc(Buffer.from(fs.readFileSync(__dirname + '/__testdata__/config.txt', 'utf-8'), 'base64'))[0];
+        let configs = cell.beginParse().loadDictDirect(Dictionary.Keys.Int(32), Dictionary.Values.Cell());
+        let ids: number[] = [0, 1, 2, 4, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 28, 29, 31, 32, 34, 71, 72, -999, -71];
+        let keys = configs.keys();
+        for (let i of ids) {
+            expect(keys).toContain(BigInt(i));
+            expect(configs.get(BigInt(i))).not.toBeUndefined();
+            expect(configs.has(BigInt(i))).toBe(true);
+        }
+    });
+
+    it('should parse bridge config', () => {
+        let cell = Cell.fromBoc(Buffer.from(fs.readFileSync(__dirname + '/__testdata__/config.txt', 'utf-8'), 'base64'))[0];
+        let configs = cell.beginParse().loadDictDirect(Dictionary.Keys.Int(32), Dictionary.Values.Cell());
+
+        for (let i of [71n, 72n]) {
+            let r = configs.get(i)!;
+            let config = r.beginParse();
+            let bridgeAddress = config.loadBuffer(32);
+            let oracleMultisigAddress = config.loadBuffer(32);
+            let oracles = config.loadDict(Dictionary.Keys.Uint(256), Dictionary.Values.Buffer(32));
+            let externalChainAddress = config.loadBuffer(32);
+            // console.warn(oracles);
+        }
     });
 });

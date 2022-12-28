@@ -44,6 +44,15 @@ export class Dictionary<K, V> {
          */
         Uint: (bits?: number | null | undefined) => {
             return createUintKey(bits);
+        },
+
+        /**
+         * Create standard buffer key
+         * @param bytes number of bytes of a buffer
+         * @returns DictionaryKey<Buffer>
+         */
+        Buffer: (bytes: number) => {
+            return createBufferKey(bytes);
         }
     }
 
@@ -149,65 +158,73 @@ export class Dictionary<K, V> {
         return new Dictionary(key, value, values);
     }
 
-    private readonly key: DictionaryKey<K>;
-    private readonly value: DictionaryValue<V>;
-    private readonly values: Map<bigint, V>;
+    private readonly _key: DictionaryKey<K>;
+    private readonly _value: DictionaryValue<V>;
+    private readonly _map: Map<bigint, V>;
 
     private constructor(key: DictionaryKey<K>, value: DictionaryValue<V>, values: Map<bigint, V>) {
-        this.key = key;
-        this.value = value;
-        this.values = values;
+        this._key = key;
+        this._value = value;
+        this._map = values;
     }
 
     get size() {
-        return this.values.size;
+        return this._map.size;
     }
 
     get(key: K): V | undefined {
-        return this.values.get(this.key.serialize(key));;
+        return this._map.get(this._key.serialize(key));
     }
 
     has(key: K): boolean {
-        return this.values.has(this.key.serialize(key));
+        return this._map.has(this._key.serialize(key));
     }
 
     set(key: K, value: V): this {
-        this.values.set(this.key.serialize(key), value)
+        this._map.set(this._key.serialize(key), value)
         return this;
     }
 
     delete(key: K) {
-        const k = this.key.serialize(key);
-        return this.values.delete(k)
+        const k = this._key.serialize(key);
+        return this._map.delete(k)
     }
 
     clear() {
-        this.values.clear();
+        this._map.clear();
     }
 
     *[Symbol.iterator](): IterableIterator<[K, V]> {
-        for (const [k, v] of this.values) {
-            const key = this.key.parse(k);
+        for (const [k, v] of this._map) {
+            const key = this._key.parse(k);
             yield [key, v]
         }
     }
 
+    keys() {
+        return Array.from(this._map.keys()).map((v) => this._key.parse(v));
+    }
+
+    values() {
+        return Array.from(this._map.values());
+    }
+
     store(builder: Builder) {
-        if (this.values.size === 0) {
+        if (this._map.size === 0) {
             builder.storeBit(0);
         } else {
             builder.storeBit(1);
             let dd = beginCell();
-            serializeDict(this.values, this.key.bits, this.value.serialize, dd);
+            serializeDict(this._map, this._key.bits, this._value.serialize, dd);
             builder.storeRef(dd.endCell());
         }
     }
 
     storeDirect(builder: Builder) {
-        if (this.values.size === 0) {
+        if (this._map.size === 0) {
             throw Error('Cannot store empty dictionary directly');
         }
-        serializeDict(this.values, this.key.bits, this.value.serialize, builder);
+        serializeDict(this._map, this._key.bits, this._value.serialize, builder);
     }
 }
 
@@ -249,6 +266,18 @@ function createUintKey(bits: number | null | undefined): DictionaryKey<bigint> {
         },
         parse: (src) => {
             return beginCell().storeUint(src, bt).endCell().beginParse().loadUintBig(bt);
+        }
+    }
+}
+
+function createBufferKey(bytes: number): DictionaryKey<Buffer> {
+    return {
+        bits: bytes * 8,
+        serialize: (src) => {
+            return beginCell().storeBuffer(src).endCell().beginParse().loadUintBig(bytes * 8);
+        },
+        parse: (src) => {
+            return beginCell().storeUint(src, bytes * 8).endCell().beginParse().loadBuffer(bytes);
         }
     }
 }

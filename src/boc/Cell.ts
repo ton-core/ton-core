@@ -93,6 +93,13 @@ export class Cell {
         this.mask = mask;
         this._depths = depths;
         this._hashes = hashes;
+
+        Object.freeze(this);
+        Object.freeze(this.refs);
+        Object.freeze(this.bits);
+        Object.freeze(this.mask);
+        Object.freeze(this._depths);
+        Object.freeze(this._hashes);
     }
 
     /**

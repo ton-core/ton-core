@@ -13,8 +13,8 @@ export class Slice {
     private _refs: Cell[];
 
     constructor(reader: BitReader, refs: Cell[]) {
-        this._reader = reader;
-        this._refs = refs;
+        this._reader = reader.clone();
+        this._refs = [...refs];
     }
 
     /**
@@ -419,7 +419,7 @@ export class Slice {
      * @returns cloned slice
      */
     clone() {
-        return new Slice(this._reader.clone(), [...this._refs]);
+        return new Slice(this._reader, this._refs);
     }
 
     /**
