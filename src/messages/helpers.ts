@@ -17,7 +17,7 @@ export function internal(src: {
     value: bigint | string,
     bounce?: Maybe<boolean>,
     init?: Maybe<{ code?: Maybe<Cell>, data?: Maybe<Cell> }>,
-    body?: Cell | string
+    body?: Maybe<Cell | string>
 }) {
 
     // Resolve bounce
@@ -67,7 +67,7 @@ export function internal(src: {
 export function external(src: {
     to: Address | string,
     init?: Maybe<{ code?: Maybe<Cell>, data?: Maybe<Cell> }>,
-    body?: Cell
+    body?: Maybe<Cell>
 }) {
 
     // Resolve address
