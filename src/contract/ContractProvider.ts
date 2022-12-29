@@ -10,5 +10,5 @@ export interface ContractProvider {
     getState(): Promise<AccountState>;
     get(name: string, args: TupleItem[]): Promise<{ stack: TupleReader }>;
     external(message: Cell): Promise<void>;
-    internal(via: Sender, args: { value: bigint | string, bounce?: Maybe<boolean>, sendMode?: SendMode, body?: Cell | string }): Promise<void>;
+    internal(via: Sender, args: { value: bigint | string, bounce?: Maybe<boolean>, sendMode?: SendMode, body?: Maybe<Cell | string> }): Promise<void>;
 }
