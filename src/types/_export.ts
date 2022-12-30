@@ -111,6 +111,16 @@ export {
     storeSplitMergeInfo
 } from './SplitMergeInfo';
 export {
+    StateInit,
+    loadStateInit,
+    storeStateInit
+} from './StateInit';
+export {
+    StorageInfo,
+    loadStorageInfo,
+    storeStorageInfo
+} from './StorageInto';
+export {
     StorageUsed,
     loadStorageUsed,
     storeStorageUsed
