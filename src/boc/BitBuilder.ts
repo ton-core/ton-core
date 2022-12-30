@@ -1,5 +1,7 @@
 import { Address } from "../address/Address";
 import { ExternalAddress } from "../address/ExternalAddress";
+import { bitsForNumber } from "../utils/bitsForNumber";
+import { Maybe } from "../utils/maybe";
 import { BitString } from "./BitString";
 
 /**
@@ -263,10 +265,10 @@ export class BitBuilder {
      * Write address
      * @param address write address or address external 
      */
-    writeAddress(address: Address | ExternalAddress | null) {
+    writeAddress(address: Maybe<Address | ExternalAddress>) {
 
         // Is empty address
-        if (address === null) {
+        if (address === null || address === undefined) {
             this.writeUint(0, 2); // Empty address
             return;
         }
@@ -283,7 +285,8 @@ export class BitBuilder {
         // Is External Address
         if (ExternalAddress.isAddress(address)) {
             this.writeUint(1, 2); // External address
-            this.writeVarUint(address.value, 9);
+            this.writeUint(address.bits, 9);
+            this.writeUint(address.value, address.bits);
             return;
         }
 

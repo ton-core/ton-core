@@ -400,6 +400,15 @@ export class Slice {
     }
 
     /**
+     * Checks if slice is empty
+     */
+    endParse() {
+        if (this.remainingBits > 0 || this.remainingRefs > 0) {
+            throw new Error("Slice is not empty");
+        }
+    }
+
+    /**
      * Convert slice to cell
      */
     asCell() {

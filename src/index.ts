@@ -35,7 +35,7 @@ export { StateInit } from './messages/StateInit';
 export { InternalMessage } from './messages/InternalMessage';
 export { ExternalMessage } from './messages/ExternalMessage';
 export { CommonMessageInfo } from './messages/CommonMessageInfo';
-export { SendMode } from './messages/SendMode';
+export { SendMode } from './types/SendMode';
 export { internal, external, comment } from './messages/helpers';
 
 export { CommentMessage } from './messages/CommentMessage';

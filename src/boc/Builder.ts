@@ -7,6 +7,7 @@ import { Cell } from "./Cell";
 import { Slice } from "./Slice";
 import { writeString } from "./utils/strings";
 import { Dictionary } from "../dict/Dictionary";
+import { Maybe } from "../utils/maybe";
 
 /**
  * Start building a cell
@@ -98,6 +99,22 @@ export class Builder {
     }
 
     /**
+     * Store maybe uint value
+     * @param value value as bigint or number, null or undefined
+     * @param bits number of bits to write
+     * @returns this builder
+     */
+    storeMaybeUint(value: Maybe<number | bigint>, bits: number) {
+        if (value !== null && value !== undefined) {
+            this.storeBit(1);
+            this.storeUint(value, bits);
+        } else {
+            this.storeBit(0);
+        }
+        return this;
+    }
+
+    /**
      * Store int value
      * @param value value as bigint or number
      * @param bits number of bits to write
@@ -105,6 +122,22 @@ export class Builder {
      */
     storeInt(value: bigint | number, bits: number) {
         this._bits.writeInt(value, bits);
+        return this;
+    }
+
+    /**
+     * Store maybe int value
+     * @param value value as bigint or number, null or undefined
+     * @param bits number of bits to write
+     * @returns this builder
+     */
+    storeMaybeInt(value: Maybe<number | bigint>, bits: number) {
+        if (value !== null && value !== undefined) {
+            this.storeBit(1);
+            this.storeInt(value, bits);
+        } else {
+            this.storeBit(0);
+        }
         return this;
     }
 
@@ -120,6 +153,22 @@ export class Builder {
     }
 
     /**
+     * Store maybe varuint value
+     * @param value value as bigint or number, null or undefined
+     * @param bits number of bits to write to header
+     * @returns this builder
+     */
+    storeMaybeVarUint(value: Maybe<number | bigint>, bits: number) {
+        if (value !== null && value !== undefined) {
+            this.storeBit(1);
+            this.storeVarUint(value, bits);
+        } else {
+            this.storeBit(0);
+        }
+        return this;
+    }
+
+    /**
      * Store varint value
      * @param value value as bigint or number
      * @param bits number of bits to write to header
@@ -127,6 +176,22 @@ export class Builder {
      */
     storeVarInt(value: number | bigint, bits: number) {
         this._bits.writeVarInt(value, bits);
+        return this;
+    }
+
+    /**
+     * Store maybe varint value
+     * @param value value as bigint or number, null or undefined
+     * @param bits number of bits to write to header
+     * @returns this builder
+     */
+    storeMaybeVarInt(value: Maybe<number | bigint>, bits: number) {
+        if (value !== null && value !== undefined) {
+            this.storeBit(1);
+            this.storeVarInt(value, bits);
+        } else {
+            this.storeBit(0);
+        }
         return this;
     }
 
@@ -141,11 +206,26 @@ export class Builder {
     }
 
     /**
+     * Store maybe coins value
+     * @param amount amount of coins, null or undefined
+     * @returns this builder
+     */
+    storeMaybeCoins(amount: Maybe<number | bigint>) {
+        if (amount !== null && amount !== undefined) {
+            this.storeBit(1);
+            this.storeCoins(amount);
+        } else {
+            this.storeBit(0);
+        }
+        return this;
+    }
+
+    /**
      * Store address
      * @param addres address to store 
      * @returns this builder
      */
-    storeAddress(address: Address | ExternalAddress | null) {
+    storeAddress(address: Maybe<Address | ExternalAddress>) {
         this._bits.writeAddress(address);
         return this;
     }
@@ -179,7 +259,7 @@ export class Builder {
      * @param cell cell or builder to store
      * @returns this builder
      */
-    storeMaybeRef(cell: Cell | Builder | null) {
+    storeMaybeRef(cell?: Maybe<Cell | Builder>) {
         if (cell) {
             this.storeBit(1);
             this.storeRef(cell);
@@ -209,7 +289,7 @@ export class Builder {
      * Store slice in this builder if not null
      * @param src source slice
      */
-    storeMaybeSlice(src: Slice | null) {
+    storeMaybeSlice(src?: Maybe<Slice>) {
         if (src) {
             this.storeBit(1);
             this.storeSlice(src);
@@ -233,7 +313,7 @@ export class Builder {
      * @param src builder to store
      * @returns this builder
      */
-    storeMaybeBuilder(src: Builder | null) {
+    storeMaybeBuilder(src?: Maybe<Builder>) {
         if (src) {
             this.storeBit(1);
             this.storeBuilder(src);
@@ -262,7 +342,7 @@ export class Builder {
      * @param writer writer or builder to store
      * @returns this builder
      */
-    storeMaybeWritable(writer: ((builder: Builder) => void) | Writable | null) {
+    storeMaybeWritable(writer?: Maybe<((builder: Builder) => void) | Writable>) {
         if (writer) {
             this.storeBit(1);
             this.storeWritable(writer);
@@ -296,8 +376,8 @@ export class Builder {
      * @param src source string
      * @returns this builder
      */
-    storeMaybeStringTail(src: string | null) {
-        if (src !== null) {
+    storeMaybeStringTail(src?: Maybe<string>) {
+        if (src !== null && src !== undefined) {
             this.storeBit(1);
             writeString(src, this);
         } else {
@@ -322,8 +402,8 @@ export class Builder {
      * @param src source string
      * @returns this builder
      */
-    storeMaybeStringRefTail(src: string | null) {
-        if (src !== null) {
+    storeMaybeStringRefTail(src?: Maybe<string | null>) {
+        if (src !== null && src !== undefined) {
             this.storeBit(1);
             this.storeStringRefTail(src);
         } else {
@@ -337,8 +417,12 @@ export class Builder {
      * @param dict dictionary to store
      * @returns this builder
      */
-    storeDict<K, V>(dict: Dictionary<K, V>) {
-        dict.store(this);
+    storeDict<K, V>(dict?: Maybe<Dictionary<K, V>>) {
+        if (dict) {
+            dict.store(this);
+        } else {
+            this.storeBit(0);
+        }
         return this;
     }
 

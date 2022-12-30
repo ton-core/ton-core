@@ -1,5 +1,5 @@
 import { Cell } from "../boc/Cell";
-import { SendMode } from "../messages/SendMode";
+import { SendMode } from "../types/SendMode";
 import { TupleReader } from "../tuple/reader";
 import { TupleItem } from "../tuple/tuple";
 import { Maybe } from "../utils/maybe";

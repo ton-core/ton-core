@@ -1,5 +1,6 @@
 import { randomInt } from 'crypto';
 import Prando from 'prando';
+import { ExternalAddress } from '../address/ExternalAddress';
 import { testAddress } from '../utils/testAddress';
 import { BitBuilder } from './BitBuilder';
 import { BitReader } from './BitReader';
@@ -151,6 +152,24 @@ describe('BitReader', () => {
                 expect(reader.loadMaybeAddress()).toBeNull();
             }
             expect(reader.loadAddress().toString()).toEqual(b.toString());
+        }
+    });
+
+    it('should read external address from builder', () => {
+        for (let i = 0; i < 1000; i++) {
+            let a = randomInt(20) === 0 ? new ExternalAddress(BigInt(randomInt(10000000000)), 48) : null;
+            let b = new ExternalAddress(BigInt(randomInt(10000000000)), 48);
+            let builder = new BitBuilder();
+            builder.writeAddress(a);
+            builder.writeAddress(b);
+            let bits = builder.build();
+            let reader = new BitReader(bits);
+            if (a) {
+                expect(reader.loadMaybeExternalAddress()!.toString()).toEqual(a.toString());
+            } else {
+                expect(reader.loadMaybeExternalAddress()).toBeNull();
+            }
+            expect(reader.loadExternalAddress().toString()).toEqual(b.toString());
         }
     });
 });

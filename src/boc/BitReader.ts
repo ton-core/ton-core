@@ -293,7 +293,7 @@ export class BitReader {
         if (type === 2) {
             return this._loadInternalAddress();
         } else {
-            throw new Error("Invalid address");
+            throw new Error("Invalid address: " + type);
         }
     }
 
@@ -484,14 +484,14 @@ export class BitReader {
         }
 
         // Load length
-        let l = this._preloadUint(9, this._offset + 2);
+        let bits = Number(this._preloadUint(9, this._offset + 2));
 
         // Load address
-        let value = this._preloadUint(Number(l), this._offset + 11);
+        let value = this._preloadUint(bits, this._offset + 11);
 
         // Update offset
-        this._offset += 11 + Number(l);
+        this._offset += 11 + bits;
 
-        return new ExternalAddress(value);
+        return new ExternalAddress(value, bits);
     }
 }

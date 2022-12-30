@@ -1,6 +1,6 @@
 import { Address } from "../address/Address";
 import { Cell } from "../boc/Cell";
-import { SendMode } from "../messages/SendMode";
+import { SendMode } from "../types/SendMode";
 import { Maybe } from "../utils/maybe";
 
 export type SenderArguments = {

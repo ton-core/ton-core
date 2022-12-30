@@ -1,0 +1,34 @@
+import { Builder } from "../boc/Builder";
+import { Slice } from "../boc/Slice";
+
+// acst_unchanged$0 = AccStatusChange;  // x -> x
+// acst_frozen$10 = AccStatusChange;    // init -> frozen
+// acst_deleted$11 = AccStatusChange;   // frozen -> deleted
+export type AccountStatusChange = 'unchanged' | 'frozen' | 'deleted';
+
+export function loadAccountStatusChange(slice: Slice): AccountStatusChange {
+    if (!slice.loadBit()) {
+        return 'unchanged';
+    }
+    if (slice.loadBit()) {
+        return 'frozen';
+    } else {
+        return 'deleted';
+    }
+}
+
+export function storeAccountStatusChange(src: AccountStatusChange) {
+    return (builder: Builder) => {
+        if (src == 'unchanged') {
+            builder.storeBit(0);
+        } else if (src === 'frozen') {
+            builder.storeBit(1);
+            builder.storeBit(0);
+        } else if (src === 'deleted') {
+            builder.storeBit(1);
+            builder.storeBit(1);
+        } else {
+            throw Error('Invalid account status change');
+        }
+    };
+}

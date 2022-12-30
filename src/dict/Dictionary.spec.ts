@@ -45,7 +45,7 @@ describe('Dictionary', () => {
         let ids: number[] = [0, 1, 2, 4, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 28, 29, 31, 32, 34, 71, 72, -999, -71];
         let keys = configs.keys();
         for (let i of ids) {
-            expect(keys).toContain(BigInt(i));
+            expect(keys).toContain(i);
             expect(configs.get(i)).not.toBeUndefined();
             expect(configs.has(i)).toBe(true);
         }
