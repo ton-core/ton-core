@@ -1,6 +1,7 @@
 import { Builder } from "../boc/Builder";
 import { Cell } from "../boc/Cell";
 import { Slice } from "../boc/Slice";
+import { Maybe } from "../utils/maybe";
 import { CommonMessageInfoRelaxed, loadCommonMessageInfoRelaxed, storeCommonMessageInfoRelaxed } from "./CommonMessageInfoRelaxed";
 import { loadStateInit, StateInit, storeStateInit } from "./StateInit";
 
@@ -8,9 +9,10 @@ import { loadStateInit, StateInit, storeStateInit } from "./StateInit";
 // message$_ {X:Type} info:CommonMsgInfoRelaxed
 //  init:(Maybe (Either StateInit ^StateInit))
 //  body:(Either X ^X) = MessageRelaxed X;
+
 export type MessageRelaxed = {
     info: CommonMessageInfoRelaxed,
-    init: StateInit | null,
+    init?: Maybe<StateInit>,
     body: Cell
 };
 

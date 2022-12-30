@@ -14,6 +14,8 @@ import { beginCell } from './Builder';
  */
 export class Cell {
 
+    static readonly EMPTY = new Cell();
+
     /**
      * Deserialize cells from BOC
      * @param src source buffer

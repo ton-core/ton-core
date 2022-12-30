@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+🔧 Big refactoring, removing obsolete `Message` type and adding new types for working with contracts and accounts.
+
+## Added
+- Add parsing of transactions, accounts and blocks
+
+## Removed
+- Remove old `Message` type and all relevant types
+
 ## [0.27.0] - 2022-12-29
 
 ## Fixed

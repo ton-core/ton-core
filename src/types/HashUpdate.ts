@@ -4,6 +4,7 @@ import { Slice } from "../boc/Slice";
 // Source: https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L273
 // update_hashes#72 {X:Type} old_hash:bits256 new_hash:bits256
 //  = HASH_UPDATE X;
+
 export type HashUpdate = { oldHash: Buffer, newHash: Buffer };
 
 export function loadHashUpdate(slice: Slice): HashUpdate {

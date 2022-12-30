@@ -8,6 +8,7 @@ import { AccountStatusChange, loadAccountStatusChange, storeAccountStatusChange 
 //   storage_fees_due:(Maybe Grams)
 //   status_change:AccStatusChange
 //   = TrStoragePhase;
+
 export type TransactionStoragePhase = {
     storageFeesCollected: bigint,
     storageFeesDue?: Maybe<bigint>,

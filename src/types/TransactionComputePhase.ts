@@ -1,3 +1,7 @@
+import { beginCell, Builder } from "../boc/Builder";
+import { Slice } from "../boc/Slice";
+import { Maybe } from "../utils/maybe";
+import { ComputeSkipReason, loadComputeSkipReason, storeComputeSkipReason } from "./ComputeSkipReason";
 
 // Source: https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L296
 // tr_phase_compute_skipped$0 reason:ComputeSkipReason
@@ -10,11 +14,6 @@
 //      vm_steps:uint32
 //      vm_init_state_hash:bits256 vm_final_state_hash:bits256 ]
 //   = TrComputePhase;
-
-import { beginCell, Builder } from "../boc/Builder";
-import { Slice } from "../boc/Slice";
-import { Maybe } from "../utils/maybe";
-import { ComputeSkipReason, loadComputeSkipReason, storeComputeSkipReason } from "./ComputeSkipReason";
 
 export type TransactionComputePhase = TransactionComputeSkipped | TransactionComputeVm;
 export type TransactionComputeSkipped = { type: 'skipped', reason: ComputeSkipReason };

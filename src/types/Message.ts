@@ -2,6 +2,7 @@ import { beginCell, Builder } from "../boc/Builder";
 import { Cell } from "../boc/Cell";
 import { Slice } from "../boc/Slice";
 import { DictionaryValue } from "../dict/Dictionary";
+import { Maybe } from "../utils/maybe";
 import { CommonMessageInfo, loadCommonMessageInfo, storeCommonMessageInfo } from "./CommonMessageInfo";
 import { loadStateInit, StateInit, storeStateInit } from "./StateInit";
 
@@ -9,9 +10,10 @@ import { loadStateInit, StateInit, storeStateInit } from "./StateInit";
 // message$_ {X:Type} info:CommonMsgInfo
 //  init:(Maybe (Either StateInit ^StateInit))
 //  body:(Either X ^X) = Message X;
+
 export type Message = {
     info: CommonMessageInfo,
-    init: StateInit | null,
+    init?: Maybe<StateInit>,
     body: Cell
 };
 

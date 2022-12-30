@@ -1,3 +1,10 @@
+import { Slice } from "../boc/Slice"
+import { Dictionary } from "../dict/Dictionary"
+import { Maybe } from "../utils/maybe"
+import { loadMasterchainStateExtra, MasterchainStateExtra } from "./MasterchainStateExtra"
+import { loadShardAccounts, ShardAccountRef } from "./ShardAccounts"
+import { loadShardIdent, ShardIdent } from "./ShardIdent"
+
 // Source: https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L396
 // shard_state#9023afe2 global_id:int32
 //  shard_id:ShardIdent 
@@ -15,8 +22,6 @@
 //  custom:(Maybe ^McStateExtra)
 //  = ShardStateUnsplit;
 
-import { ShardIdent } from "./ShardIdent"
-
 export type ShardStateUnsplit = {
     globalId: number,
     shardId: ShardIdent,
@@ -26,6 +31,53 @@ export type ShardStateUnsplit = {
     genLt: bigint,
     minRefMcSeqno: number,
     beforeSplit: boolean,
-    accounts: Map<string, RawShardAccountRef>,
-    extras: RawMasterChainStateExtra | null
+    accounts: Dictionary<bigint, ShardAccountRef>,
+    extras?: Maybe<MasterchainStateExtra>
+}
+
+export function loadShardStateUnsplit(cs: Slice): ShardStateUnsplit {
+    if (cs.loadUint(32) !== 0x9023afe2) {
+        throw Error('Invalid data');
+    }
+    let globalId = cs.loadInt(32);
+    let shardId = loadShardIdent(cs);
+    let seqno = cs.loadUint(32);
+    let vertSeqNo = cs.loadUint(32);
+    let genUtime = cs.loadUint(32);
+    let genLt = cs.loadUintBig(64);
+    let minRefMcSeqno = cs.loadUint(32);
+
+    // Skip OutMsgQueueInfo: usually exotic
+    cs.loadRef();
+
+    let beforeSplit = cs.loadBit();
+
+    // Parse accounts
+    let accounts = loadShardAccounts(cs.loadRef().beginParse());
+
+    // Skip (not used by apps)
+    cs.loadRef();
+
+    // Parse extras
+    let mcStateExtra = cs.loadBit();
+    let extras: MasterchainStateExtra | null = null;
+    if (mcStateExtra) {
+        let cell = cs.loadRef();
+        if (!cell.isExotic) {
+            extras = loadMasterchainStateExtra(cell.beginParse());
+        }
+    };
+
+    return {
+        globalId,
+        shardId,
+        seqno,
+        vertSeqNo,
+        genUtime,
+        genLt,
+        minRefMcSeqno,
+        beforeSplit,
+        accounts,
+        extras
+    }
 }

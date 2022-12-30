@@ -236,6 +236,18 @@ export class Slice {
     }
 
     /**
+     * Load maybe coins
+     * @returns coins value or null
+     */
+    loadMaybeCoins() {
+        if (this._reader.loadBit()) {
+            return this._reader.loadCoins();
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Load internal Address
      * @returns Address
      */

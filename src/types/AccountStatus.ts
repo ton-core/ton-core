@@ -6,6 +6,7 @@ import { Slice } from "../boc/Slice";
 // acc_state_frozen$01 = AccountStatus;
 // acc_state_active$10 = AccountStatus;
 // acc_state_nonexist$11 = AccountStatus;
+
 export type AccountStatus = 'uninitialized' | 'frozen' | 'active' | 'non-existing';
 
 /**

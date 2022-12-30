@@ -1,10 +1,9 @@
-
-// Source: https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L139
-
 import { Builder } from "../boc/Builder";
 import { Slice } from "../boc/Slice";
 
+// Source: https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L139
 // tick_tock$_ tick:Bool tock:Bool = TickTock;
+
 export type TickTock = {
     tick: boolean;
     tock: boolean;

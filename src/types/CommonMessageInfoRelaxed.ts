@@ -2,6 +2,7 @@ import { Address } from "../address/Address";
 import { ExternalAddress } from "../address/ExternalAddress";
 import { Builder } from "../boc/Builder";
 import { Slice } from "../boc/Slice";
+import { Maybe } from "../utils/maybe";
 import { CurrencyCollection, loadCurrencyCollection, storeCurrencyCollection } from "./CurrencyCollection";
 
 // Source: https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/block/block.tlb#L132
@@ -21,7 +22,7 @@ export type CommonMessageInfoRelaxedInternal = {
     ihrDisabled: boolean,
     bounce: boolean,
     bounced: boolean,
-    src: Address | null,
+    src?: Maybe<Address>,
     dest: Address,
     value: CurrencyCollection,
     ihrFee: bigint,
@@ -32,8 +33,8 @@ export type CommonMessageInfoRelaxedInternal = {
 
 export type CommonMessageInfoRelaxedExternalOut = {
     type: 'external-out',
-    src: Address | null,
-    dest: ExternalAddress | null,
+    src?: Maybe<Address>,
+    dest?: Maybe<ExternalAddress>,
     createdLt: bigint,
     createdAt: number
 };

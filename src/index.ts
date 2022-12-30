@@ -29,19 +29,8 @@ export { Tuple, TupleItem, TupleNull, TupleInt, TupleNaN, TupleCell, TupleBuilde
 export { parseTuple, serializeTuple } from './tuple/tuple';
 export { TupleReader } from './tuple/reader';
 
-// Messages
-export { Message } from './messages/Message';
-export { StateInit } from './messages/StateInit';
-export { InternalMessage } from './messages/InternalMessage';
-export { ExternalMessage } from './messages/ExternalMessage';
-export { CommonMessageInfo } from './messages/CommonMessageInfo';
-export { SendMode } from './types/SendMode';
-export { internal, external, comment } from './messages/helpers';
-
-export { CommentMessage } from './messages/CommentMessage';
-export { EmptyMessage } from './messages/EmptyMessage';
-export { CellMessage } from './messages/CellMessage';
-export { BufferMessage } from './messages/BufferMessage';
+// Types
+export * from './types/_export';
 
 // Contract
 export { Contract } from './contract/Contract';

@@ -4,6 +4,7 @@ import { Slice } from "../boc/Slice";
 // acst_unchanged$0 = AccStatusChange;  // x -> x
 // acst_frozen$10 = AccStatusChange;    // init -> frozen
 // acst_deleted$11 = AccStatusChange;   // frozen -> deleted
+
 export type AccountStatusChange = 'unchanged' | 'frozen' | 'deleted';
 
 export function loadAccountStatusChange(slice: Slice): AccountStatusChange {
