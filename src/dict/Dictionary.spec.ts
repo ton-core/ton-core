@@ -26,9 +26,9 @@ describe('Dictionary', () => {
 
         // Unpack
         let dict = Dictionary.loadDirect(Dictionary.Keys.Uint(16), Dictionary.Values.Uint(16), root.beginParse());
-        expect(dict.get(13n)).toBe(169n);
-        expect(dict.get(17n)).toBe(289n);
-        expect(dict.get(239n)).toBe(57121n);
+        expect(dict.get(13)).toBe(169);
+        expect(dict.get(17)).toBe(289);
+        expect(dict.get(239)).toBe(57121);
 
         // Pack
         let builder = beginCell();
@@ -46,8 +46,8 @@ describe('Dictionary', () => {
         let keys = configs.keys();
         for (let i of ids) {
             expect(keys).toContain(BigInt(i));
-            expect(configs.get(BigInt(i))).not.toBeUndefined();
-            expect(configs.has(BigInt(i))).toBe(true);
+            expect(configs.get(i)).not.toBeUndefined();
+            expect(configs.has(i)).toBe(true);
         }
     });
 
@@ -55,7 +55,7 @@ describe('Dictionary', () => {
         let cell = Cell.fromBoc(Buffer.from(fs.readFileSync(__dirname + '/__testdata__/config.txt', 'utf-8'), 'base64'))[0];
         let configs = cell.beginParse().loadDictDirect(Dictionary.Keys.Int(32), Dictionary.Values.Cell());
 
-        for (let i of [71n, 72n]) {
+        for (let i of [71, 72]) {
             let r = configs.get(i)!;
             let config = r.beginParse();
             let bridgeAddress = config.loadBuffer(32);

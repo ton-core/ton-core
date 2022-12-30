@@ -29,20 +29,38 @@ export class Dictionary<K, V> {
         },
 
         /**
-         * Create standard integer key
-         * @param bits number of bits. Default is 257.
+         * Create standard big integer key
+         * @param bits number of bits
          * @returns DictionaryKey<bigint>
          */
-        Int: (bits?: number | null | undefined) => {
+        BigInt: (bits: number) => {
+            return createBigIntKey(bits);
+        },
+
+        /**
+         * Create integer key
+         * @param bits bits of integer
+         * @returns DictionaryKey<number>
+         */
+        Int: (bits: number) => {
             return createIntKey(bits);
         },
 
         /**
-         * Create standard unsigned integer key
-         * @param bits number of bits. Default is 256.
+         * Create standard unsigned big integer key
+         * @param bits number of bits
          * @returns DictionaryKey<bigint>
          */
-        Uint: (bits?: number | null | undefined) => {
+        BigUint: (bits: number) => {
+            return createBigUintKey(bits);
+        },
+
+        /**
+         * Create standard unsigned integer key
+         * @param bits number of bits
+         * @returns DictionaryKey<number>
+         */
+        Uint: (bits: number) => {
             return createUintKey(bits);
         },
 
@@ -57,22 +75,57 @@ export class Dictionary<K, V> {
     }
 
     static Values = {
+
         /**
          * Create standard integer value
-         * @param bits number of bits. Default is 257.
          * @returns DictionaryValue<bigint>
          */
-        Int: (bits?: number | null | undefined) => {
+        BigInt: (bits: number) => {
+            return createBigIntValue(bits);
+        },
+
+        /**
+         * Create standard integer value
+         * @returns DictionaryValue<number>
+         */
+        Int: (bits: number) => {
             return createIntValue(bits);
         },
 
         /**
-         * Create standard unsigned integer value
-         * @param bits number of bits. Default is 256.
+         * Create big var int
+         * @param bits nubmer of header bits
          * @returns DictionaryValue<bigint>
          */
-        Uint: (bits?: number | null | undefined) => {
+        BigVarInt: (bits: number) => {
+            return createBigVarIntValue(bits);
+        },
+
+        /**
+         * Create standard unsigned integer value
+         * @param bits number of bits
+         * @returns DictionaryValue<bigint>
+         */
+        BigUint: (bits: number) => {
+            return createBigUintValue(bits);
+        },
+
+        /**
+         * Create standard unsigned integer value
+         * @param bits number of bits
+         * @returns DictionaryValue<bigint>
+         */
+        Uint: (bits: number) => {
             return createUintValue(bits);
+        },
+
+        /**
+         * Create big var int
+         * @param bits nubmer of header bits
+         * @returns DictionaryValue<bigint>
+         */
+        BigVarUint: (bits: number) => {
+            return createBigVarUintValue(bits);
         },
 
         /**
@@ -137,7 +190,7 @@ export class Dictionary<K, V> {
      */
     static load<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>, sc: Slice): Dictionary<K, V> {
         let cell = sc.loadMaybeRef();
-        if (cell) {
+        if (cell && !cell.isExotic) {
             return Dictionary.loadDirect<K, V>(key, value, cell.beginParse());
         } else {
             return Dictionary.empty<K, V>(key, value);
@@ -244,28 +297,50 @@ function createAddressKey(): DictionaryKey<Address> {
     }
 }
 
-function createIntKey(bits: number | null | undefined): DictionaryKey<bigint> {
-    const bt = (bits === null || bits === undefined) ? 257 : bits;
+function createBigIntKey(bits: number): DictionaryKey<bigint> {
     return {
-        bits: bt,
+        bits,
         serialize: (src) => {
-            return beginCell().storeInt(src, bt).endCell().beginParse().loadUintBig(bt);
+            return beginCell().storeInt(src, bits).endCell().beginParse().loadUintBig(bits);
         },
         parse: (src) => {
-            return beginCell().storeUint(src, bt).endCell().beginParse().loadIntBig(bt);
+            return beginCell().storeUint(src, bits).endCell().beginParse().loadIntBig(bits);
         }
     }
 }
 
-function createUintKey(bits: number | null | undefined): DictionaryKey<bigint> {
-    const bt = (bits === null || bits === undefined) ? 256 : bits;
+function createIntKey(bits: number): DictionaryKey<number> {
     return {
-        bits: bt,
+        bits: bits,
         serialize: (src) => {
-            return beginCell().storeUint(src, bt).endCell().beginParse().loadUintBig(bt);
+            return beginCell().storeInt(src, bits).endCell().beginParse().loadUintBig(bits);
         },
         parse: (src) => {
-            return beginCell().storeUint(src, bt).endCell().beginParse().loadUintBig(bt);
+            return beginCell().storeUint(src, bits).endCell().beginParse().loadInt(bits);
+        }
+    }
+}
+
+function createBigUintKey(bits: number): DictionaryKey<bigint> {
+    return {
+        bits,
+        serialize: (src) => {
+            return beginCell().storeUint(src, bits).endCell().beginParse().loadUintBig(bits);
+        },
+        parse: (src) => {
+            return beginCell().storeUint(src, bits).endCell().beginParse().loadUintBig(bits);
+        }
+    }
+}
+
+function createUintKey(bits: number): DictionaryKey<number> {
+    return {
+        bits,
+        serialize: (src) => {
+            return beginCell().storeUint(src, bits).endCell().beginParse().loadUintBig(bits);
+        },
+        parse: (src) => {
+            return Number(beginCell().storeUint(src, bits).endCell().beginParse().loadUint(bits));
         }
     }
 }
@@ -282,26 +357,68 @@ function createBufferKey(bytes: number): DictionaryKey<Buffer> {
     }
 }
 
-function createIntValue(bits: number | null | undefined): DictionaryValue<bigint> {
-    const bt = (bits === null || bits === undefined) ? 257 : bits;
+function createIntValue(bits: number): DictionaryValue<number> {
     return {
         serialize: (src, buidler) => {
-            buidler.storeInt(src, bt);
+            buidler.storeInt(src, bits);
         },
         parse: (src) => {
-            return src.loadIntBig(bt);
+            return src.loadInt(bits);
         }
     }
 }
 
-function createUintValue(bits: number | null | undefined): DictionaryValue<bigint> {
-    const bt = (bits === null || bits === undefined) ? 256 : bits;
+function createBigIntValue(bits: number): DictionaryValue<bigint> {
     return {
         serialize: (src, buidler) => {
-            buidler.storeUint(src, bt);
+            buidler.storeInt(src, bits);
         },
         parse: (src) => {
-            return src.loadUintBig(bt);
+            return src.loadIntBig(bits);
+        }
+    }
+}
+
+function createBigVarIntValue(bits: number): DictionaryValue<bigint> {
+    return {
+        serialize: (src, buidler) => {
+            buidler.storeVarInt(src, bits);
+        },
+        parse: (src) => {
+            return src.loadVarIntBig(bits);
+        }
+    }
+}
+
+function createBigVarUintValue(bits: number): DictionaryValue<bigint> {
+    return {
+        serialize: (src, buidler) => {
+            buidler.storeVarUint(src, bits);
+        },
+        parse: (src) => {
+            return src.loadVarUintBig(bits);
+        }
+    }
+}
+
+function createUintValue(bits: number): DictionaryValue<number> {
+    return {
+        serialize: (src, buidler) => {
+            buidler.storeUint(src, bits);
+        },
+        parse: (src) => {
+            return src.loadUint(bits);
+        }
+    }
+}
+
+function createBigUintValue(bits: number): DictionaryValue<bigint> {
+    return {
+        serialize: (src, buidler) => {
+            buidler.storeUint(src, bits);
+        },
+        parse: (src) => {
+            return src.loadUintBig(bits);
         }
     }
 }

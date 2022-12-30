@@ -273,6 +273,15 @@ export class Builder {
     }
 
     /**
+     * Store object in this builder
+     * @param writer Writable or writer functuin
+     */
+    store(writer: ((builder: Builder) => void) | Writable) {
+        this.storeWritable(writer);
+        return this;
+    }
+
+    /**
      * Store string tail
      * @param src source string
      * @returns this builder
