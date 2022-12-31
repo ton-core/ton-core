@@ -35,7 +35,7 @@ export * from './types/_export';
 // Contract
 export { Contract } from './contract/Contract';
 export { ContractProvider } from './contract/ContractProvider';
-export { AccountState } from './contract/AccountState';
+export { ContractState } from './contract/ContractState';
 export { Sender, SenderArguments } from './contract/Sender';
 export { openContract } from './contract/openContract';
 
