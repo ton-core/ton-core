@@ -94,7 +94,7 @@ describe('boc', () => {
         let full = deserializeBoc(fullBoc)[0];
         expect(pruned.isExotic).toBe(true);
         expect(pruned.type).toBe(CellType.MerkleProof);
-        let prunedData = pruned.beginParse().loadRef();
+        let prunedData = pruned.beginParse(true).loadRef();
 
         // Load refs
         let sc = full.beginParse();

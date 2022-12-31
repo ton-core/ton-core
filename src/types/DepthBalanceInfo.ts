@@ -11,8 +11,9 @@ export type DepthBalanceInfo = {
 };
 
 export function loadDepthBalanceInfo(slice: Slice): DepthBalanceInfo {
+    let splitDepth = slice.loadUint(5);
     return {
-        splitDepth: slice.loadUint(5),
+        splitDepth,
         balance: loadCurrencyCollection(slice)
     };
 }

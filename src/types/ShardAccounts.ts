@@ -22,8 +22,8 @@ export const ShardAccountRefValue: DictionaryValue<ShardAccountRef> = {
         }
     },
     serialize(src, builder) {
-        builder.store(storeShardAccount(src.shardAccount));
         builder.store(storeDepthBalanceInfo(src.depthBalanceInfo));
+        builder.store(storeShardAccount(src.shardAccount));
     },
 };
 

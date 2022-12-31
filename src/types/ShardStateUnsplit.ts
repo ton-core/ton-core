@@ -2,6 +2,7 @@ import { Slice } from "../boc/Slice"
 import { Dictionary } from "../dict/Dictionary"
 import { Maybe } from "../utils/maybe"
 import { loadMasterchainStateExtra, MasterchainStateExtra } from "./MasterchainStateExtra"
+import { ShardAccount } from "./ShardAccount"
 import { loadShardAccounts, ShardAccountRef } from "./ShardAccounts"
 import { loadShardIdent, ShardIdent } from "./ShardIdent"
 
@@ -31,7 +32,7 @@ export type ShardStateUnsplit = {
     genLt: bigint,
     minRefMcSeqno: number,
     beforeSplit: boolean,
-    accounts: Dictionary<bigint, ShardAccountRef>,
+    accounts?: Maybe<Dictionary<bigint, ShardAccountRef>>,
     extras?: Maybe<MasterchainStateExtra>
 }
 
@@ -53,7 +54,11 @@ export function loadShardStateUnsplit(cs: Slice): ShardStateUnsplit {
     let beforeSplit = cs.loadBit();
 
     // Parse accounts
-    let accounts = loadShardAccounts(cs.loadRef().beginParse());
+    let shardAccountsRef = cs.loadRef();
+    let accounts: Dictionary<bigint, ShardAccountRef> | undefined = undefined;
+    if (!shardAccountsRef.isExotic) {
+        accounts = loadShardAccounts(shardAccountsRef.beginParse());
+    }
 
     // Skip (not used by apps)
     cs.loadRef();

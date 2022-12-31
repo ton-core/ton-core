@@ -115,7 +115,10 @@ export class Cell {
      * Beging cell parsing
      * @returns a new slice
      */
-    beginParse = () => {
+    beginParse = (allowExotic: boolean = false) => {
+        if (this.isExotic && !allowExotic) {
+            throw new Error("Exotic cells cannot be parsed");
+        }
         return new Slice(new BitReader(this.bits), this.refs);
     }
 
@@ -171,7 +174,17 @@ export class Cell {
      */
     toString(indent?: string): string {
         let id = indent || '';
-        let s = id + (this.isExotic ? 'e' : 'x') + '{' + this.bits.toString() + '}';
+        let t = 'x';
+        if (this.isExotic) {
+            if (this.type === CellType.MerkleProof) {
+                t = 'p';
+            } else if (this.type === CellType.MerkleUpdate) {
+                t = 'u';
+            } else if (this.type === CellType.PrunedBranch) {
+                t = 'p';
+            }
+        }
+        let s = id + (this.isExotic ? t : 'x') + '{' + this.bits.toString() + '}';
         for (let k in this.refs) {
             const i = this.refs[k];
             s += '\n' + i.toString(id + ' ');

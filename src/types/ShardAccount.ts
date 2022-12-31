@@ -14,9 +14,17 @@ export type ShardAccount = {
 };
 
 export function loadShardAccount(slice: Slice): ShardAccount {
-    let accSc = slice.loadRef().beginParse();
+    let accountRef = slice.loadRef();
+    let account: Account | undefined = undefined;
+    if (!accountRef.isExotic) {
+        let accountSlice = accountRef.beginParse();
+        if (accountSlice.loadBit()) {
+            account = loadAccount(accountSlice);
+        }
+    }
+    
     return {
-        account: accSc.loadBit() ? loadAccount(accSc) : undefined,
+        account,
         lastTransactionHash: slice.loadUintBig(256),
         lastTransactionLt: slice.loadUintBig(64)
     };
