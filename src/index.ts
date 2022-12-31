@@ -37,12 +37,14 @@ export { Contract } from './contract/Contract';
 export { ContractProvider } from './contract/ContractProvider';
 export { AccountState } from './contract/AccountState';
 export { Sender, SenderArguments } from './contract/Sender';
+export { openContract } from './contract/openContract';
 
 // Utility
 export { toNano, fromNano } from './utils/convert';
 export { crc16 } from './utils/crc16';
 export { crc32c } from './utils/crc32c';
 export { base32Decode, base32Encode } from './utils/base32';
+export { getMethodId } from './utils/getMethodId';
 
 // Crypto
 export { safeSign, safeSignVerify } from './crypto/safeSign';
