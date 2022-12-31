@@ -1,4 +1,4 @@
-import { Builder } from "../boc/Builder";
+import { beginCell, Builder } from "../boc/Builder";
 import { Slice } from "../boc/Slice";
 import { Maybe } from "../utils/maybe";
 import { Account, loadAccount, storeAccount } from "./Account";
@@ -22,7 +22,7 @@ export function loadShardAccount(slice: Slice): ShardAccount {
             account = loadAccount(accountSlice);
         }
     }
-    
+
     return {
         account,
         lastTransactionHash: slice.loadUintBig(256),
@@ -33,10 +33,14 @@ export function loadShardAccount(slice: Slice): ShardAccount {
 export function storeShardAccount(src: ShardAccount) {
     return (builder: Builder) => {
         if (src.account) {
-            builder.storeBit(true);
-            builder.store(storeAccount(src.account));
+            builder.storeRef(beginCell()
+                .storeBit(true)
+                .store(storeAccount(src.account))
+            );
         } else {
-            builder.storeBit(false);
+            builder.storeRef(beginCell()
+                .storeBit(false)
+            );
         }
         builder.storeUint(src.lastTransactionHash, 256);
         builder.storeUint(src.lastTransactionLt, 64);

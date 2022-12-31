@@ -16,7 +16,7 @@ export type StorageInfo = {
 export function loadStorageInfo(slice: Slice): StorageInfo {
     return {
         used: loadStorageUsed(slice),
-        lastPaid: slice.loadUint(4),
+        lastPaid: slice.loadUint(32),
         duePayment: slice.loadMaybeCoins()
     };
 }
@@ -24,7 +24,7 @@ export function loadStorageInfo(slice: Slice): StorageInfo {
 export function storeStorageInfo(src: StorageInfo) {
     return (builder: Builder) => {
         builder.store(storeStorageUsed(src.used));
-        builder.storeUint(src.lastPaid, 4);
+        builder.storeUint(src.lastPaid, 32);
         builder.storeMaybeCoins(src.duePayment);
     };
 }
