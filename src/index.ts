@@ -38,6 +38,7 @@ export { ContractProvider } from './contract/ContractProvider';
 export { ContractState } from './contract/ContractState';
 export { Sender, SenderArguments } from './contract/Sender';
 export { openContract } from './contract/openContract';
+export { ComputeError } from './contract/ComputeError';
 
 // Utility
 export { toNano, fromNano } from './utils/convert';
