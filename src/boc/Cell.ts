@@ -46,7 +46,7 @@ export class Cell {
         // Resolve refs
         let refs: Cell[] = [];
         if (opts && opts.refs) {
-            refs = opts.refs;
+            refs = [...opts.refs];
         }
 
         // Resolve type

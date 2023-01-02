@@ -1,4 +1,4 @@
-import { Builder } from "../boc/Builder";
+import { beginCell, Builder } from "../boc/Builder";
 import { Cell } from "../boc/Cell";
 import { Slice } from "../boc/Slice";
 import { Maybe } from "../utils/maybe";
@@ -44,7 +44,14 @@ export function storeMessageRelaxed(message: MessageRelaxed, opts?: { forceRef?:
         // Store init
         if (message.init) {
             builder.storeBit(true);
-            builder.store(storeStateInit(message.init));
+            let initCell = beginCell().store(storeStateInit(message.init));
+            if (builder.availableBits - 2 /* At least on byte for body */ >= initCell.bits) {
+                builder.storeBit(false);
+                builder.storeBuilder(initCell);
+            } else {
+                builder.storeBit(true);
+                builder.storeRef(initCell);
+            }
         } else {
             builder.storeBit(false);
         }
