@@ -1,7 +1,7 @@
 import { Maybe } from "../utils/maybe";
 
 export class ComputeError extends Error {
-    exitCode: number | null;
+    exitCode: number;
     debugLogs: string | null;
     logs: string | null;
 
