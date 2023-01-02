@@ -193,7 +193,6 @@ export function parseTuple(src: Cell): TupleItem[] {
     let res: TupleItem[] = [];
     let cs = src.beginParse();
     let size = cs.loadUint(24);
-    console.warn(size);
     for (let i = 0; i < size; i++) {
         let next = cs.loadRef();
         res.unshift(parseStackItem(cs));
