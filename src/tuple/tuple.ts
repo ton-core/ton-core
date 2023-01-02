@@ -126,10 +126,10 @@ function parseStackItem(cs: Slice): TupleItem {
         // Copy refs if exist
         if (startRefs < endRefs) {
             for (let i = 0; i < startRefs; i++) {
-                cs.loadRef();
+                rs.loadRef();
             }
             for (let i = 0; i < endRefs - startRefs; i++) {
-                builder.storeRef(cs.loadRef());
+                builder.storeRef(rs.loadRef());
             }
         }
 
@@ -193,6 +193,7 @@ export function parseTuple(src: Cell): TupleItem[] {
     let res: TupleItem[] = [];
     let cs = src.beginParse();
     let size = cs.loadUint(24);
+    console.warn(size);
     for (let i = 0; i < size; i++) {
         let next = cs.loadRef();
         res.unshift(parseStackItem(cs));
