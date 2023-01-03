@@ -11,6 +11,13 @@ export class TupleReader {
         return this.items.length;
     }
 
+    peek() {
+        if (this.items.length === 0) {
+            throw Error('EOF');
+        }
+        return this.items[0];
+    }
+
     pop() {
         if (this.items.length === 0) {
             throw Error('EOF');
