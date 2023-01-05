@@ -39,7 +39,17 @@ export { ContractState } from './contract/ContractState';
 export { Sender, SenderArguments } from './contract/Sender';
 export { openContract } from './contract/openContract';
 export { ComputeError } from './contract/ComputeError';
-export { ContractABI, ABIError } from './contract/ContractABI';
+export {
+    ContractABI,
+    ABIError,
+    ABITypeRef,
+    ABIField,
+    ABIArgument,
+    ABIGetter,
+    ABIType,
+    ABIReceiverMessage,
+    ABIReceiver
+} from './contract/ContractABI';
 
 // Utility
 export { toNano, fromNano } from './utils/convert';
