@@ -57,6 +57,26 @@ export class Slice {
     }
 
     /**
+     * Load a boolean
+     * @returns true or false depending on the bit value
+     */
+    loadBoolean() {
+        return this.loadBit();
+    }
+
+    /**
+     * Load maybe boolean
+     * @returns true or false depending on the bit value or null
+     */
+    loadMaybeBoolean() {
+        if (this.loadBit()) {
+            return this.loadBoolean();
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Load bits as a new BitString
      * @param bits number of bits to read
      * @returns new BitString
@@ -111,6 +131,32 @@ export class Slice {
     }
 
     /**
+     * Load maybe uint
+     * @param bits number of bits to read
+     * @returns uint value or null
+     */
+    loadMaybeUint(bits: number) {
+        if (this.loadBit()) {
+            return this.loadUint(bits);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Load maybe uint
+     * @param bits number of bits to read
+     * @returns uint value or null
+     */
+    loadMaybeUintBig(bits: number) {
+        if (this.loadBit()) {
+            return this.loadUintBig(bits);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Load int
      * @param bits number of bits to read 
      * @returns int value
@@ -144,6 +190,32 @@ export class Slice {
      */
     preloadIntBig(bits: number) {
         return this._reader.preloadIntBig(bits);
+    }
+
+    /**
+     * Load maybe uint
+     * @param bits number of bits to read
+     * @returns uint value or null
+     */
+    loadMaybeInt(bits: number) {
+        if (this.loadBit()) {
+            return this.loadInt(bits);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Load maybe uint
+     * @param bits number of bits to read
+     * @returns uint value or null
+     */
+    loadMaybeIntBig(bits: number) {
+        if (this.loadBit()) {
+            return this.loadIntBig(bits);
+        } else {
+            return null;
+        }
     }
 
     /**

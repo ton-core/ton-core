@@ -80,10 +80,32 @@ export class Builder {
     /**
      * Store Buffer
      * @param src source buffer
+     * @param bytes optional number of bytes to write
      * @returns this builder
      */
-    storeBuffer(src: Buffer) {
+    storeBuffer(src: Buffer, bytes?: Maybe<number>) {
+        if (bytes !== undefined && bytes !== null) {
+            if (src.length !== bytes) {
+                throw Error(`Buffer length ${src.length} is not equal to ${bytes}`);
+            }
+        }
         this._bits.writeBuffer(src);
+        return this;
+    }
+
+    /**
+     * Store Maybe Buffer
+     * @param src source buffer or null
+     * @param bytes optional number of bytes to write
+     * @returns this builder
+     */
+    storeMaybeBuffer(src: Buffer | null, bytes?: Maybe<number>) {
+        if (src !== null) {
+            this.storeBit(1);
+            this.storeBuffer(src, bytes);
+        } else {
+            this.storeBit(0);
+        }
         return this;
     }
 
