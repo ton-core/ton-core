@@ -1,3 +1,4 @@
+import { Address } from "../address/Address";
 import { beginCell } from "../boc/Builder";
 import { Cell } from "../boc/Cell";
 import { Slice } from "../boc/Slice";
@@ -80,6 +81,14 @@ export class TupleBuilder {
             this._tuple.push({ type: 'null' });
         } else {
             this._tuple.push({ type: 'tuple', items: v });
+        }
+    }
+
+    writeAddress(v?: Maybe<Address>) {
+        if (v === null || v === undefined) {
+            this._tuple.push({ type: 'null' });
+        } else {
+            this._tuple.push({ type: 'slice', cell: beginCell().storeAddress(v).endCell() });
         }
     }
 
