@@ -6,13 +6,13 @@ const INT64_MIN = BigInt('-9223372036854775808');
 const INT64_MAX = BigInt('9223372036854775807');
 
 export type Tuple = { type: 'tuple', items: TupleItem[] };
-export type TupleNull = { type: 'null' };
-export type TupleInt = { type: 'int', value: bigint };
-export type TupleNaN = { type: 'nan' };
-export type TupleCell = { type: 'cell', cell: Cell };
-export type TupleSlice = { type: 'slice', cell: Cell };
-export type TupleBuilder = { type: 'builder', cell: Cell };
-export type TupleItem = TupleNull | TupleInt | TupleNaN | TupleCell | TupleSlice | TupleBuilder | Tuple;
+export type TupleItemNull = { type: 'null' };
+export type TupleItemInt = { type: 'int', value: bigint };
+export type TupleItemNaN = { type: 'nan' };
+export type TupleItemCell = { type: 'cell', cell: Cell };
+export type TupleItemSlice = { type: 'slice', cell: Cell };
+export type TupleItemBuilder = { type: 'builder', cell: Cell };
+export type TupleItem = TupleItemNull | TupleItemInt | TupleItemNaN | TupleItemCell | TupleItemSlice | TupleItemBuilder | Tuple;
 
 // vm_stk_null#00 = VmStackValue;
 // vm_stk_tinyint#01 value:int64 = VmStackValue;
