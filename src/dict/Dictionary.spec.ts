@@ -30,13 +30,23 @@ describe('Dictionary', () => {
         expect(dict.get(17)).toBe(289);
         expect(dict.get(239)).toBe(57121);
 
+        // Empty
+        let fromEmpty = Dictionary.empty<number, number>();
+        fromEmpty.set(13, 169);
+        fromEmpty.set(17, 289);
+        fromEmpty.set(239, 57121);
+
         // Pack
-        let builder = beginCell();
-        dict.storeDirect(builder);
-        let packed = builder.endCell();
+        let packed = beginCell()
+            .storeDictDirect(dict)
+            .endCell();
+        let packed2 = beginCell()
+            .storeDictDirect(fromEmpty, Dictionary.Keys.Uint(16), Dictionary.Values.Uint(16))
+            .endCell();
 
         // Compare
         expect(packed.equals(root)).toBe(true);
+        expect(packed2.equals(root)).toBe(true);
     });
 
     it('should parse config', () => {
@@ -60,7 +70,7 @@ describe('Dictionary', () => {
             let config = r.beginParse();
             let bridgeAddress = config.loadBuffer(32);
             let oracleMultisigAddress = config.loadBuffer(32);
-            let oracles = config.loadDict(Dictionary.Keys.Uint(256), Dictionary.Values.Buffer(32));
+            let oracles = config.loadDict(Dictionary.Keys.BigUint(256), Dictionary.Values.Buffer(32));
             let externalChainAddress = config.loadBuffer(32);
             // console.warn(oracles);
         }

@@ -2,10 +2,14 @@ import { Address } from "../address/Address";
 import { beginCell, Builder } from "../boc/Builder";
 import { Cell } from "../boc/Cell";
 import { Slice } from "../boc/Slice";
+import { Maybe } from "../utils/maybe";
 import { parseDict } from "./parseDict";
 import { serializeDict } from "./serializeDict";
+import { deserializeInternalKey, serializeInternalKey } from "./utils/internalKeySerializer";
 
-export type DictionaryKey<K> = {
+export type DictionaryKeyTypes = Address | number | bigint | Buffer;
+
+export type DictionaryKey<K extends DictionaryKeyTypes> = {
     bits: number;
     serialize(src: K): bigint;
     parse(src: bigint): K;
@@ -16,8 +20,7 @@ export type DictionaryValue<V> = {
     parse(src: Slice): V;
 }
 
-
-export class Dictionary<K, V> {
+export class Dictionary<K extends DictionaryKeyTypes, V> {
     static Keys = {
 
         /**
@@ -166,7 +169,7 @@ export class Dictionary<K, V> {
          * @param key 
          * @param value 
          */
-        Dictionary: <K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>) => {
+        Dictionary: <K extends DictionaryKeyTypes, V>(key: DictionaryKey<K>, value: DictionaryValue<V>) => {
             return createDictionaryValue(key, value);
         }
     };
@@ -177,8 +180,12 @@ export class Dictionary<K, V> {
      * @param value value type
      * @returns Dictionary<K, V>
      */
-    static empty<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>): Dictionary<K, V> {
-        return new Dictionary<K, V>(key, value, new Map());
+    static empty<K extends DictionaryKeyTypes, V>(key?: Maybe<DictionaryKey<K>>, value?: Maybe<DictionaryValue<V>>): Dictionary<K, V> {
+        if (key && value) {
+            return new Dictionary<K, V>(new Map(), key, value);
+        } else {
+            return new Dictionary<K, V>(new Map(), null, null);
+        }
     }
 
     /**
@@ -188,7 +195,7 @@ export class Dictionary<K, V> {
      * @param src slice
      * @returns Dictionary<K, V>
      */
-    static load<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>, sc: Slice): Dictionary<K, V> {
+    static load<K extends DictionaryKeyTypes, V>(key: DictionaryKey<K>, value: DictionaryValue<V>, sc: Slice): Dictionary<K, V> {
         let cell = sc.loadMaybeRef();
         if (cell && !cell.isExotic) {
             return Dictionary.loadDirect<K, V>(key, value, cell.beginParse());
@@ -206,16 +213,20 @@ export class Dictionary<K, V> {
      * @param sc slice
      * @returns Dictionary<K, V>
      */
-    static loadDirect<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>, sc: Slice): Dictionary<K, V> {
+    static loadDirect<K extends DictionaryKeyTypes, V>(key: DictionaryKey<K>, value: DictionaryValue<V>, sc: Slice): Dictionary<K, V> {
         let values = parseDict(sc, key.bits, value.parse);
-        return new Dictionary(key, value, values);
+        let prepare = new Map<string, V>();
+        for (let [k, v] of values) {
+            prepare.set(serializeInternalKey(key.parse(k)), v);
+        }
+        return new Dictionary(prepare, key, value);
     }
 
-    private readonly _key: DictionaryKey<K>;
-    private readonly _value: DictionaryValue<V>;
-    private readonly _map: Map<bigint, V>;
+    private readonly _key: DictionaryKey<K> | null;
+    private readonly _value: DictionaryValue<V> | null;
+    private readonly _map: Map<string, V>;
 
-    private constructor(key: DictionaryKey<K>, value: DictionaryValue<V>, values: Map<bigint, V>) {
+    private constructor(values: Map<string, V>, key: DictionaryKey<K> | null, value: DictionaryValue<V> | null) {
         this._key = key;
         this._value = value;
         this._map = values;
@@ -226,20 +237,20 @@ export class Dictionary<K, V> {
     }
 
     get(key: K): V | undefined {
-        return this._map.get(this._key.serialize(key));
+        return this._map.get(serializeInternalKey(key));
     }
 
     has(key: K): boolean {
-        return this._map.has(this._key.serialize(key));
+        return this._map.has(serializeInternalKey(key));
     }
 
     set(key: K, value: V): this {
-        this._map.set(this._key.serialize(key), value)
+        this._map.set(serializeInternalKey(key), value)
         return this;
     }
 
     delete(key: K) {
-        const k = this._key.serialize(key);
+        const k = serializeInternalKey(key);
         return this._map.delete(k)
     }
 
@@ -249,35 +260,83 @@ export class Dictionary<K, V> {
 
     *[Symbol.iterator](): IterableIterator<[K, V]> {
         for (const [k, v] of this._map) {
-            const key = this._key.parse(k);
+            const key = deserializeInternalKey(k) as K;
             yield [key, v]
         }
     }
 
     keys() {
-        return Array.from(this._map.keys()).map((v) => this._key.parse(v));
+        return Array.from(this._map.keys()).map((v) => deserializeInternalKey(v) as K);
     }
 
     values() {
         return Array.from(this._map.values());
     }
 
-    store(builder: Builder) {
+    store(builder: Builder, key?: Maybe<DictionaryKey<K>>, value?: Maybe<DictionaryValue<V>>) {
         if (this._map.size === 0) {
             builder.storeBit(0);
         } else {
+
+            // Resolve serializer
+            let resolvedKey = this._key;
+            if (key !== null && key !== undefined) {
+                resolvedKey = key;
+            }
+            let resolvedValue = this._value;
+            if (value !== null && value !== undefined) {
+                resolvedValue = value;
+            }
+            if (!resolvedKey) {
+                throw Error('Key serializer is not defined');
+            }
+            if (!resolvedValue) {
+                throw Error('Value serializer is not defined');
+            }
+
+            // Prepare map
+            let prepared = new Map<bigint, V>();
+            for (const [k, v] of this._map) {
+                prepared.set(resolvedKey.serialize(deserializeInternalKey(k)), v);
+            }
+
+            // Store
             builder.storeBit(1);
             let dd = beginCell();
-            serializeDict(this._map, this._key.bits, this._value.serialize, dd);
+            serializeDict(prepared, resolvedKey.bits, resolvedValue.serialize, dd);
             builder.storeRef(dd.endCell());
         }
     }
 
-    storeDirect(builder: Builder) {
+    storeDirect(builder: Builder, key?: Maybe<DictionaryKey<K>>, value?: Maybe<DictionaryValue<V>>) {
         if (this._map.size === 0) {
             throw Error('Cannot store empty dictionary directly');
         }
-        serializeDict(this._map, this._key.bits, this._value.serialize, builder);
+
+        // Resolve serializer
+        let resolvedKey = this._key;
+        if (key !== null && key !== undefined) {
+            resolvedKey = key;
+        }
+        let resolvedValue = this._value;
+        if (value !== null && value !== undefined) {
+            resolvedValue = value;
+        }
+        if (!resolvedKey) {
+            throw Error('Key serializer is not defined');
+        }
+        if (!resolvedValue) {
+            throw Error('Value serializer is not defined');
+        }
+
+        // Prepare map
+        let prepared = new Map<bigint, V>();
+        for (const [k, v] of this._map) {
+            prepared.set(resolvedKey.serialize(deserializeInternalKey(k)), v);
+        }
+
+        // Store
+        serializeDict(prepared, resolvedKey.bits, resolvedValue.serialize, builder);
     }
 }
 
@@ -289,6 +348,9 @@ function createAddressKey(): DictionaryKey<Address> {
     return {
         bits: 267,
         serialize: (src) => {
+            if (!Address.isAddress(src)) {
+                throw Error('Key is not an address');
+            }
             return beginCell().storeAddress(src).endCell().beginParse().preloadUintBig(267);
         },
         parse: (src) => {
@@ -301,6 +363,9 @@ function createBigIntKey(bits: number): DictionaryKey<bigint> {
     return {
         bits,
         serialize: (src) => {
+            if (typeof src !== 'bigint') {
+                throw Error('Key is not a bigint');
+            }
             return beginCell().storeInt(src, bits).endCell().beginParse().loadUintBig(bits);
         },
         parse: (src) => {
@@ -313,6 +378,12 @@ function createIntKey(bits: number): DictionaryKey<number> {
     return {
         bits: bits,
         serialize: (src) => {
+            if (typeof src !== 'number') {
+                throw Error('Key is not a number');
+            }
+            if (!Number.isSafeInteger(src)) {
+                throw Error('Key is not a safe integer: ' + src);
+            }
             return beginCell().storeInt(src, bits).endCell().beginParse().loadUintBig(bits);
         },
         parse: (src) => {
@@ -325,6 +396,12 @@ function createBigUintKey(bits: number): DictionaryKey<bigint> {
     return {
         bits,
         serialize: (src) => {
+            if (typeof src !== 'bigint') {
+                throw Error('Key is not a bigint');
+            }
+            if (src < 0) {
+                throw Error('Key is negative: ' + src);
+            }
             return beginCell().storeUint(src, bits).endCell().beginParse().loadUintBig(bits);
         },
         parse: (src) => {
@@ -337,6 +414,15 @@ function createUintKey(bits: number): DictionaryKey<number> {
     return {
         bits,
         serialize: (src) => {
+            if (typeof src !== 'number') {
+                throw Error('Key is not a number');
+            }
+            if (!Number.isSafeInteger(src)) {
+                throw Error('Key is not a safe integer: ' + src);
+            }
+            if (src < 0) {
+                throw Error('Key is negative: ' + src);
+            }
             return beginCell().storeUint(src, bits).endCell().beginParse().loadUintBig(bits);
         },
         parse: (src) => {
@@ -349,6 +435,9 @@ function createBufferKey(bytes: number): DictionaryKey<Buffer> {
     return {
         bits: bytes * 8,
         serialize: (src) => {
+            if (!Buffer.isBuffer(src)) {
+                throw Error('Key is not a buffer');
+            }
             return beginCell().storeBuffer(src).endCell().beginParse().loadUintBig(bytes * 8);
         },
         parse: (src) => {
@@ -456,7 +545,7 @@ function createCellValue(): DictionaryValue<Cell> {
     }
 }
 
-function createDictionaryValue<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>): DictionaryValue<Dictionary<K, V>> {
+function createDictionaryValue<K extends DictionaryKeyTypes, V>(key: DictionaryKey<K>, value: DictionaryValue<V>): DictionaryValue<Dictionary<K, V>> {
     return {
         serialize: (src, buidler) => {
             src.store(buidler);

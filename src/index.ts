@@ -17,7 +17,7 @@ export { Cell } from './boc/Cell';
 export { Writable } from './boc/Writable';
 
 // Dict
-export { Dictionary, DictionaryKey, DictionaryValue } from './dict/Dictionary';
+export { Dictionary, DictionaryKey, DictionaryKeyTypes, DictionaryValue } from './dict/Dictionary';
 
 // Exotics
 export { exoticMerkleProof } from './boc/cell/exoticMerkleProof';

@@ -6,7 +6,7 @@ import { Writable } from "./Writable";
 import { Cell } from "./Cell";
 import { Slice } from "./Slice";
 import { writeString } from "./utils/strings";
-import { Dictionary } from "../dict/Dictionary";
+import { Dictionary, DictionaryKey, DictionaryKeyTypes, DictionaryValue } from "../dict/Dictionary";
 import { Maybe } from "../utils/maybe";
 
 /**
@@ -439,9 +439,9 @@ export class Builder {
      * @param dict dictionary to store
      * @returns this builder
      */
-    storeDict<K, V>(dict?: Maybe<Dictionary<K, V>>) {
+    storeDict<K extends DictionaryKeyTypes, V>(dict?: Maybe<Dictionary<K, V>>, key?: Maybe<DictionaryKey<K>>, value?: Maybe<DictionaryValue<V>>) {
         if (dict) {
-            dict.store(this);
+            dict.store(this, key, value);
         } else {
             this.storeBit(0);
         }
@@ -453,8 +453,8 @@ export class Builder {
      * @param dict dictionary to store
      * @returns this builder
      */
-    storeDictDirect<K, V>(dict: Dictionary<K, V>) {
-        dict.storeDirect(this);
+    storeDictDirect<K extends DictionaryKeyTypes, V>(dict: Dictionary<K, V>, key?: Maybe<DictionaryKey<K>>, value?: Maybe<DictionaryValue<V>>) {
+        dict.storeDirect(this, key, value);
         return this;
     }
 

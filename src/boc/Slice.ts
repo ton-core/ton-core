@@ -1,5 +1,5 @@
 import inspectSymbol from 'symbol.inspect';
-import { Dictionary, DictionaryKey, DictionaryValue } from '../dict/Dictionary';
+import { Dictionary, DictionaryKey, DictionaryKeyTypes, DictionaryValue } from '../dict/Dictionary';
 import { BitReader } from "./BitReader";
 import { beginCell } from "./Builder";
 import { Cell } from "./Cell";
@@ -469,7 +469,7 @@ export class Slice {
      * @param value value description
      * @returns Dictionary<K, V>
      */
-    loadDict<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>): Dictionary<K, V> {
+    loadDict<K extends DictionaryKeyTypes, V>(key: DictionaryKey<K>, value: DictionaryValue<V>): Dictionary<K, V> {
         return Dictionary.load(key, value, this);
     }
 
@@ -479,7 +479,7 @@ export class Slice {
      * @param value value description
      * @returns Dictionary<K, V>
      */
-    loadDictDirect<K, V>(key: DictionaryKey<K>, value: DictionaryValue<V>): Dictionary<K, V> {
+    loadDictDirect<K extends DictionaryKeyTypes, V>(key: DictionaryKey<K>, value: DictionaryValue<V>): Dictionary<K, V> {
         return Dictionary.loadDirect(key, value, this);
     }
 
