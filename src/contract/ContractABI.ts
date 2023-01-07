@@ -10,7 +10,7 @@ export type ABITypeRef = {
     optional?: Maybe<boolean>,
     format?: Maybe<string | number | boolean>,
 } | {
-    kind: 'map',
+    kind: 'dict',
     format?: Maybe<string | number | boolean>,
     key: string,
     keyFormat?: Maybe<string | number | boolean>,
