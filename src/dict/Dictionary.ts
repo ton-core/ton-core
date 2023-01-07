@@ -195,8 +195,17 @@ export class Dictionary<K extends DictionaryKeyTypes, V> {
      * @param src slice
      * @returns Dictionary<K, V>
      */
-    static load<K extends DictionaryKeyTypes, V>(key: DictionaryKey<K>, value: DictionaryValue<V>, sc: Slice): Dictionary<K, V> {
-        let cell = sc.loadMaybeRef();
+    static load<K extends DictionaryKeyTypes, V>(key: DictionaryKey<K>, value: DictionaryValue<V>, sc: Slice | Cell): Dictionary<K, V> {
+        let slice: Slice;
+        if (sc instanceof Cell) {
+            if (sc.isExotic) {
+                return Dictionary.empty<K, V>(key, value);
+            }
+            slice = sc.beginParse();
+        } else {
+            slice = sc;
+        }
+        let cell = slice.loadMaybeRef();
         if (cell && !cell.isExotic) {
             return Dictionary.loadDirect<K, V>(key, value, cell.beginParse());
         } else {
@@ -213,8 +222,17 @@ export class Dictionary<K extends DictionaryKeyTypes, V> {
      * @param sc slice
      * @returns Dictionary<K, V>
      */
-    static loadDirect<K extends DictionaryKeyTypes, V>(key: DictionaryKey<K>, value: DictionaryValue<V>, sc: Slice): Dictionary<K, V> {
-        let values = parseDict(sc, key.bits, value.parse);
+    static loadDirect<K extends DictionaryKeyTypes, V>(key: DictionaryKey<K>, value: DictionaryValue<V>, sc: Slice | Cell | null): Dictionary<K, V> {
+        if (!sc) {
+            return Dictionary.empty<K, V>(key, value);
+        }
+        let slice: Slice;
+        if (sc instanceof Cell) {
+            slice = sc.beginParse();
+        } else {
+            slice = sc;
+        }
+        let values = parseDict(slice, key.bits, value.parse);
         let prepare = new Map<string, V>();
         for (let [k, v] of values) {
             prepare.set(serializeInternalKey(key.parse(k)), v);
