@@ -12,6 +12,10 @@ yarn install ton-core
 
 `Address` represents address in TON and allows conversion from different address formats.
 
+## Docs
+
+[Documentation](https://ton-community.github.io/ton-core/).
+
 # License
 
 MIT
