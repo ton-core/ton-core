@@ -29,7 +29,7 @@ export class TupleReader {
 
     skip(number: number = 1) {
         for (let i = 0; i < number; i++) {
-            this.items.pop();
+            this.pop();
         }
         return this;
     }
