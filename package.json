@@ -10,7 +10,8 @@
     "src"
   ],
   "scripts": {
-    "build": "rm -fr dist docs && tsc --declaration && typedoc src/index.ts",
+    "docs": "rm -fr docs && typedoc src/index.ts",
+    "build": "rm -fr dist && tsc --declaration",
     "test": "jest --verbose --runInBand",
     "release": "yarn build && yarn test && yarn release-it --npm.yarn1"
   },
