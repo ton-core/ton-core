@@ -27,8 +27,8 @@ export class TupleReader {
         return res;
     }
 
-    skip(number: number = 1) {
-        for (let i = 0; i < number; i++) {
+    skip(num: number = 1) {
+        for (let i = 0; i < num; i++) {
             this.pop();
         }
         return this;
