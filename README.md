@@ -14,7 +14,7 @@ yarn install ton-core
 
 ## Docs
 
-[Documentation](https://ton-community.github.io/ton-core/).
+[Documentation](https://ton-community.github.io/ton-core/)
 
 # License
 
