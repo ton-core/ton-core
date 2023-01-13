@@ -27,6 +27,13 @@ export class TupleReader {
         return res;
     }
 
+    skip(num: number = 1) {
+        for (let i = 0; i < num; i++) {
+            this.pop();
+        }
+        return this;
+    }
+
     readBigNumber() {
         let popped = this.pop();
         if (popped.type !== 'int') {
