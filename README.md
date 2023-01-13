@@ -8,11 +8,7 @@ Core library that implements low level primitives of TON blockchain.
 yarn install ton-core
 ```
 
-## Address
-
-`Address` represents address in TON and allows conversion from different address formats.
-
-## Docs
+## Reference Documentation
 
 [Documentation](https://ton-community.github.io/ton-core/)
 
