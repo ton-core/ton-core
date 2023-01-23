@@ -3,7 +3,7 @@ import { Cell } from "../boc/Cell";
 import { Contract } from "./Contract";
 import { ContractProvider } from "./ContractProvider";
 
-type OpenedContract<F> = {
+export type OpenedContract<F> = {
     [P in keyof F]: P extends `${'get' | 'send'}${string}`
     ? (F[P] extends (x: ContractProvider, ...args: infer P) => infer R ? (...args: P) => R : never)
     : F[P];
