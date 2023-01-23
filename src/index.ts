@@ -38,7 +38,7 @@ export { Contract } from './contract/Contract';
 export { ContractProvider } from './contract/ContractProvider';
 export { ContractState } from './contract/ContractState';
 export { Sender, SenderArguments } from './contract/Sender';
-export { openContract } from './contract/openContract';
+export { openContract, OpenedContract } from './contract/openContract';
 export { ComputeError } from './contract/ComputeError';
 export {
     ContractABI,
