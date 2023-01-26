@@ -2,7 +2,7 @@
   "name": "ton-core",
   "version": "0.46.0",
   "main": "dist/index.js",
-  "repository": "https://github.com/ton-community/ton-core.git",
+  "repository": "https://github.com/ton-core/ton-core.git",
   "author": "Steve Korshakov <steve@korshakov.com>",
   "license": "MIT",
   "files": [
