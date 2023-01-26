@@ -5,7 +5,7 @@ Core library that implements low level primitives of TON blockchain.
 ## How to install
 
 ```bash
-yarn install ton-core
+yarn add ton-core
 ```
 
 ## Reference Documentation
