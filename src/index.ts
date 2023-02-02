@@ -1,5 +1,5 @@
 // Address
-export { Address } from './address/Address';
+export { Address, address } from './address/Address';
 export { ExternalAddress } from './address/ExternalAddress';
 export { ADNLAddress } from './address/ADNLAddress';
 export { contractAddress } from './address/contractAddress';
@@ -35,7 +35,10 @@ export * from './types/_export';
 
 // Contract
 export { Contract } from './contract/Contract';
-export { ContractProvider } from './contract/ContractProvider';
+export {
+    ContractProvider,
+    ContractGetMethodResult
+} from './contract/ContractProvider';
 export { ContractState } from './contract/ContractState';
 export { Sender, SenderArguments } from './contract/Sender';
 export { openContract, OpenedContract } from './contract/openContract';

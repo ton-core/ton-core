@@ -156,3 +156,7 @@ export class Address {
 
     [inspectSymbol] = () => this.toString()
 }
+
+export function address(src: string) {
+    return Address.parse(src);
+}
