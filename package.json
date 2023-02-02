@@ -1,6 +1,6 @@
 {
   "name": "ton-core",
-  "version": "0.46.0",
+  "version": "0.47.0",
   "main": "dist/index.js",
   "repository": "https://github.com/ton-core/ton-core.git",
   "author": "Steve Korshakov <steve@korshakov.com>",
