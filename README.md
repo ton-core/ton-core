@@ -10,7 +10,7 @@ yarn add ton-core
 
 ## Reference Documentation
 
-[Documentation](https://ton-community.github.io/ton-core/)
+[Documentation](https://ton-core.github.io/ton-core/)
 
 # License
 
