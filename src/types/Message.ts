@@ -62,7 +62,8 @@ export function storeMessage(message: Message, opts?: { forceRef?: boolean }) {
         if (opts && opts.forceRef) {
             needRef = true;
         } else {
-            if (builder.availableBits - 1 /* At least on byte for body */ >= message.body.bits.length) {
+            if (builder.availableBits - 1 /* At least on byte for body */ >= message.body.bits.length &&
+                  builder.refs + message.body.refs.length <= 4) {
                 needRef = false;
             } else {
                 needRef = true;
