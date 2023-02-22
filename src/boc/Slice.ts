@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) Whales Corp. 
+ * All Rights Reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 import inspectSymbol from 'symbol.inspect';
 import { Dictionary, DictionaryKey, DictionaryKeyTypes, DictionaryValue } from '../dict/Dictionary';
 import { BitReader } from "./BitReader";

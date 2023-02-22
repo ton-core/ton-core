@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) Whales Corp. 
+ * All Rights Reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 import inspectSymbol from 'symbol.inspect';
 import { base32Decode, base32Encode } from '../utils/base32';
 import { crc16 } from '../utils/crc16';
