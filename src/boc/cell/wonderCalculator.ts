@@ -15,6 +15,7 @@ import { exoticMerkleProof } from "./exoticMerkleProof";
 import { getRepr } from "./descriptor";
 import { sha256_sync } from "ton-crypto";
 import { exoticMerkleUpdate } from "./exoticMerkleUpdate";
+import { exoticLibrary } from "./exoticLibrary";
 
 //
 // This function replicates unknown logic of resolving cell data
@@ -56,6 +57,13 @@ export function wonderCalculator(type: CellType, bits: BitString, refs: Cell[]):
 
         // Load level
         levelMask = new LevelMask((refs[0].mask.value | refs[1].mask.value) >> 1);
+    } else if (type === CellType.Library) {
+
+        // Parse library
+        let loaded = exoticLibrary(bits, refs);
+
+        // Load level
+        levelMask = new LevelMask(0);
     } else {
         throw new Error("Unsupported exotic type");
     }

@@ -10,6 +10,7 @@ import { BitReader } from "../BitReader";
 import { BitString } from "../BitString";
 import { Cell } from "../Cell";
 import { CellType } from "../CellType";
+import { exoticLibrary } from "./exoticLibrary";
 import { exoticMerkleProof } from "./exoticMerkleProof";
 import { exoticMerkleUpdate } from "./exoticMerkleUpdate";
 import { exoticPruned } from "./exoticPruned";
@@ -36,6 +37,25 @@ function resolvePruned(bits: BitString, refs: Cell[]): { type: CellType, depths:
         mask
     };
 }
+
+function resolveLibrary(bits: BitString, refs: Cell[]): { type: CellType, depths: number[], hashes: Buffer[], mask: LevelMask } {
+
+    // Parse library cell
+    let pruned = exoticLibrary(bits, refs);
+
+    // Calculate parameters
+    let depths: number[] = [];
+    let hashes: Buffer[] = [];
+    let mask = new LevelMask(0);
+
+    return {
+        type: CellType.Library,
+        depths,
+        hashes,
+        mask
+    };
+}
+
 
 function resolveMerkleProof(bits: BitString, refs: Cell[]): { type: CellType, depths: number[], hashes: Buffer[], mask: LevelMask } {
 
@@ -82,7 +102,7 @@ export function resolveExotic(bits: BitString, refs: Cell[]): { type: CellType, 
     }
 
     if (type === 2) {
-        throw new Error('Library cell must be loaded automatically');
+        return resolveLibrary(bits, refs);
     }
 
     if (type === 3) {

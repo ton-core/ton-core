@@ -11,6 +11,7 @@ import fs from 'fs';
 import { beginCell } from "../Builder";
 import { CellType } from "../CellType";
 import { exoticPruned } from "./exoticPruned";
+import { Cell } from "../Cell";
 
 const wallets: string[] = [
     'B5EE9C72410101010044000084FF0020DDA4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED5441FDF089',
@@ -202,4 +203,10 @@ describe('boc', () => {
         expect(deserializeBoc(Buffer.from('te6ccoEBAgEADwAACQMIOt5osQEBAQAIB1vNFQ==', 'base64'))[0].equals(cell)).toBe(true);
         expect(deserializeBoc(Buffer.from('te6ccsEBAgEADwAACQMIOt5osQEBAQAIB1vNFT/vUE4=', 'base64'))[0].equals(cell)).toBe(true);
     });
+
+    it('should deserialize library cell', () => {
+        let cell = Cell.fromBase64('te6ccgEBAgEALQABDv8AiNDtHtgBCEICGbgzd5nhZ9WhSM+4juFCvgMYJOtxthFdtTKIH6M/6SM=');
+        expect(cell.toString()).toBe('x{FF0088D0ED1ED8}\n x{0219B8337799E167D5A148CFB88EE142BE031824EB71B6115DB532881FA33FE923}');
+    });
 });
+
