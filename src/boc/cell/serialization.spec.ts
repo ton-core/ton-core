@@ -204,9 +204,10 @@ describe('boc', () => {
         expect(deserializeBoc(Buffer.from('te6ccsEBAgEADwAACQMIOt5osQEBAQAIB1vNFT/vUE4=', 'base64'))[0].equals(cell)).toBe(true);
     });
 
-    it('should deserialize library cell', () => {
+    it('should deserialize/serialize library cell', () => {
         let cell = Cell.fromBase64('te6ccgEBAgEALQABDv8AiNDtHtgBCEICGbgzd5nhZ9WhSM+4juFCvgMYJOtxthFdtTKIH6M/6SM=');
         expect(cell.toString()).toBe('x{FF0088D0ED1ED8}\n x{0219B8337799E167D5A148CFB88EE142BE031824EB71B6115DB532881FA33FE923}');
+        expect(serializeBoc(cell, { idx: false, crc32: false }).toString('base64')).toBe('te6ccgEBAgEALQABDv8AiNDtHtgBCEICGbgzd5nhZ9WhSM+4juFCvgMYJOtxthFdtTKIH6M/6SM=');
     });
 });
 

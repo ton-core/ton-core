@@ -46,7 +46,7 @@ function resolveLibrary(bits: BitString, refs: Cell[]): { type: CellType, depths
     // Calculate parameters
     let depths: number[] = [];
     let hashes: Buffer[] = [];
-    let mask = new LevelMask(0);
+    let mask = new LevelMask();
 
     return {
         type: CellType.Library,

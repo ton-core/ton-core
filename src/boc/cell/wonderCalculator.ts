@@ -63,7 +63,7 @@ export function wonderCalculator(type: CellType, bits: BitString, refs: Cell[]):
         let loaded = exoticLibrary(bits, refs);
 
         // Load level
-        levelMask = new LevelMask(0);
+        levelMask = new LevelMask();
     } else {
         throw new Error("Unsupported exotic type");
     }
