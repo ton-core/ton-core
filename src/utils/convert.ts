@@ -10,9 +10,10 @@ export function toNano(src: number | string | bigint): bigint {
 
     if (typeof src === 'bigint') {
         return src * 1000000000n;
-    } else if (typeof src === 'number') {
-        return BigInt(src) * 1000000000n;
     } else {
+        if (typeof src === 'number') {
+            src = String(src);
+        }
 
         // Check sign
         let neg = false;
