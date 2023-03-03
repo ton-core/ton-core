@@ -12,7 +12,13 @@ export function toNano(src: number | string | bigint): bigint {
         return src * 1000000000n;
     } else {
         if (typeof src === 'number') {
-            src = String(src);
+            if (Math.log10(src) <= 6) {
+                src = src.toLocaleString('en', { minimumFractionDigits: 9, useGrouping: false });
+            } else if (src - Math.trunc(src) === 0) {
+                src = src.toLocaleString('en', { maximumFractionDigits: 0, useGrouping: false });
+            } else {
+                throw Error('Not enough precision for a number value. Use string value instead');
+            }
         }
 
         // Check sign
