@@ -92,7 +92,7 @@ export class BitBuilder {
         // Special case for 8 bits
         if (bits === 8 && this._length % 8 === 0) {
             let v = Number(value);
-            if (v < 0 || v > 255 || !Number.isSafeInteger(v)) {
+            if (v < 0 || v > 255) {
                 throw Error(`value is out of range for ${bits} bits. Got ${value}`);
             }
             this._buffer[this._length / 8] = Number(value);
@@ -103,7 +103,7 @@ export class BitBuilder {
         // Special case for 16 bits
         if (bits === 16 && this._length % 8 === 0) {
             let v = Number(value);
-            if (v < 0 || v > 65536 || !Number.isSafeInteger(v)) {
+            if (v < 0 || v > 65536) {
                 throw Error(`value is out of range for ${bits} bits. Got ${value}`);
             }
             this._buffer[this._length / 8] = v >> 8;
