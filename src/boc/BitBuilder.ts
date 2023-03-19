@@ -190,7 +190,7 @@ export class BitBuilder {
         // Write sign
         if (v < 0) {
             this.writeBit(true);
-            v = (1n << (BigInt(bits) - 1n)) + v;
+            v = vBits + v;
         } else {
             this.writeBit(false);
         }
