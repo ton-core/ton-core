@@ -2868,6 +2868,7 @@ Map {
         Symbol(nodejs.util.inspect.custom): [Function],
       },
     ],
+    "_refsOffset": 0,
     Symbol(nodejs.util.inspect.custom): [Function],
   },
 }
@@ -3019,6 +3020,7 @@ Map {
       "_offset": 267,
     },
     "_refs": [],
+    "_refsOffset": 0,
     Symbol(nodejs.util.inspect.custom): [Function],
   },
 }
