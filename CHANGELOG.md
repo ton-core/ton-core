@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## Added
+- `Slice.clone(true)` to clone slice and reset it to the begining
+- `Slice.offsetBits` and `Slice.offsetRefs` to get current offset in bits and refs
+- `BitReader.offset` to get current offset in reader
+
 ## [0.48.0] - 2023-02-28
 
 ## Added 

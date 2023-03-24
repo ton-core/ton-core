@@ -25,6 +25,13 @@ export class BitReader {
     }
 
     /**
+     * Offset in source bit string
+     */
+    get offset() {
+        return this._offset;
+    }
+
+    /**
      * Number of bits remaining
      */
     get remaining() {

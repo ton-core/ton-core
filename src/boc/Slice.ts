@@ -19,10 +19,12 @@ import { readString } from "./utils/strings";
 export class Slice {
     private _reader: BitReader;
     private _refs: Cell[];
+    private _refsOffset: number;
 
     constructor(reader: BitReader, refs: Cell[]) {
         this._reader = reader.clone();
         this._refs = [...refs];
+        this._refsOffset = 0;
     }
 
     /**
@@ -33,10 +35,24 @@ export class Slice {
     }
 
     /**
+     * Get offset bits
+     */
+    get offsetBits() {
+        return this._reader.offset;
+    }
+
+    /**
      * Get remaining refs
      */
     get remainingRefs() {
-        return this._refs.length;
+        return this._refs.length - this._refsOffset;
+    }
+
+    /**
+     * Get offset refs
+     */
+    get offsetRefs() {
+        return this._refsOffset;
     }
 
     /**
@@ -372,10 +388,10 @@ export class Slice {
      * @returns Cell
      */
     loadRef() {
-        if (this._refs.length === 0) {
+        if (this._refsOffset >= this._refs.length) {
             throw new Error("No more references");
         }
-        return this._refs.shift()!!;
+        return this._refs[this._refsOffset++];
     }
 
     /**
@@ -383,10 +399,10 @@ export class Slice {
      * @returns Cell
      */
     preloadRef() {
-        if (this._refs.length === 0) {
+        if (this._refsOffset >= this._refs.length) {
             throw new Error("No more references");
         }
-        return this._refs[0];
+        return this._refs[this._refsOffset];
     }
 
     /**
@@ -519,8 +535,16 @@ export class Slice {
      * Clone slice
      * @returns cloned slice
      */
-    clone() {
-        return new Slice(this._reader, this._refs);
+    clone(fromStart: boolean = false): Slice {
+        if (fromStart) {
+            let reader = this._reader.clone();
+            reader.reset();
+            return new Slice(reader, this._refs);
+        } else {
+            let res = new Slice(this._reader, this._refs);
+            res._refsOffset = this._refsOffset;
+            return res;
+        }
     }
 
     /**
