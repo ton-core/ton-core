@@ -81,11 +81,6 @@ export class BitString {
      */
     substring(offset: number, length: number) {
 
-        // Corner case of empty string
-        if (length === 0 && offset === this._length) {
-            return BitString.EMPTY;
-        }
-
         // Check offset
         if (offset >= this._length) {
             throw new Error(`Offset(${offset}) > ${this._length} is out of bounds`);
@@ -93,6 +88,12 @@ export class BitString {
         if (offset < 0) {
             throw new Error(`Offset(${offset}) < 0 is out of bounds`);
         }
+        
+        // Corner case of empty string
+        if (length === 0) {
+            return BitString.EMPTY;
+        }
+
         if (offset + length > this._length) {
             throw new Error(`Offset ${offset} + Length ${length} > ${this._length} is out of bounds`);
         }
