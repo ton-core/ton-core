@@ -1,11 +1,14 @@
 # 💎 ton-core
 
-Core library that implements low level primitives of TON blockchain.
+Core TypeScript library that implements low level primitives for TON blockchain.
 
 ## How to install
 
 ```bash
-yarn add ton-core
+yarn add @ton/core
+```
+```bash
+npm install @ton/core
 ```
 
 ## Reference Documentation
