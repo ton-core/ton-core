@@ -82,7 +82,7 @@ export class BitString {
     substring(offset: number, length: number) {
 
         // Check offset
-        if (offset >= this._length) {
+        if (offset > this._length) {
             throw new Error(`Offset(${offset}) > ${this._length} is out of bounds`);
         }
         if (offset < 0) {
@@ -111,7 +111,7 @@ export class BitString {
     subbuffer(offset: number, length: number) {
 
         // Check offset
-        if (offset >= this._length) {
+        if (offset > this._length) {
             throw new Error(`Offset ${offset} is out of bounds`);
         }
         if (offset < 0) {
