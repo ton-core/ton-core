@@ -25,6 +25,14 @@ export class BitString {
     private readonly _data: Buffer;
 
     /**
+     * Checks if supplied object is BitString
+     * @param src is unknow object
+     * @returns true if object is BitString and false otherwise
+     **/
+    static isBitString(src: unknown): src is BitString {
+        return src instanceof BitString;
+    }
+    /**
      * Constructing BitString from a buffer
      * @param data data that contains the bitstring data. NOTE: We are expecting this buffer to be NOT modified
      * @param offset offset in bits from the start of the buffer
@@ -175,6 +183,5 @@ export class BitString {
             }
         }
     }
-
     [inspectSymbol] = () => this.toString()
 }
