@@ -7,6 +7,8 @@
  */
 
 import { Address } from "../../address/Address";
+import { BitString } from "../../boc/BitString";
+import { bitsToPaddedBuffer, paddedBufferToBits } from "../../boc/utils/paddedBits";
 
 export function serializeInternalKey(value: any): string {
     if (typeof value === 'number') {
@@ -20,6 +22,8 @@ export function serializeInternalKey(value: any): string {
         return 'a:' + value.toString();
     } else if (Buffer.isBuffer(value)) {
         return 'f:' + value.toString('hex');
+    } else if(BitString.isBitString(value)) {
+        return 'B:' + value.toString();
     } else {
         throw Error('Invalid key type');
     }
@@ -36,6 +40,25 @@ export function deserializeInternalKey(value: string): any {
         return Address.parse(v);
     } else if (k === 'f:') {
         return Buffer.from(v, 'hex');
+    }
+    else if (k === 'B:') {
+
+        const lastDash = v.slice(-1) == "_";
+        const isPadded = lastDash || v.length % 2 != 0;
+        if(isPadded) {
+            let charLen   = lastDash ? v.length - 1 : v.length;
+            const padded  = v.substr(0, charLen) + "0"; //Padding
+            if((!lastDash) && ((charLen & 1) !== 0)){
+                // Four bit nibmle without padding
+                return new BitString(Buffer.from(padded, 'hex'), 0, charLen << 2);
+            }
+            else {
+                return paddedBufferToBits(Buffer.from(padded, 'hex')); 
+            }
+        }
+        else {
+            return new BitString(Buffer.from(v, 'hex'), 0, v.length << 2);
+        }
     }
     throw Error('Invalid key type: ' + k);
 }

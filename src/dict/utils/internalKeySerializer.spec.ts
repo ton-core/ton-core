@@ -7,6 +7,7 @@
  */
 
 import { Address } from "../../address/Address";
+import { BitString } from "../../boc/BitString";
 import { testAddress } from "../../utils/testAddress";
 import { deserializeInternalKey, serializeInternalKey } from "./internalKeySerializer";
 
@@ -35,4 +36,14 @@ describe('internalKeySerializer', () => {
             expect((deserializeInternalKey(serializeInternalKey(c)) as Buffer).equals(c)).toBe(true);
         }
     });
+    it('should serialize bit strings', () => {
+        let cs = [Buffer.from('00', 'hex'), Buffer.from('ff', 'hex'), Buffer.from('0f', 'hex'), Buffer.from('0f000011002233456611', 'hex')];
+        for (let c of cs) {
+            for(let i = 0; i < c.length * 8 - 1; i++) {
+                let bs = new BitString(c, 0, c.length * 8 - i);
+                const res = deserializeInternalKey(serializeInternalKey(bs)) as BitString;
+                expect(res.equals(bs)).toBe(true);
+            }
+        }
+    })
 });
