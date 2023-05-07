@@ -22,11 +22,20 @@ function readCell(reader: BitReader, sizeBytes: number) {
     const d1 = reader.loadUint(8);
     const refsCount = d1 % 8;
     const exotic = !!(d1 & 8);
+    const hasHashes = !!(d1 & 16);
+    const levelMask = d1 >> 5;
 
     // D2
     const d2 = reader.loadUint(8);
     const dataBytesize = Math.ceil(d2 / 2);
     const paddingAdded = !!(d2 % 2);
+
+    if (hasHashes) {
+        let maskBits = Math.ceil(Math.log2(levelMask + 1));
+        let hashesCount = maskBits + 1;
+        
+        reader.skip(hashesCount * (32 + 2) * 8); // skip hash size + depth size
+    }
 
     // Bits
     let bits = BitString.EMPTY;
