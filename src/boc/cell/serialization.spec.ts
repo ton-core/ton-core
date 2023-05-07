@@ -209,5 +209,11 @@ describe('boc', () => {
         expect(cell.toString()).toBe('x{FF0088D0ED1ED8}\n x{0219B8337799E167D5A148CFB88EE142BE031824EB71B6115DB532881FA33FE923}');
         expect(serializeBoc(cell, { idx: false, crc32: false }).toString('base64')).toBe('te6ccgEBAgEALQABDv8AiNDtHtgBCEICGbgzd5nhZ9WhSM+4juFCvgMYJOtxthFdtTKIH6M/6SM=');
     });
+
+    it('should deserialize/serialize block (#21)', () => {
+        let testCase = fs.readFileSync(__dirname + '/__testdata__/block.txt', 'utf8');
+        let cell = Cell.fromBase64(testCase);
+        expect(serializeBoc(cell, { idx: false, crc32: false }).toString('base64')).toBe(testCase);
+    })
 });
 
