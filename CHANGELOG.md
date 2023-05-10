@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Fixed
 - `Cell.fromBoc` exotic cell parsing
 - `Cell.hash` calculation if there is merkle proof in the cell tree
+- `BitString.substring` correct shortcut for empty substring
 
 ## [0.49.0] - 2023-03-24
 
