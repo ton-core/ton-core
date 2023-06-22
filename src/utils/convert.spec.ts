@@ -20,6 +20,9 @@ const stringCases: { nano: string, real: string }[] = [
 ];
 
 const numberCases: { nano: string, real: number }[] = [
+    { real: -0, nano: '0' },
+    { real: 0, nano: '0' },
+    { real: 1e64, nano: '10000000000000000000000000000000000000000000000000000000000000000000000000' },
     { real: 1, nano: '1000000000' },
     { real: 10, nano: '10000000000' },
     { real: 0.1, nano: '100000000' },
@@ -31,6 +34,15 @@ const numberCases: { nano: string, real: number }[] = [
 ];
 
 describe('convert', () => {
+    it('should throw an error for NaN', () => {
+        expect(() => toNano(NaN)).toThrow();
+    });
+    it('should throw an error for Infinity', () => {
+        expect(() => toNano(Infinity)).toThrow();
+    });
+    it('should throw an error for -Infinity', () => {
+        expect(() => toNano(-Infinity)).toThrow();
+    });
     it('should throw an error due to insufficient precision of number', () => {
         expect(() => toNano(10000000.000000001)).toThrow();
     });

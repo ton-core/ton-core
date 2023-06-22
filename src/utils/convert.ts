@@ -12,6 +12,10 @@ export function toNano(src: number | string | bigint): bigint {
         return src * 1000000000n;
     } else {
         if (typeof src === 'number') {
+            if (!Number.isFinite(src)) {
+                throw Error('Invalid number');
+            }
+
             if (Math.log10(src) <= 6) {
                 src = src.toLocaleString('en', { minimumFractionDigits: 9, useGrouping: false });
             } else if (src - Math.trunc(src) === 0) {
