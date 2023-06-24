@@ -164,6 +164,14 @@ export class Dictionary<K extends DictionaryKeyTypes, V> {
         },
 
         /**
+         * Create standard slice value
+         * @returns DictionaryValue<Slice>
+         */
+        Slice: () => {
+            return createSliceValue();
+        },
+
+        /**
          * Create Builder value
          * @param bytes number of bytes of a buffer
          * @returns DictionaryValue<Builder>
@@ -592,6 +600,17 @@ function createBufferValue(size: number): DictionaryValue<Buffer> {
         },
         parse: (src) => {
             return src.loadBuffer(size);
+        }
+    }
+}
+
+export function createSliceValue(): DictionaryValue<Slice> {
+    return {
+        serialize: (src, buidler) => {
+            buidler.storeSlice(src);
+        },
+        parse: (src) => {
+            return src;
         }
     }
 }
