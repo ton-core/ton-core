@@ -117,4 +117,9 @@ describe('BitString', () => {
             expect(r.toString()).toEqual(c[1]);
         }
     });
+
+    it('should read empty substring at the end of string', () => {
+        const emptySubstring = BitString.EMPTY.substring(0, 0);
+        expect(emptySubstring.length).toEqual(0);
+    });
 });

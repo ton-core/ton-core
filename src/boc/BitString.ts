@@ -80,6 +80,10 @@ export class BitString {
      * @returns 
      */
     substring(offset: number, length: number) {
+        // Corner case of empty substring at the end
+        if (length === 0 && offset <= this._length) {
+            return BitString.EMPTY;
+        }
 
         // Check offset
         if (offset >= this._length) {

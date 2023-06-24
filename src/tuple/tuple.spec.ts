@@ -9,7 +9,7 @@
 import { Address } from "../address/Address";
 import { beginCell } from "../boc/Builder";
 import { Cell } from "../boc/Cell";
-import { parseTuple, serializeTuple } from "./tuple";
+import { TupleItemCell, parseTuple, serializeTuple } from "./tuple";
 
 describe('tuple', () => {
     it('should serialize tuple with numbers', () => {
@@ -105,5 +105,18 @@ describe('tuple', () => {
         let boc = 'te6cckECCAEAAwgAAg8AAAEEAD+AYAECAAAB/tC/0YDQuNCy0LXRgiDQvNC40YAg8J+RgCDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LgDAf7QstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIgBAH+0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIAUB/vCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9EGAf6A0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC1BwDc0YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYDQv9GA0LjQstC10YIg0LzQuNGAIPCfkYBG2Y9A';
         let cell = Cell.fromBase64(boc);
         parseTuple(cell);
+    });
+
+    it('should parse emtpy slice in tuple', () => {
+        let serialized = serializeTuple([
+            {
+                "type": "slice", "cell": beginCell().endCell()
+            }
+        ]);
+        let parsed = parseTuple(serialized);
+        expect(parsed.length).toEqual(1);
+        const item = parsed[0] as TupleItemCell;
+        let body = item.cell.beginParse()
+        expect(body.remainingBits).toEqual(0);
     });
 });
