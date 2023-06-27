@@ -13,7 +13,7 @@ npm install @ton/core
 
 ## Reference Documentation
 
-[Documentation](https://ton-community.github.io/ton-core/)
+[Documentation](https://ton-org.github.io/ton-core/)
 
 # License
 
