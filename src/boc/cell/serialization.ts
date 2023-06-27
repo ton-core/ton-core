@@ -16,6 +16,19 @@ import { getBitsDescriptor, getRefsDescriptor } from "./descriptor";
 import { bitsToPaddedBuffer } from "../utils/paddedBits";
 import { crc32c } from "../../utils/crc32c";
 
+function getHashesCount(levelMask: number) {
+    return getHashesCountFromMask(levelMask & 7)
+}
+
+function getHashesCountFromMask(mask: number) {
+    let n = 0;
+    for (let i = 0; i < 3; i++) {
+        n += (mask & 1);
+        mask = mask >> 1;
+    }
+    return n+1; // 1 repr + up to 3 higher hashes
+}
+
 function readCell(reader: BitReader, sizeBytes: number) {
 
     // D1
@@ -27,6 +40,16 @@ function readCell(reader: BitReader, sizeBytes: number) {
     const d2 = reader.loadUint(8);
     const dataBytesize = Math.ceil(d2 / 2);
     const paddingAdded = !!(d2 % 2);
+
+    const levelMask = d1 >> 5;
+    const hasHashes = (d1 & 16) != 0;
+    const hash_bytes = 32;
+
+    const hashesSize = hasHashes ? getHashesCount(levelMask) * hash_bytes : 0;
+    const depthSize = hasHashes ? getHashesCount(levelMask) * 2 : 0;
+
+    reader.skip(hashesSize * 8);
+    reader.skip(depthSize * 8);
 
     // Bits
     let bits = BitString.EMPTY;

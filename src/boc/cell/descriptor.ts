@@ -20,7 +20,7 @@ export function getBitsDescriptor(bits: BitString) {
     return Math.ceil(len / 8) + Math.floor(len / 8);
 }
 
-export function getRepr(bits: BitString, refs: Cell[], level: number, type: CellType) {
+export function getRepr(originalBits: BitString, bits: BitString, refs: Cell[], level: number, type: CellType) {
 
     // Allocate
     const bitsLen = Math.ceil(bits.length / 8);
@@ -29,7 +29,7 @@ export function getRepr(bits: BitString, refs: Cell[], level: number, type: Cell
     // Write descriptors
     let reprCursor = 0;
     repr[reprCursor++] = getRefsDescriptor(refs, level, type);
-    repr[reprCursor++] = getBitsDescriptor(bits);
+    repr[reprCursor++] = getBitsDescriptor(originalBits);
 
     // Write bits
     bitsToPaddedBuffer(bits).copy(repr, reprCursor);
