@@ -7,14 +7,7 @@
  */
 
 import { Slice } from "../boc/Slice";
-
-function readUnaryLength(slice: Slice) {
-    let res = 0;
-    while (slice.loadBit()) {
-        res++;
-    }
-    return res;
-}
+import { readUnaryLength } from "./utils/readUnaryLength";
 
 function doParse<V>(prefix: string, slice: Slice, n: number, res: Map<bigint, V>, extractor: (src: Slice) => V) {
 
