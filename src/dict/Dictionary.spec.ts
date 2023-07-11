@@ -8,6 +8,8 @@
 
 import { beginCell, Builder } from "../boc/Builder";
 import { Cell } from "../boc/Cell";
+import { exoticMerkleProof } from "../boc/cell/exoticMerkleProof";
+import { exoticMerkleUpdate } from "../boc/cell/exoticMerkleUpdate";
 import { Dictionary } from "./Dictionary";
 import fs from 'fs';
 
@@ -81,6 +83,53 @@ describe('Dictionary', () => {
             let oracles = config.loadDict(Dictionary.Keys.BigUint(256), Dictionary.Values.Buffer(32));
             let externalChainAddress = config.loadBuffer(32);
             // console.warn(oracles);
+        }
+    });
+
+    it('should generate merkle proofs', () => {
+        let d = Dictionary.empty(
+            Dictionary.Keys.Uint(8),
+            Dictionary.Values.Uint(32)
+        );
+        d.set(1, 11);
+        d.set(2, 22);
+        d.set(3, 33);
+        d.set(4, 44);
+        d.set(5, 55);
+
+        for (let k = 1; k <= 5; k++) {
+            const proof = d.generateMerkleProof(k);
+            expect(exoticMerkleProof(proof.bits, proof.refs).proofHash).toEqual(
+                Buffer.from(
+                    'ee41b86bd71f8224ebd01848b4daf4cd46d3bfb3e119d8b865ce7c2802511de3',
+                    'hex'
+                )
+            );
+        }
+    });
+
+    it('should generate merkle updates', () => {
+        let d = Dictionary.empty(
+            Dictionary.Keys.Uint(8),
+            Dictionary.Values.Uint(32)
+        );
+        d.set(1, 11);
+        d.set(2, 22);
+        d.set(3, 33);
+        d.set(4, 44);
+        d.set(5, 55);
+
+        for (let k = 1; k <= 5; k++) {
+            const update = d.generateMerkleUpdate(k, d.get(k)! * 2);
+            expect(
+                exoticMerkleUpdate(update.bits, update.refs).proofHash1
+            ).toEqual(
+                Buffer.from(
+                    'ee41b86bd71f8224ebd01848b4daf4cd46d3bfb3e119d8b865ce7c2802511de3',
+                    'hex'
+                )
+            );
+            d.set(k, Math.floor(d.get(k)! / 2));
         }
     });
 });
