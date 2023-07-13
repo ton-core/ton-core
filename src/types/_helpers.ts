@@ -13,12 +13,13 @@ import { beginCell } from "../boc/Builder";
 import { toNano } from "../utils/convert";
 import { MessageRelaxed } from "./MessageRelaxed";
 import { Message } from "./Message";
+import { StateInit } from "./StateInit";
 
 export function internal(src: {
     to: Address | string,
     value: bigint | string,
     bounce?: Maybe<boolean>,
-    init?: Maybe<{ code?: Maybe<Cell>, data?: Maybe<Cell> }>,
+    init?: Maybe<StateInit>,
     body?: Maybe<Cell | string>
 }): MessageRelaxed {
 
@@ -75,7 +76,7 @@ export function internal(src: {
 
 export function external(src: {
     to: Address | string,
-    init?: Maybe<{ code?: Maybe<Cell>, data?: Maybe<Cell> }>,
+    init?: Maybe<StateInit>,
     body?: Maybe<Cell>
 }): Message {
 
