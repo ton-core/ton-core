@@ -1010,6 +1010,48 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ton/core@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@ton/core@workspace:."
+  dependencies:
+    "@release-it/keep-a-changelog": ^3.1.0
+    "@ton/crypto": ^3.2.0
+    "@types/jest": ^29.2.4
+    "@types/node": ^18.11.17
+    jest: ^29.3.1
+    prando: ^6.0.1
+    release-it: ^15.5.1
+    symbol.inspect: 1.0.1
+    ton3-core: ^0.0.20
+    ts-jest: ^29.0.3
+    ts-node: ^10.9.1
+    typedoc: ^0.23.24
+    typescript: ^4.9.4
+  peerDependencies:
+    "@ton/crypto": ">=3.2.0"
+  languageName: unknown
+  linkType: soft
+
+"@ton/crypto-primitives@npm:2.0.0":
+  version: 2.0.0
+  resolution: "@ton/crypto-primitives@npm:2.0.0"
+  dependencies:
+    jssha: 3.2.0
+  checksum: 1a686b04dc1430792341339f0ddc1e2f5effd94d31ae118baf2c510e074201495801787b2ca881a6ceb587f89212eb081ec9e3979d374d9c9004c6c4b61fc591
+  languageName: node
+  linkType: hard
+
+"@ton/crypto@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@ton/crypto@npm:3.2.0"
+  dependencies:
+    "@ton/crypto-primitives": 2.0.0
+    jssha: 3.2.0
+    tweetnacl: 1.0.3
+  checksum: 0851fad506796573ec6079c1f36d3d07f4070abb90a4a2f3e621f6b2b2c6725c13096a5afdabb24611aa2a063ba335dcbc742e98a3c1cd0bbf3645ae55c1a8c6
+  languageName: node
+  linkType: hard
+
 "@tootallnate/once@npm:1":
   version: 1.1.2
   resolution: "@tootallnate/once@npm:1.1.2"
@@ -6080,48 +6122,6 @@ __metadata:
   version: 1.0.1
   resolution: "toidentifier@npm:1.0.1"
   checksum: 952c29e2a85d7123239b5cfdd889a0dde47ab0497f0913d70588f19c53f7e0b5327c95f4651e413c74b785147f9637b17410ac8c846d5d4a20a5a33eb6dc3a45
-  languageName: node
-  linkType: hard
-
-"ton-core@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "ton-core@workspace:."
-  dependencies:
-    "@release-it/keep-a-changelog": ^3.1.0
-    "@types/jest": ^29.2.4
-    "@types/node": ^18.11.17
-    jest: ^29.3.1
-    prando: ^6.0.1
-    release-it: ^15.5.1
-    symbol.inspect: 1.0.1
-    ton-crypto: ^3.2.0
-    ton3-core: ^0.0.20
-    ts-jest: ^29.0.3
-    ts-node: ^10.9.1
-    typedoc: ^0.23.24
-    typescript: ^4.9.4
-  peerDependencies:
-    ton-crypto: ">=3.2.0"
-  languageName: unknown
-  linkType: soft
-
-"ton-crypto-primitives@npm:2.0.0":
-  version: 2.0.0
-  resolution: "ton-crypto-primitives@npm:2.0.0"
-  dependencies:
-    jssha: 3.2.0
-  checksum: a81e5e7f1e44a2f32c519d6a9c3512c047b837be2f90a4e5aa226378b330ec6f9d36c1937a21b947eb792ae819c6906cfbd5b5eeab891f9df486d570141fc749
-  languageName: node
-  linkType: hard
-
-"ton-crypto@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "ton-crypto@npm:3.2.0"
-  dependencies:
-    jssha: 3.2.0
-    ton-crypto-primitives: 2.0.0
-    tweetnacl: 1.0.3
-  checksum: 5c4b077ce36f6d6583c6fee91be45ba88024cfb17927d2da8fce355f226dba559ba5dc91ee508b205c537d6dd6a34bfea17a26c2656ef80bd72f64d1a2604c45
   languageName: node
   linkType: hard
 
