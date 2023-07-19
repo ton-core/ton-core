@@ -6,7 +6,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { TupleItem } from "./tuple";
+import { TupleItem, Tuple } from "./tuple";
+
+function _readCons(cons: TupleItem[] | TupleReader): TupleItem[] {
+    const nThLevelItems = ((cons.pop()) as Tuple).items;
+    const reader = new TupleReader(nThLevelItems);
+    const nullTerminator = nThLevelItems.pop();
+    const item = [(reader.pop() as Tuple).items[0]];
+    if (nullTerminator!.type == "null") {
+        return item
+    }
+    return [...item, ..._readCons(reader)]
+}
 
 export class TupleReader {
     private readonly items: TupleItem[];
@@ -142,6 +153,10 @@ export class TupleReader {
             throw Error('Not a number');
         }
         return new TupleReader(popped.items);
+    }
+
+    readCons() {
+        return _readCons(this)
     }
 
     readBuffer() {
