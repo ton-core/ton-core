@@ -13,49 +13,78 @@ describe('tuple', () => {
     it('should read cons', () => {
         const cons: TupleItem[] = [
             {
-              "type": "tuple",
-              "items": [
-                {
-                  "type": "tuple",
-                  "items": [
-                    { "type": "int", "value": BigInt(1) },
-                    { "type": "null"}
-                  ]
-                },
-                {
-                  "type": "tuple",
-                  "items": [
+                "type": "tuple",
+                "items": [
                     {
-                      "type": "tuple",
-                      "items": [
-                        { "type": "int", "value": BigInt(2)},
-                        { "type": "null"}
-                      ]
+                        "type": "tuple",
+                        "items": [
+                            { "type": "int", "value": BigInt(1) },
+                            { "type": "int", "value": BigInt(1) },
+                            { "type": "null" }
+                        ]
                     },
                     {
                         "type": "tuple",
                         "items": [
-                          {
-                            "type": "tuple",
-                            "items": [
-                              { "type": "int", "value": BigInt(3)},
-                              { "type": "null"}
-                            ]
-                          },
-                          { "type": "null" }
+                            {
+                                "type": "tuple",
+                                "items": [
+                                    { "type": "int", "value": BigInt(2) },
+                                    { "type": "null" }
+                                ]
+                            },
+                            {
+                                "type": "tuple",
+                                "items": [
+                                    {
+                                        "type": "tuple",
+                                        "items": [
+                                            { "type": "int", "value": BigInt(3) },
+                                            { "type": "null" }
+                                        ]
+                                    },
+                                    { "type": "null" }
+                                ]
+                            }
                         ]
                     }
-                  ]
-                }
-              ]
+                ]
             }
         ]
         const r = new TupleReader(cons);
 
         const items: TupleItem[] = [
-            { type: 'int', value: 1n },
-            { type: 'int', value: 2n },
-            { type: 'int', value: 3n }
+            {
+                "type": "tuple",
+                "items": [
+                    {
+                        "type": "int",
+                        "value": BigInt(1)
+                    },
+                    {
+                        "type": "int",
+                        "value": BigInt(1)
+                    }
+                ]
+            },
+            {
+                "type": "tuple",
+                "items": [
+                    {
+                        "type": "int",
+                        "value": BigInt(2)
+                    }
+                ]
+            },
+            {
+                "type": "tuple",
+                "items": [
+                    {
+                        "type": "int",
+                        "value": BigInt(3)
+                    }
+                ]
+            }
         ]
 
         expect(r.readCons()).toEqual(items);

@@ -7,12 +7,13 @@
  */
 
 import { TupleItem, Tuple } from "./tuple";
+import { TupleBuilder } from "./builder";
 
-function _readCons(cons: TupleItem[] | TupleReader): TupleItem[] {
+function _readCons(cons: TupleItem[] | TupleReader): TupleItem[][] {
     const nThLevelItems = ((cons.pop()) as Tuple).items;
     const reader = new TupleReader(nThLevelItems);
     const nullTerminator = nThLevelItems.pop();
-    const item = [(reader.pop() as Tuple).items[0]];
+    const item = [(reader.pop() as Tuple).items.slice(0,-1)];
     if (nullTerminator!.type == "null") {
         return item
     }
@@ -156,7 +157,12 @@ export class TupleReader {
     }
 
     readCons() {
-        return _readCons(this)
+        const b = new TupleBuilder();
+        const res = _readCons(this);
+        for (const element of res) {
+            b.writeTuple(element)
+        }
+        return b.build();
     }
 
     readBuffer() {
