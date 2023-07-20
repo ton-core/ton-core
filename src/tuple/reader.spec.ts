@@ -20,7 +20,6 @@ describe('tuple', () => {
                         "items": [
                             { "type": "int", "value": BigInt(1) },
                             { "type": "int", "value": BigInt(1) },
-                            { "type": "null" }
                         ]
                     },
                     {
@@ -30,7 +29,6 @@ describe('tuple', () => {
                                 "type": "tuple",
                                 "items": [
                                     { "type": "int", "value": BigInt(2) },
-                                    { "type": "null" }
                                 ]
                             },
                             {
@@ -40,7 +38,6 @@ describe('tuple', () => {
                                         "type": "tuple",
                                         "items": [
                                             { "type": "int", "value": BigInt(3) },
-                                            { "type": "null" }
                                         ]
                                     },
                                     { "type": "null" }

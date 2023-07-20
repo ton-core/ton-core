@@ -13,7 +13,7 @@ function _readCons(cons: TupleItem[] | TupleReader): TupleItem[][] {
     const nThLevelItems = ((cons.pop()) as Tuple).items;
     const reader = new TupleReader(nThLevelItems);
     const nullTerminator = nThLevelItems.pop();
-    const item = [(reader.pop() as Tuple).items.slice(0,-1)];
+    const item = [(reader.pop() as Tuple).items];
     if (nullTerminator!.type == "null") {
         return item
     }
