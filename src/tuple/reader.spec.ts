@@ -8,6 +8,7 @@
 
 import { TupleReader } from "./reader";
 import { TupleItem } from "./tuple";
+import fs from 'fs';
 
 describe('tuple', () => {
     it('should read cons', () => {
@@ -85,6 +86,20 @@ describe('tuple', () => {
         ]
 
         expect(r.readCons()).toEqual(items);
+    });
+
+    it('should read ultra deep cons', () => {
+        let fContent = fs.readFileSync('./src/tuple/ultra_deep_cons.json');
+        const cons: TupleItem[] = JSON.parse(fContent.toString());
+
+        const result = [];
+        for (let index = 0; index < 187; index++) {
+            if (![11,82,116,154].includes(index)) {
+                result.push({"type":"int","value": index.toString()})
+            }
+        }
+
+        expect(new TupleReader(cons).readCons()).toEqual(result);
     });
 
 })

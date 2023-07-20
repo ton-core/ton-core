@@ -7,17 +7,18 @@
  */
 
 import { TupleItem, Tuple } from "./tuple";
-import { TupleBuilder } from "./builder";
 
-function _readCons(cons: TupleItem[] | TupleReader): TupleItem[][] {
-    const nThLevelItems = ((cons.pop()) as Tuple).items;
-    const reader = new TupleReader(nThLevelItems);
-    const nullTerminator = nThLevelItems.pop();
-    const item = [(reader.pop() as Tuple).items];
-    if (nullTerminator!.type == "null") {
-        return item
+function _readCons(cons: TupleReader): TupleItem[] {
+    const result: TupleItem[] = []
+    while (true) {
+        var items = ((cons.pop()) as Tuple).items;
+        result.push(items.slice(0,-1).pop()!);
+        const next = items.pop();
+        if (next!.type == "null") {
+            return result
+        }
+        cons = new TupleReader([next] as Tuple[]);
     }
-    return [...item, ..._readCons(reader)]
 }
 
 export class TupleReader {
@@ -157,12 +158,7 @@ export class TupleReader {
     }
 
     readCons() {
-        const b = new TupleBuilder();
-        const res = _readCons(this);
-        for (const element of res) {
-            b.writeTuple(element)
-        }
-        return b.build();
+        return _readCons(this)
     }
 
     readBuffer() {
