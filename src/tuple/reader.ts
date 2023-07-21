@@ -8,19 +8,6 @@
 
 import { TupleItem, Tuple } from "./tuple";
 
-function _readCons(cons: TupleReader): TupleItem[] {
-    const result: TupleItem[] = []
-    while (true) {
-        var items = ((cons.pop()) as Tuple).items;
-        result.push(items.slice(0,-1).pop()!);
-        const next = items.pop();
-        if (next!.type == "null") {
-            return result
-        }
-        cons = new TupleReader([next] as Tuple[]);
-    }
-}
-
 export class TupleReader {
     private readonly items: TupleItem[];
 
@@ -157,8 +144,28 @@ export class TupleReader {
         return new TupleReader(popped.items);
     }
 
+    private _readCons(cons: TupleReader): TupleItem[] {
+        const result: TupleItem[] = []
+        while (true) {
+            var current = cons.pop();
+            if (current.type != 'tuple') {
+                throw Error('Const consists only from tuple elements');
+            }
+            var items = ((current) as Tuple).items;
+            result.push(items.slice(0,-1).pop()!);
+            const next = items.pop();
+            if (!['tuple', 'null'].includes(next!.type)) {
+                throw Error('Const payload could be only tuple');
+            }
+            if (next!.type == "null") {
+                return result
+            }
+            cons = new TupleReader([next] as Tuple[]);
+        }
+    }
+
     readCons() {
-        return _readCons(this)
+        return this._readCons(this)
     }
 
     readBuffer() {
