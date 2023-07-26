@@ -149,13 +149,13 @@ export class TupleReader {
         while (true) {
             var current = cons.pop();
             if (current.type != 'tuple') {
-                throw Error('Const consists only from tuple elements');
+                throw Error('Cons consists only from tuple elements');
             }
             var items = ((current) as Tuple).items;
             result.push(items.slice(0,-1).pop()!);
             const next = items.pop();
             if (!['tuple', 'null'].includes(next!.type)) {
-                throw Error('Const payload could be only tuple');
+                throw Error('Cons consists only from tuple elements');
             }
             if (next!.type == "null") {
                 return result

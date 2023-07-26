@@ -102,19 +102,17 @@ describe('tuple', () => {
         expect(new TupleReader(cons).readCons()).toEqual(result);
     });
 
-    it('should raise error', () => {
+    it('should raise error on nontuple element in chain', () => {
 
         const cons: TupleItem[] = [
             {
                 "type": "null"
             }
         ]
-        const r = new TupleReader(cons);
-        const b = new TupleReader(cons)
-        console.log(expect(b.readCons()).rejects);
+        const r = new TupleReader(cons)
         async function wrapped() {
-            return b.readCons()
+            return r.readCons()
         };
-        expect(wrapped()).rejects.toThrowError('Const consists only from tuple elements');
+        expect(wrapped()).rejects.toThrowError('Cons consists only from tuple elements');
     });
 })
