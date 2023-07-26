@@ -53,4 +53,34 @@ describe('Address', () => {
         expect(address2.equals(address3)).toBe(false);
         expect(address4.equals(address3)).toBe(false);
     });
+
+    it('should throw if address is invalid', () => {
+        expect(() => {
+            Address.parseRaw('0:2cf55953e92efbeadab7ba725c3f93a0b23f842cbba72d7b8e6f510a70e422');
+        }).toThrowError('Invalid address hash length: 31');
+
+        expect(() => {
+            Address.parseRaw('0:2cf55953e92efbeadab7ba725c3f93a0b23f842cbba72d7b8e6f510a70e422e');
+        }).toThrowError('Invalid address hash length: 31');
+
+        expect(() => {
+            Address.parse('ton://EQAs9VlT6S776tq3unJcP5Ogsj-ELLunLXuOb1EKcOQi4wJB')
+        }).toThrowError('Unknown address type');
+
+        expect(() => {
+            Address.parse('EQAs9VlT6S776tq3unJcP5Ogsj-ELLunLXuOb1EKcOQi4wJ')
+        }).toThrowError('Unknown address type');
+
+        expect(() => {
+            Address.parse('ton://transfer/EQDXDCFLXgiTrjGSNVBuvKPZVYlPn3J_u96xxLas3_yoRWRk')
+        }).toThrowError('Unknown address type');
+
+        expect(() => {
+            Address.parseFriendly('ton://transfer/EQDXDCFLXgiTrjGSNVBuvKPZVYlPn3J_u96xxLas3_yoRWRk')
+        }).toThrowError('Unknown address type');
+
+        expect(() => {
+            Address.parseFriendly('0:EQDXDCFLXgiTrjGSNVBuvKPZVYlPn3J_u96xxLas3_yoRWRk')
+        }).toThrowError('Unknown address type');
+    });
 });
