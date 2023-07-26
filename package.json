@@ -1,6 +1,6 @@
 {
   "name": "ton-core",
-  "version": "0.49.1",
+  "version": "0.50.0",
   "main": "dist/index.js",
   "repository": "https://github.com/ton-core/ton-core.git",
   "author": "Whales Corp. <developers@whalescorp.com>",
