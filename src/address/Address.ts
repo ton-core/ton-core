@@ -14,6 +14,10 @@ const non_bounceable_tag = 0x51;
 const test_flag = 0x80;
 
 function parseFriendlyAddress(src: string | Buffer) {
+    if (typeof src === 'string' && !Address.isFriendly(src)) {
+        throw new Error('Unknown address type');
+    }
+
     const data = Buffer.isBuffer(src) ? src : Buffer.from(src, 'base64');
 
     // 1byte tag + 1byte workchain + 32 bytes hash + 2 byte crc

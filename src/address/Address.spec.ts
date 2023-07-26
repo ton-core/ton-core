@@ -77,6 +77,10 @@ describe('Address', () => {
 
         expect(() => {
             Address.parseFriendly('ton://transfer/EQDXDCFLXgiTrjGSNVBuvKPZVYlPn3J_u96xxLas3_yoRWRk')
-        }).toThrowError('Unknown address type: byte length is not equal to 36');
+        }).toThrowError('Unknown address type');
+
+        expect(() => {
+            Address.parseFriendly('0:EQDXDCFLXgiTrjGSNVBuvKPZVYlPn3J_u96xxLas3_yoRWRk')
+        }).toThrowError('Unknown address type');
     });
 });
