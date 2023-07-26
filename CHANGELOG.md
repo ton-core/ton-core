@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Address.parse`/`Address.parseRaw`/`Address.parseFriendly` now checks validity of address before parsing
 - `loadStringTail` crashed if the slice was partially read
 
+## [0.49.2] - 2023-07-14
+
+## Changed
+- Migrated to @ton/crypto package instead of ton-crypto
+
 ## [0.49.1] - 2023-05-10
 
 ## Fixed
