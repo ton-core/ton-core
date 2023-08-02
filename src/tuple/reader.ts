@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { TupleItem, Tuple } from "./tuple";
+import { TupleItem } from "./tuple";
 
 export class TupleReader {
     private readonly items: TupleItem[];
@@ -165,7 +165,7 @@ export class TupleReader {
         if (this.items.length === 1 && this.items[0].type === 'null') {
             return [];
         }
-        
+
         return TupleReader.readLispList(this);
     }
 
