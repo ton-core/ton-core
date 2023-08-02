@@ -10,9 +10,20 @@ export function toNano(src: number | string | bigint): bigint {
 
     if (typeof src === 'bigint') {
         return src * 1000000000n;
-    } else if (typeof src === 'number') {
-        return BigInt(src) * 1000000000n;
     } else {
+        if (typeof src === 'number') {
+            if (!Number.isFinite(src)) {
+                throw Error('Invalid number');
+            }
+
+            if (Math.log10(src) <= 6) {
+                src = src.toLocaleString('en', { minimumFractionDigits: 9, useGrouping: false });
+            } else if (src - Math.trunc(src) === 0) {
+                src = src.toLocaleString('en', { maximumFractionDigits: 0, useGrouping: false });
+            } else {
+                throw Error('Not enough precision for a number value. Use string value instead');
+            }
+        }
 
         // Check sign
         let neg = false;
