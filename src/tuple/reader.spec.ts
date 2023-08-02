@@ -16,31 +16,15 @@ describe('tuple', () => {
             {
                 "type": "tuple",
                 "items": [
+                    { "type": "int", "value": BigInt(1) },
                     {
                         "type": "tuple",
                         "items": [
-                            { "type": "int", "value": BigInt(1) },
-                            { "type": "int", "value": BigInt(1) },
-                        ]
-                    },
-                    {
-                        "type": "tuple",
-                        "items": [
+                            { "type": "int", "value": BigInt(2) },
                             {
                                 "type": "tuple",
                                 "items": [
-                                    { "type": "int", "value": BigInt(2) },
-                                ]
-                            },
-                            {
-                                "type": "tuple",
-                                "items": [
-                                    {
-                                        "type": "tuple",
-                                        "items": [
-                                            { "type": "int", "value": BigInt(3) },
-                                        ]
-                                    },
+                                    { "type": "int", "value": BigInt(3) },
                                     { "type": "null" }
                                 ]
                             }
@@ -53,39 +37,20 @@ describe('tuple', () => {
 
         const items: TupleItem[] = [
             {
-                "type": "tuple",
-                "items": [
-                    {
-                        "type": "int",
-                        "value": BigInt(1)
-                    },
-                    {
-                        "type": "int",
-                        "value": BigInt(1)
-                    }
-                ]
+                "type": "int",
+                "value": BigInt(1)
             },
             {
-                "type": "tuple",
-                "items": [
-                    {
-                        "type": "int",
-                        "value": BigInt(2)
-                    }
-                ]
+                "type": "int",
+                "value": BigInt(2)
             },
             {
-                "type": "tuple",
-                "items": [
-                    {
-                        "type": "int",
-                        "value": BigInt(3)
-                    }
-                ]
-            }
+                "type": "int",
+                "value": BigInt(3)
+            },
         ]
 
-        expect(r.readCons()).toEqual(items);
+        expect(r.readLispList()).toEqual(items);
     });
 
     it('should read ultra deep cons', () => {
@@ -99,20 +64,33 @@ describe('tuple', () => {
             }
         }
 
-        expect(new TupleReader(cons).readCons()).toEqual(result);
+        expect(new TupleReader(cons).readLispList()).toEqual(result);
     });
 
     it('should raise error on nontuple element in chain', () => {
 
         const cons: TupleItem[] = [
             {
-                "type": "null"
+                "type": "int",
+                "value": BigInt(1)
             }
-        ]
-        const r = new TupleReader(cons)
-        async function wrapped() {
-            return r.readCons()
-        };
-        expect(wrapped()).rejects.toThrowError('Cons consists only from tuple elements');
+        ];
+        
+        const r = new TupleReader(cons);
+        expect(() => r.readLispListDirect()).toThrowError('Lisp list consists only from (any, tuple) elements');
+    });
+
+    it('should return empty list if tuple is null', () => {
+        const cons: TupleItem[] = [
+            {
+                type: 'null'
+            }
+        ];
+
+        let r = new TupleReader(cons);
+        expect(r.readLispList()).toEqual([]);
+
+        r = new TupleReader(cons);
+        expect(r.readLispListDirect()).toEqual([]);
     });
 })
