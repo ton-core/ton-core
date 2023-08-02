@@ -33,7 +33,7 @@ export { exoticMerkleUpdate } from './boc/cell/exoticMerkleUpdate';
 export { exoticPruned } from './boc/cell/exoticPruned';
 
 // Tuples
-export { Tuple, TupleItem, TupleItemNull, TupleItemInt, TupleItemNaN, TupleItemCell, TupleItemBuilder } from './tuple/tuple';
+export { Tuple, TupleItem, TupleItemNull, TupleItemInt, TupleItemNaN, TupleItemCell, TupleItemSlice, TupleItemBuilder } from './tuple/tuple';
 export { parseTuple, serializeTuple } from './tuple/tuple';
 export { TupleReader } from './tuple/reader';
 export { TupleBuilder } from './tuple/builder';
