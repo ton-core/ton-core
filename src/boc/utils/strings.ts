@@ -18,9 +18,6 @@ function readBuffer(slice: Slice) {
     if (slice.remainingRefs !== 0 && slice.remainingRefs !== 1) {
         throw new Error(`invalid number of refs: ${slice.remainingRefs}`);
     }
-    if (slice.remainingRefs === 1 && (1023 - slice.remainingBits) > 7) {
-        throw new Error(`invalid string length: ${slice.remainingBits / 8}`);
-    }
 
     // Read string
     let res: Buffer

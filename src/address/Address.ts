@@ -14,6 +14,10 @@ const non_bounceable_tag = 0x51;
 const test_flag = 0x80;
 
 function parseFriendlyAddress(src: string | Buffer) {
+    if (typeof src === 'string' && !Address.isFriendly(src)) {
+        throw new Error('Unknown address type');
+    }
+
     const data = Buffer.isBuffer(src) ? src : Buffer.from(src, 'base64');
 
     // 1byte tag + 1byte workchain + 32 bytes hash + 2 byte crc
@@ -61,8 +65,43 @@ export class Address {
         return src instanceof Address;
     }
 
-    static isFriendly(source: String) {
-        return source.indexOf(':') < 0;
+    static isFriendly(source: string) {
+        // Check length
+        if (source.length !== 48) {
+            return false;
+        }
+        // Check if address is valid base64
+        if (!/[A-Za-z0-9+/_-]+/.test(source)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    static isRaw(source: string) {
+        // Check if has delimiter
+        if (source.indexOf(':') === -1) {
+            return false;
+        }
+
+        let [wc, hash] = source.split(':');
+
+        // wc is not valid
+        if (!Number.isInteger(parseFloat(wc))) {
+            return false;
+        }
+
+        // hash is not valid
+        if (!/[a-f][0-9]+/.test(hash.toLowerCase())) {
+            return false;
+        }
+
+        // has is not correct
+        if (hash.length !== 64) {
+            return false;
+        }
+
+        return true;
     }
 
     static normalize(source: string | Address) {
@@ -76,14 +115,17 @@ export class Address {
     static parse(source: string) {
         if (Address.isFriendly(source)) {
             return this.parseFriendly(source).address;
-        } else {
+        } else if (Address.isRaw(source)) {
             return this.parseRaw(source);
+        } else {
+            throw new Error('Unknown address type: ' + source);
         }
     }
 
     static parseRaw(source: string) {
         let workChain = parseInt(source.split(":")[0]);
         let hash = Buffer.from(source.split(":")[1], 'hex');
+
         return new Address(workChain, hash);
     }
 
@@ -110,6 +152,10 @@ export class Address {
     readonly hash: Buffer;
 
     constructor(workChain: number, hash: Buffer) {
+        if (hash.length !== 32) {
+            throw new Error('Invalid address hash length: ' + hash.length);
+        }
+
         this.workChain = workChain;
         this.hash = hash;
         Object.freeze(this);

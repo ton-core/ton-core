@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.51.0] - 2023-08-17
+
+## Added
+- `TupleReader.readLispList`/`TupleReader.readLispListDirect`
+
+## Changed
+- `toNano` now accepts fractional numbers
+
+## [0.50.0] - 2023-07-26
+
+## Fixed
+- `Address.parse`/`Address.parseRaw`/`Address.parseFriendly` now checks validity of address before parsing
+- `loadStringTail` crashed if the slice was partially read
+
 ## [0.49.2] - 2023-07-14
 
 ## Changed

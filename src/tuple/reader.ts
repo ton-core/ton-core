@@ -128,7 +128,7 @@ export class TupleReader {
     readTuple() {
         let popped = this.pop();
         if (popped.type !== 'tuple') {
-            throw Error('Not a number');
+            throw Error('Not a tuple');
         }
         return new TupleReader(popped.items);
     }
@@ -139,9 +139,38 @@ export class TupleReader {
             return null;
         }
         if (popped.type !== 'tuple') {
-            throw Error('Not a number');
+            throw Error('Not a tuple');
         }
         return new TupleReader(popped.items);
+    }
+
+    private static readLispList(reader: TupleReader | null) {
+        const result: TupleItem[] = [];
+    
+        let tail = reader;
+        while (tail !== null) {
+            var head = tail.pop();
+            if (tail.items.length === 0 || (tail.items[0].type !== 'tuple' && tail.items[0].type !== 'null')) {
+                throw Error('Lisp list consists only from (any, tuple) elements and ends with null');
+            }
+    
+            tail = tail.readTupleOpt();
+            result.push(head);
+        }
+    
+        return result;
+    }
+
+    readLispListDirect(): TupleItem[] {
+        if (this.items.length === 1 && this.items[0].type === 'null') {
+            return [];
+        }
+
+        return TupleReader.readLispList(this);
+    }
+
+    readLispList() {
+        return TupleReader.readLispList(this.readTupleOpt());
     }
 
     readBuffer() {
