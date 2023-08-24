@@ -7,6 +7,7 @@
  */
 
 import { beginCell, Builder } from "../boc/Builder";
+import { Cell } from '../boc/Cell';
 import { Slice } from "../boc/Slice";
 import { Dictionary } from "../dict/Dictionary";
 import { Maybe } from "../utils/maybe";
@@ -39,9 +40,12 @@ export type Transaction = {
     totalFees: CurrencyCollection,
     stateUpdate: HashUpdate,
     description: TransactionDescription,
+    raw: Cell,
+    hash: () => Buffer,
 };
 
-export function loadTransaction(slice: Slice) {
+export function loadTransaction(slice: Slice): Transaction {
+    let raw = slice.asCell();
 
     if (slice.loadUint(4) !== 0x07) {
         throw Error('Invalid data');
@@ -79,6 +83,8 @@ export function loadTransaction(slice: Slice) {
         totalFees,
         stateUpdate,
         description,
+        raw,
+        hash: () => raw.hash(),
     };
 }
 
