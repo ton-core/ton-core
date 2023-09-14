@@ -92,7 +92,7 @@ export class Address {
         }
 
         // hash is not valid
-        if (!/[a-f][0-9]+/.test(hash.toLowerCase())) {
+        if (!/[a-f0-9]+/.test(hash.toLowerCase())) {
             return false;
         }
 

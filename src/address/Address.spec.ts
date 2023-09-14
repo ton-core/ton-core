@@ -13,6 +13,7 @@ describe('Address', () => {
         let address1 = Address.parseFriendly('0QAs9VlT6S776tq3unJcP5Ogsj-ELLunLXuOb1EKcOQi4-QO');
         let address2 = Address.parseFriendly('kQAs9VlT6S776tq3unJcP5Ogsj-ELLunLXuOb1EKcOQi47nL');
         let address3 = Address.parseRaw('0:2cf55953e92efbeadab7ba725c3f93a0b23f842cbba72d7b8e6f510a70e422e3');
+        let address4 = Address.parse('-1:3333333333333333333333333333333333333333333333333333333333333333');
         expect(address1.isBounceable).toBe(false);
         expect(address2.isBounceable).toBe(true);
         expect(address1.isTestOnly).toBe(true);
