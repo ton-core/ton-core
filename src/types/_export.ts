@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Whales Corp. 
+ * Copyright (c) Whales Corp.
  * All Rights Reserved.
  *
  * This source code is licensed under the MIT license found in the
@@ -36,6 +36,12 @@ export {
     loadAccountStorage,
     storeAccountStorage
 } from './AccountStorage';
+export {
+    ActionSendMsg,
+    ActionSetCode,
+    OutAction,
+    OutList
+} from './Block';
 export {
     CommonMessageInfo,
     CommonMessageInfoInternal,
