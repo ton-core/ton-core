@@ -1,4 +1,4 @@
-# 💎 ton-core
+# 💎 @ton/core
 
 Core TypeScript library that implements low level primitives for TON blockchain.
 
