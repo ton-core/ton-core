@@ -37,11 +37,14 @@ export {
     storeAccountStorage
 } from './AccountStorage';
 export {
-    ActionSendMsg,
-    ActionSetCode,
+    OutActionSendMsg,
+    OutActionSetCode,
     OutAction,
-    OutList
-} from './Block';
+    loadOutAction,
+    storeOutAction,
+    loadOutList,
+    storeOutList
+} from './OutList';
 export {
     CommonMessageInfo,
     CommonMessageInfoInternal,
