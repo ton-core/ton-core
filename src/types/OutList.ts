@@ -31,11 +31,14 @@ export interface OutActionSetCode {
 export type OutAction = OutActionSendMsg | OutActionSetCode;
 
 export function storeOutAction(action: OutAction) {
-    if (action.type === 'sendMsg') {
-        return storeOutActionSendMsg(action);
+    switch (action.type) {
+        case 'sendMsg':
+            return storeOutActionSendMsg(action);
+        case 'setCode':
+            return storeOutActionSetCode(action);
+        default:
+            throw new Error(`Unknown action type ${(action as OutAction).type}`)
     }
-
-    return storeOutActionSetCode(action);
 }
 
 /*
