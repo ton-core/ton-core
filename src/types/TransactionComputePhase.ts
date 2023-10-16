@@ -63,7 +63,7 @@ export function loadTransactionComputePhase(slice: Slice): TransactionComputePha
     let gasLimit = vmState.loadVarUintBig(3);
     let gasCredit = vmState.loadBit() ? vmState.loadVarUintBig(2) : undefined;
     let mode = vmState.loadUint(8);
-    let exitCode = vmState.loadUint(32);
+    let exitCode = vmState.loadInt(32);
     let exitArg = vmState.loadBit() ? vmState.loadInt(32) : undefined;
     let vmSteps = vmState.loadUint(32);
     let vmInitStateHash = vmState.loadUintBig(256);
@@ -103,7 +103,7 @@ export function storeTransactionComputePhase(src: TransactionComputePhase) {
             .storeVarUint(src.gasLimit, 3)
             .store((b) => (src.gasCredit !== undefined && src.gasCredit !== null) ? b.storeBit(1).storeVarUint(src.gasCredit, 2) : b.storeBit(0))
             .storeUint(src.mode, 8)
-            .storeUint(src.exitCode, 32)
+            .storeInt(src.exitCode, 32)
             .store((b) => (src.exitArg !== undefined && src.exitArg !== null) ? b.storeBit(1).storeInt(src.exitArg, 32) : b.storeBit(0))
             .storeUint(src.vmSteps, 32)
             .storeUint(src.vmInitStateHash, 256)
