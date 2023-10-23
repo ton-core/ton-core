@@ -32,6 +32,10 @@ export { exoticMerkleProof } from './boc/cell/exoticMerkleProof';
 export { exoticMerkleUpdate } from './boc/cell/exoticMerkleUpdate';
 export { exoticPruned } from './boc/cell/exoticPruned';
 
+// Merkle trees
+export { generateMerkleProof } from './dict/generateMerkleProof'
+export { generateMerkleUpdate } from './dict/generateMerkleUpdate'
+
 // Tuples
 export { Tuple, TupleItem, TupleItemNull, TupleItemInt, TupleItemNaN, TupleItemCell, TupleItemSlice, TupleItemBuilder } from './tuple/tuple';
 export { parseTuple, serializeTuple } from './tuple/tuple';
