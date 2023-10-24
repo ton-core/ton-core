@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.53.0] - 2023-10-24
+
+## Added
+
+- `Dictionary` `BitString` keys and values (thanks @Trinketer22)
+- `BitString.isBitString` method (thanks @Trinketer22)
+- `paddedBufferToBits` helper (thanks @Trinketer22)
+- `Dictionary.generateMerkeProof` and `Dictionary.generateMerkleUpdate` (thanks @Gusarich)
+- `OutAction` and `OutList` (de)serializers (thanks @siandreev)
+
+## Fixed
+- `BitString.substring` now accepts `offset` == `str.length`
+
 ## [0.52.2] - 2023-09-14
 
 ## Fixed

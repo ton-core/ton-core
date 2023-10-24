@@ -12,6 +12,7 @@ import { exoticMerkleProof } from "../boc/cell/exoticMerkleProof";
 import { exoticMerkleUpdate } from "../boc/cell/exoticMerkleUpdate";
 import { Dictionary } from "./Dictionary";
 import fs from 'fs';
+import { BitString } from "../boc/BitString";
 
 function storeBits(builder: Builder, src: string) {
     for (let s of src) {
@@ -84,6 +85,29 @@ describe('Dictionary', () => {
             let externalChainAddress = config.loadBuffer(32);
             // console.warn(oracles);
         }
+    });
+
+    it('should parse dictionary with empty values', () => {
+        let cell = Cell.fromBoc(Buffer.from(fs.readFileSync(__dirname + "/__testdata__/empty_value.boc")))[0];
+        let testDict = Dictionary.loadDirect(Dictionary.Keys.BigUint(256), Dictionary.Values.BitString(0), cell);
+        expect(testDict.keys()[0]).toEqual(123n);
+        expect(testDict.get(123n)!.length).toBe(0);
+    });
+
+    it('should correctly serialize BitString keys and values', () => {
+        const keyLen = 9; // Not 8 bit aligned
+        const keys = Dictionary.Keys.BitString(keyLen);
+        const values = Dictionary.Values.BitString(72);
+        let testKey = new BitString(Buffer.from("Test"), 0, keyLen);
+        let testVal = new BitString(Buffer.from("BitString"), 0, 72);
+        let testDict = Dictionary.empty(keys, values);
+
+        testDict.set(testKey, testVal);
+        expect(testDict.get(testKey)!.equals(testVal)).toBe(true);
+
+        let serialized = beginCell().storeDictDirect(testDict).endCell();
+        let dictDs = Dictionary.loadDirect(keys, values, serialized);
+        expect(dictDs.get(testKey)!.equals(testVal)).toBe(true);
     });
 
     it('should generate merkle proofs', () => {

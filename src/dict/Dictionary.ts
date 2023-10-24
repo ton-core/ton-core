@@ -10,6 +10,7 @@ import { Address } from "../address/Address";
 import { beginCell, Builder } from "../boc/Builder";
 import { Cell } from "../boc/Cell";
 import { Slice } from "../boc/Slice";
+import { BitString } from "../boc/BitString";
 import { Maybe } from "../utils/maybe";
 import { generateMerkleProof } from "./generateMerkleProof";
 import { generateMerkleUpdate } from "./generateMerkleUpdate";
@@ -17,7 +18,7 @@ import { parseDict } from "./parseDict";
 import { serializeDict } from "./serializeDict";
 import { deserializeInternalKey, serializeInternalKey } from "./utils/internalKeySerializer";
 
-export type DictionaryKeyTypes = Address | number | bigint | Buffer;
+export type DictionaryKeyTypes = Address | number | bigint | Buffer | BitString;
 
 export type DictionaryKey<K extends DictionaryKeyTypes> = {
     bits: number;
@@ -84,6 +85,19 @@ export class Dictionary<K extends DictionaryKeyTypes, V> {
          */
         Buffer: (bytes: number) => {
             return createBufferKey(bytes);
+        },
+
+        /**
+         * Create BitString key
+         * @param bits key length
+         * @returns DictionaryKey<BitString>
+         * Point is that Buffer has to be 8 bit aligned,
+         * while key is TVM dictionary doesn't have to be
+         * aligned at all.
+         */
+
+        BitString: (bits: number) => {
+            return createBitStringKey(bits);
         }
     }
 
@@ -172,6 +186,17 @@ export class Dictionary<K extends DictionaryKeyTypes, V> {
          */
         Buffer: (bytes: number) => {
             return createBufferValue(bytes);
+        },
+
+        /**
+         * Create BitString value
+         * @param requested bit length
+         * @returns DictionaryValue<BitString>
+         * Point is that Buffer is not applicable
+         * when length is not 8 bit alligned.
+         */
+        BitString: (bits: number) => {
+            return createBitStringValue(bits);
         },
 
         /**
@@ -482,6 +507,20 @@ function createBufferKey(bytes: number): DictionaryKey<Buffer> {
     }
 }
 
+function createBitStringKey(bits: number): DictionaryKey<BitString> {
+    return {
+        bits,
+        serialize: (src) => {
+            if(!BitString.isBitString(src))
+                throw Error('Key is not a BitString');
+            return beginCell().storeBits(src).endCell().beginParse().loadUintBig(bits);
+        },
+        parse: (src) => {
+            return beginCell().storeUint(src, bits).endCell().beginParse().loadBits(bits);
+        }
+    }
+}
+
 function createIntValue(bits: number): DictionaryValue<number> {
     return {
         serialize: (src, buidler) => {
@@ -602,6 +641,20 @@ function createBufferValue(size: number): DictionaryValue<Buffer> {
         },
         parse: (src) => {
             return src.loadBuffer(size);
+        }
+    }
+}
+
+function createBitStringValue(bits: number): DictionaryValue<BitString> {
+    return {
+        serialize: (src, builder) => {
+            if (src.length !== bits) {
+                throw Error('Invalid BitString size');
+            }
+            builder.storeBits(src);
+        },
+        parse: (src) => {
+            return src.loadBits(bits);
         }
     }
 }

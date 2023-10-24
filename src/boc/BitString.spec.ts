@@ -10,6 +10,19 @@ import { BitBuilder } from './BitBuilder';
 import { BitString } from './BitString';
 
 describe('BitString', () => {
+    let testOOB:(method: 'substring' | 'subbuffer' , bs:BitString, offset:number, length:number) => void;
+    beforeAll(() =>{
+        testOOB = (method: 'substring' | 'subbuffer', bs:BitString,  offset:number, length: number) =>{
+            try {
+                let bs2 = bs[method](offset, length);
+                throw(Error("Should fail"));
+            }
+            catch(e: any) {
+                expect(e.message.endsWith('out of bounds')).toBe(true);
+            }
+        }
+    });
+
     it('should read bits', () => {
         let bs = new BitString(Buffer.from([0b10101010]), 0, 8);
         expect(bs.at(0)).toBe(true);
@@ -46,6 +59,39 @@ describe('BitString', () => {
         let bs = new BitString(Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]), 0, 64);
         let bs2 = bs.subbuffer(0, 16);
         expect(bs2!.length).toBe(2);
+    });
+    it('should do substrings', () => {
+        let bs = new BitString(Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]), 0, 64);
+        let bs2 = bs.substring(0, 16);
+        expect(bs2!.length).toBe(16);
+    });
+    it('should do empty substrings with requested length 0', () => {
+        let bs = new BitString(Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]), 0, 64);
+        let bs2 = bs.substring(bs.length, 0);
+        expect(bs2!.length).toBe(0);
+    });
+    it('should OOB when substring offset is out of bounds', () => {
+        let bs = new BitString(Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]), 0, 64);
+        testOOB('substring', bs, bs.length + 1, 0);
+        testOOB('substring', bs, -1, 0);
+    });
+    it('should OOB when subbuffer offset is out of bounds', () => {
+        let bs = new BitString(Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]), 0, 64);
+        testOOB('subbuffer', bs, bs.length + 1, 0);
+        testOOB('subbuffer', bs, -1, 0);
+    });
+    it('should OOB when offset is on the end of bitsring and length > 0', () =>{
+        let bs = new BitString(Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]), 0, 64);
+        testOOB('substring', bs, bs.length, 1);
+    });
+    it('should do empty subbuffers with requested length 0', () => {
+        let bs = new BitString(Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]), 0, 64);
+        let bs2 = bs.subbuffer(bs.length, 0);
+        expect(bs2!.length).toBe(0);
+    });
+    it('should OOB when offset is on the end of buffer and length > 0', () => {
+        let bs = new BitString(Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]), 0, 64);
+        testOOB('subbuffer', bs, bs.length, 1);
     });
     it('should process monkey strings', () => {
         let cases = [
