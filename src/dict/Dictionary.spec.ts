@@ -8,6 +8,8 @@
 
 import { beginCell, Builder } from "../boc/Builder";
 import { Cell } from "../boc/Cell";
+import { exoticMerkleProof } from "../boc/cell/exoticMerkleProof";
+import { exoticMerkleUpdate } from "../boc/cell/exoticMerkleUpdate";
 import { Dictionary } from "./Dictionary";
 import fs from 'fs';
 import { BitString } from "../boc/BitString";
@@ -94,17 +96,66 @@ describe('Dictionary', () => {
 
     it('should correctly serialize BitString keys and values', () => {
         const keyLen = 9; // Not 8 bit aligned
-        const keys   = Dictionary.Keys.BitString(keyLen);
+        const keys = Dictionary.Keys.BitString(keyLen);
         const values = Dictionary.Values.BitString(72);
-        let testKey  = new BitString(Buffer.from("Test"), 0, keyLen);
-        let testVal  = new BitString(Buffer.from("BitString"), 0, 72);
-        let testDict = Dictionary.empty(keys,values);
+        let testKey = new BitString(Buffer.from("Test"), 0, keyLen);
+        let testVal = new BitString(Buffer.from("BitString"), 0, 72);
+        let testDict = Dictionary.empty(keys, values);
 
         testDict.set(testKey, testVal);
         expect(testDict.get(testKey)!.equals(testVal)).toBe(true);
 
         let serialized = beginCell().storeDictDirect(testDict).endCell();
-        let dictDs     = Dictionary.loadDirect(keys, values, serialized);
+        let dictDs = Dictionary.loadDirect(keys, values, serialized);
         expect(dictDs.get(testKey)!.equals(testVal)).toBe(true);
-    })
+    });
+
+    it('should generate merkle proofs', () => {
+        let d = Dictionary.empty(
+            Dictionary.Keys.Uint(8),
+            Dictionary.Values.Uint(32)
+        );
+        d.set(1, 11);
+        d.set(2, 22);
+        d.set(3, 33);
+        d.set(4, 44);
+        d.set(5, 55);
+
+        for (let k = 1; k <= 5; k++) {
+            const proof = d.generateMerkleProof(k);
+            Cell.fromBoc(proof.toBoc());
+            expect(exoticMerkleProof(proof.bits, proof.refs).proofHash).toEqual(
+                Buffer.from(
+                    'ee41b86bd71f8224ebd01848b4daf4cd46d3bfb3e119d8b865ce7c2802511de3',
+                    'hex'
+                )
+            );
+        }
+    });
+
+    it('should generate merkle updates', () => {
+        let d = Dictionary.empty(
+            Dictionary.Keys.Uint(8),
+            Dictionary.Values.Uint(32)
+        );
+        d.set(1, 11);
+        d.set(2, 22);
+        d.set(3, 33);
+        d.set(4, 44);
+        d.set(5, 55);
+
+        for (let k = 1; k <= 5; k++) {
+            const update = d.generateMerkleUpdate(k, d.get(k)! * 2);
+            Cell.fromBoc(update.toBoc());
+            expect(
+                exoticMerkleUpdate(update.bits, update.refs).proofHash1
+            ).toEqual(
+                Buffer.from(
+                    'ee41b86bd71f8224ebd01848b4daf4cd46d3bfb3e119d8b865ce7c2802511de3',
+                    'hex'
+                )
+            );
+            d.set(k, Math.floor(d.get(k)! / 2));
+        }
+    });
 });

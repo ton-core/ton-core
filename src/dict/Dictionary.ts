@@ -12,6 +12,8 @@ import { Cell } from "../boc/Cell";
 import { Slice } from "../boc/Slice";
 import { BitString } from "../boc/BitString";
 import { Maybe } from "../utils/maybe";
+import { generateMerkleProof } from "./generateMerkleProof";
+import { generateMerkleUpdate } from "./generateMerkleUpdate";
 import { parseDict } from "./parseDict";
 import { serializeDict } from "./serializeDict";
 import { deserializeInternalKey, serializeInternalKey } from "./utils/internalKeySerializer";
@@ -388,6 +390,14 @@ export class Dictionary<K extends DictionaryKeyTypes, V> {
 
         // Store
         serializeDict(prepared, resolvedKey.bits, resolvedValue.serialize, builder);
+    }
+
+    generateMerkleProof(key: K): Cell {
+        return generateMerkleProof(this, key, this._key!)
+    }
+
+    generateMerkleUpdate(key: K, newValue: V): Cell {
+        return generateMerkleUpdate(this, key, this._key!, newValue);
     }
 }
 

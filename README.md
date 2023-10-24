@@ -18,7 +18,12 @@ yarn add ton-core
 
 ## Reference Documentation
 
-[Documentation](https://ton-community.github.io/ton-core/)
+[Documentation](https://ton-core.github.io/ton-core/)
+
+
+## Acknowledgements
+
+This library is developed by the [Whales Corp.](https://tonwhales.com/) and maintained by [Dan Volkov](https://github.com/dvlkv).
 
 # License
 
