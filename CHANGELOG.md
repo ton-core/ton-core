@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Dictionary` `BitString` keys and values (thanks @Trinketer22)
 - `BitString.isBitString` method (thanks @Trinketer22)
 - `paddedBufferToBits` helper (thanks @Trinketer22)
-- ``
+- `Dictionary.generateMerkeProof` and `Dictionary.generateMerkleUpdate` (thanks @Gusarich)
+- `OutAction` and `OutList` (de)serializers (thanks @siandreev)
 
 ## Fixed
 
