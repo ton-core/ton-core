@@ -8,9 +8,11 @@
 
 import { Address } from "../address/Address";
 import { Cell } from "../boc/Cell";
+import { Dictionary } from "../dict/Dictionary";
 import { StateInit } from "../types/StateInit";
 import { Contract } from "./Contract";
 import { ContractProvider } from "./ContractProvider";
+import { SimpleLibrary } from "../types/SimpleLibrary";
 
 export type OpenedContract<F> = {
     [P in keyof F]: P extends `${'get' | 'send'}${string}`
