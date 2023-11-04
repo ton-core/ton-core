@@ -17,7 +17,7 @@ export type SenderArguments = {
     to: Address,
     sendMode?: Maybe<SendMode>,
     bounce?: Maybe<boolean>,
-    init?: StateInit,
+    init?: Maybe<StateInit>,
     body?: Maybe<Cell>
 }
 

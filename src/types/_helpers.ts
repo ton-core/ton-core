@@ -19,7 +19,7 @@ export function internal(src: {
     to: Address | string,
     value: bigint | string,
     bounce?: Maybe<boolean>,
-    init?: StateInit,
+    init?: Maybe<StateInit>,
     body?: Maybe<Cell | string>
 }): MessageRelaxed {
 
@@ -84,7 +84,7 @@ export function internal(src: {
 
 export function external(src: {
     to: Address | string,
-    init?: StateInit,
+    init?: Maybe<StateInit>,
     body?: Maybe<Cell>
 }): Message {
 

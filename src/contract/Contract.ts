@@ -14,6 +14,6 @@ import { ContractABI } from "./ContractABI";
 
 export interface Contract {
     readonly address: Address;
-    readonly init?: StateInit;
+    readonly init?: Maybe<StateInit>;
     readonly abi?: Maybe<ContractABI>;
 }
