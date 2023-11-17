@@ -69,15 +69,7 @@ export function internal(src: {
             createdAt: 0,
             createdLt: 0n
         },
-        init: src.init
-            ? {
-                  code: src.init.code,
-                  data: src.init.data,
-                  libraries: src.init.libraries,
-                  special: src.init.special,
-                  splitDepth: src.init.splitDepth,
-              }
-            : undefined,
+        init: src.init ?? undefined,
         body: body
     };
 }
@@ -104,15 +96,7 @@ export function external(src: {
             dest: to,
             importFee: 0n
         },
-        init: src.init
-            ? {
-                  code: src.init.code,
-                  data: src.init.data,
-                  libraries: src.init.libraries,
-                  special: src.init.special,
-                  splitDepth: src.init.splitDepth,
-              }
-            : undefined,
+        init: src.init ?? undefined,
         body: src.body || Cell.EMPTY
     };
 }
