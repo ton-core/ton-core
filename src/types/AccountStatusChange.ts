@@ -20,9 +20,9 @@ export function loadAccountStatusChange(slice: Slice): AccountStatusChange {
         return 'unchanged';
     }
     if (slice.loadBit()) {
-        return 'frozen';
-    } else {
         return 'deleted';
+    } else {
+        return 'frozen';
     }
 }
 
