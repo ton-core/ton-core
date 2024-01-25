@@ -5,31 +5,21 @@ import { DictionaryKeyTypes, Dictionary, DictionaryKey } from './Dictionary';
 import { readUnaryLength } from './utils/readUnaryLength';
 
 function convertToPrunedBranch(c: Cell): Cell {
-    return new Cell({
-        exotic: true,
-        bits: beginCell()
-            .storeUint(1, 8)
-            .storeUint(1, 8)
-            .storeBuffer(c.hash(0))
-            .storeUint(c.depth(0), 16)
-            .endCell()
-            .beginParse()
-            .loadBits(288),
-    });
+    return beginCell()
+        .storeUint(1, 8)
+        .storeUint(1, 8)
+        .storeBuffer(c.hash(0))
+        .storeUint(c.depth(0), 16)
+        .endCell(true);
 }
 
 function convertToMerkleProof(c: Cell): Cell {
-    return new Cell({
-        exotic: true,
-        bits: beginCell()
-            .storeUint(3, 8)
-            .storeBuffer(c.hash(0))
-            .storeUint(c.depth(0), 16)
-            .endCell()
-            .beginParse()
-            .loadBits(280),
-        refs: [c],
-    });
+    return beginCell()
+        .storeUint(3, 8)
+        .storeBuffer(c.hash(0))
+        .storeUint(c.depth(0), 16)
+        .storeRef(c)
+        .endCell(true);
 }
 
 function doGenerateMerkleProof(

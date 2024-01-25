@@ -468,12 +468,14 @@ export class Builder {
 
     /**
      * Complete cell
+     * @param exotic exotic flag
      * @returns cell
      */
-    endCell() {
+    endCell(exotic?: boolean) {
         return new Cell({
             bits: this._bits.build(),
-            refs: this._refs
+            refs: this._refs,
+            exotic
         });
     }
 
