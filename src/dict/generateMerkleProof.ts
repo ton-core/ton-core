@@ -10,7 +10,7 @@ function convertToPrunedBranch(c: Cell): Cell {
         .storeUint(1, 8)
         .storeBuffer(c.hash(0))
         .storeUint(c.depth(0), 16)
-        .endCell(true);
+        .endCell({ exotic: true });
 }
 
 function convertToMerkleProof(c: Cell): Cell {
@@ -19,7 +19,7 @@ function convertToMerkleProof(c: Cell): Cell {
         .storeBuffer(c.hash(0))
         .storeUint(c.depth(0), 16)
         .storeRef(c)
-        .endCell(true);
+        .endCell({ exotic: true });
 }
 
 function doGenerateMerkleProof(

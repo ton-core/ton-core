@@ -468,14 +468,14 @@ export class Builder {
 
     /**
      * Complete cell
-     * @param exotic exotic flag
+     * @param opts options
      * @returns cell
      */
-    endCell(exotic?: boolean) {
+    endCell(opts?: { exotic?: boolean }) {
         return new Cell({
             bits: this._bits.build(),
             refs: this._refs,
-            exotic
+            exotic: opts?.exotic
         });
     }
 

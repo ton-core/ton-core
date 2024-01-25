@@ -12,7 +12,7 @@ function convertToMerkleUpdate(c1: Cell, c2: Cell): Cell {
         .storeUint(c2.depth(0), 16)
         .storeRef(c1)
         .storeRef(c2)
-        .endCell(true);
+        .endCell({ exotic: true });
 }
 
 export function generateMerkleUpdate<K extends DictionaryKeyTypes, V>(
