@@ -83,8 +83,16 @@ export function storeMessageRelaxed(message: MessageRelaxed, opts?: { forceRef?:
         if (opts && opts.forceRef) {
             needRef = true;
         } else {
-            if (builder.availableBits - 1 /* At least on byte for ref flag */ >= message.body.bits.length &&
-                builder.refs + message.body.refs.length <= 4) {
+        
+            /* 
+             1. If at least one bit for ref flag
+             2. If enough space for refs
+             3. If not exotic
+            */
+
+            if (builder.availableBits - 1 >= message.body.bits.length &&
+                builder.refs + message.body.refs.length <= 4 && 
+                !message.body.isExotic) {
                 needRef = false;
             } else {
                 needRef = true;
