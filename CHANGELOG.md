@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.54.0] - 2024-01-29
+
+## Added
+- Added `exotic` flag to `Cell.endCell` args (thanks @Gusarich)
+
+## Fixed
+- Exotic cells in `storeMessageRelaxed`
+- Extracurrency edgecase for `storeMessage` (thanks @aSpite)
+- `AccountStatusChange` status parsing (thanks @TrueCarry)
+- type definitions for `StateInit` (thanks @Gusarich)
+
 ## [0.53.0] - 2023-10-24
 
 ## Added
@@ -16,10 +27,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OutAction` and `OutList` (de)serializers (thanks @siandreev)
 
 ## Fixed
-
-- `Address.parse` regexp for raw addresses
 - `BitString.substring` now accepts `offset` == `str.length`
 
+## [0.52.2] - 2023-09-14
+
+## Fixed
+- `Address.isRaw` invalid address regexp
+
+## [0.52.1] - 2023-09-10
+
+## Fixed
+- ton-crypto replaced with @ton/crypto in build
 
 ## [0.52.0] - 2023-08-24
 
@@ -40,6 +58,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Fixed
 - `Address.parse`/`Address.parseRaw`/`Address.parseFriendly` now checks validity of address before parsing
 - `loadStringTail` crashed if the slice was partially read
+
+## [0.49.2] - 2023-07-14
+
+## Changed
+- Migrated to @ton/crypto package instead of ton-crypto
 
 ## [0.49.1] - 2023-05-10
 

@@ -20,4 +20,20 @@ describe('MessageRelaxed', () => {
             .endCell();
         expect(stored.equals(cell)).toBe(true);
     });
+
+    it('should store exotic message relaxed', () => {
+        let boc = 'te6cckEBBgEApwAJRgMNtncFfUUJSR6XK02Y/bjHpB1pj8VtOlnKAxgDtajfKgACASIFgZABAwIoSAEBN4Yioo+yQnBEkgpN5SV1lnSGuoJhL3ShCi0dcMHbuFcAACIBIAUEAE2/fOtFTZyY8zlmFJ8dch//XZQ4QApiXOGPZXvjFv5j0LSgZ7ckWPAoSAEBr+h0Em3TbCgl+CpPMKKoQskNFu4vLU/8w4Zuaz7PRP8AAOG0rdg=';
+        let cell = Cell.fromBase64(boc);
+
+        let payload = beginCell().store(storeMessageRelaxed({
+            body: cell,
+            info: {
+                createdAt: 0,
+                createdLt: 0n,
+                type: 'external-out',
+                dest: null,
+                src: null,
+            }
+        })).endCell();
+    });
 });

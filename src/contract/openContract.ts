@@ -8,8 +8,11 @@
 
 import { Address } from "../address/Address";
 import { Cell } from "../boc/Cell";
+import { Dictionary } from "../dict/Dictionary";
+import { StateInit } from "../types/StateInit";
 import { Contract } from "./Contract";
 import { ContractProvider } from "./ContractProvider";
+import { SimpleLibrary } from "../types/SimpleLibrary";
 
 export type OpenedContract<F> = {
     [P in keyof F]: P extends `${'get' | 'send'}${string}`
@@ -17,11 +20,11 @@ export type OpenedContract<F> = {
     : F[P];
 }
 
-export function openContract<T extends Contract>(src: T, factory: (params: { address: Address, init: { code: Cell, data: Cell } | null }) => ContractProvider): OpenedContract<T> {
+export function openContract<T extends Contract>(src: T, factory: (params: { address: Address, init: StateInit | null }) => ContractProvider): OpenedContract<T> {
 
     // Resolve parameters
     let address: Address;
-    let init: { code: Cell, data: Cell } | null = null;
+    let init: StateInit | null = null;
 
     if (!Address.isAddress(src.address)) {
         throw Error('Invalid address');

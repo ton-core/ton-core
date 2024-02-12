@@ -59,10 +59,8 @@ export function storeMessage(message: Message, opts?: { forceRef?: boolean }) {
             let needRef = false;
             if (opts && opts.forceRef) {
                 needRef = true;
-            } else if (builder.availableBits - 2 /* At least on byte for ref flag */ >= initCell.bits) {
-                needRef = false;
             } else {
-                needRef = true;
+                needRef = builder.availableBits - 2 /* At least two bits for ref flags */ < initCell.bits + message.body.bits.length;
             }
 
             // Persist init
@@ -82,12 +80,8 @@ export function storeMessage(message: Message, opts?: { forceRef?: boolean }) {
         if (opts && opts.forceRef) {
             needRef = true;
         } else {
-            if (builder.availableBits - 1 /* At least on byte for ref flag */ >= message.body.bits.length &&
-                builder.refs + message.body.refs.length <= 4) {
-                needRef = false;
-            } else {
-                needRef = true;
-            }
+            needRef = builder.availableBits - 1 /* At least one bit for ref flag */ < message.body.bits.length ||
+                builder.refs + message.body.refs.length > 4;
         }
         if (needRef) {
             builder.storeBit(true);

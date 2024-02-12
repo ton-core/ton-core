@@ -4,19 +4,15 @@ import { DictionaryKeyTypes, Dictionary, DictionaryKey } from './Dictionary';
 import { generateMerkleProof } from './generateMerkleProof';
 
 function convertToMerkleUpdate(c1: Cell, c2: Cell): Cell {
-    return new Cell({
-        exotic: true,
-        bits: beginCell()
-            .storeUint(4, 8)
-            .storeBuffer(c1.hash(0))
-            .storeBuffer(c2.hash(0))
-            .storeUint(c1.depth(0), 16)
-            .storeUint(c2.depth(0), 16)
-            .endCell()
-            .beginParse()
-            .loadBits(552),
-        refs: [c1, c2],
-    });
+    return beginCell()
+        .storeUint(4, 8)
+        .storeBuffer(c1.hash(0))
+        .storeBuffer(c2.hash(0))
+        .storeUint(c1.depth(0), 16)
+        .storeUint(c2.depth(0), 16)
+        .storeRef(c1)
+        .storeRef(c2)
+        .endCell({ exotic: true });
 }
 
 export function generateMerkleUpdate<K extends DictionaryKeyTypes, V>(
