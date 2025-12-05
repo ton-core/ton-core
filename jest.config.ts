@@ -1,7 +1,8 @@
+import { Config } from "jest";
+
 const SINGLETHREADED =
     process.env.SINGLETHREADED === "1" || process.env.SINGLETHREADED === "true";
-/** @type {import('jest').Config} */
-const options = {
+const options: Config = {
     transform: {
         "^.+\\.ts": "@swc/jest",
     },

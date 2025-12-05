@@ -1,6 +1,8 @@
+import { Config } from "jest";
+
 const mainConfig = require("./jest.config");
-/** @type {import('jest').Config} */
-const config = {
+
+const config: Config = {
     ...mainConfig,
     collectCoverage: true,
     coverageDirectory: "coverage",
